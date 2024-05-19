@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# IDE0021: 使用构造函数的块主体
+csharp_style_expression_bodied_constructors = true
