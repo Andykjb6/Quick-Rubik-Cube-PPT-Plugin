@@ -33,7 +33,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>E:\</PublishUrl>
+    <PublishUrl>E:\aaaaaa\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
     <ApplicationVersion>1.0.0.4</ApplicationVersion>
@@ -362,7 +362,10 @@
     <ManifestKeyFile>课件帮PPT助手_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>77E8D0FBEFB99ECA555FE6492A048CD0A76AF5FC</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>333848BBA08BB434E6240992241598A695F15DAC</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

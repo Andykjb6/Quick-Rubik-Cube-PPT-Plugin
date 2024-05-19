@@ -98,7 +98,7 @@ namespace 课件帮PPT助手
             topColorButton.Text = "自定义";
             topColorButton.Location = new System.Drawing.Point(200, 150);
             topColorButton.Size = new System.Drawing.Size(100, 40);
-            topColorButton.BackColor = System.Drawing.Color.Black;
+            topColorButton.BackColor = Color.FromArgb(253, 234, 243); // 使用RGB值 (255, 255, 192) 设置颜色
             topColorButton.Click += (s, args) =>
             {
                 ColorDialog colorDialog = new ColorDialog();
@@ -119,7 +119,7 @@ namespace 课件帮PPT助手
             middleColorButton.Text = "自定义";
             middleColorButton.Location = new System.Drawing.Point(200, 200);
             middleColorButton.Size = new System.Drawing.Size(100, 40);
-            middleColorButton.BackColor = System.Drawing.Color.White;
+            middleColorButton.BackColor = Color.FromArgb(254, 98, 171); // 使用RGB值 (255, 255, 192) 设置颜色
             middleColorButton.Click += (s, args) =>
             {
                 ColorDialog colorDialog = new ColorDialog();
@@ -140,7 +140,7 @@ namespace 课件帮PPT助手
             bottomColorButton.Text = "自定义";
             bottomColorButton.Location = new System.Drawing.Point(200, 250);
             bottomColorButton.Size = new System.Drawing.Size(100, 40);
-            bottomColorButton.BackColor = System.Drawing.Color.Blue;
+            bottomColorButton.BackColor = System.Drawing.Color.White;
             bottomColorButton.Click += (s, args) =>
             {
                 ColorDialog colorDialog = new ColorDialog();
