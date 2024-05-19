@@ -55,6 +55,7 @@ namespace 课件帮PPT助手
             shadowCheckBox.Text = "阴影开关（生成后可调）";
             shadowCheckBox.Location = new System.Drawing.Point(50, 750);
             shadowCheckBox.Size = new System.Drawing.Size(500, 40);
+
             shadowCheckBox.CheckedChanged += (sender, e) =>
             {
                 if (shadowCheckBox.Checked)
