@@ -133,6 +133,7 @@ namespace 课件帮PPT助手
                                          referenceShape.Type == MsoShapeType.msoGroup))
                 {
                     MessageBox.Show("参考裁剪仅支持图片裁剪，第一个被选对象是图片大小裁剪的参考，可以是形状或图片", "裁剪信息", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
 
                 float referenceWidth = referenceShape.Width;
@@ -143,14 +144,15 @@ namespace 课件帮PPT助手
                 for (int i = 2; i <= selection.ShapeRange.Count; i++)
                 {
                     Shape shape = selection.ShapeRange[i];
-                    AdjustShapeToReference(referenceShape, shape);
+                    AdjustShapeToReference(referenceShape, shape, referenceAspectRatio);
                 }
             }
         }
 
-        private void AdjustShapeToReference(Shape referenceShape, Shape shapeToAdjust)
+        private void AdjustShapeToReference(Shape referenceShape, Shape shapeToAdjust, float referenceAspectRatio)
         {
             float referenceHeight = referenceShape.Height;
+            float referenceWidth = referenceShape.Width;
 
             // 设置第一个被选中的对象的高度为参考高度
             if (shapeToAdjust == referenceShape)
@@ -160,9 +162,6 @@ namespace 课件帮PPT助手
             }
             else
             {
-                float referenceWidth = referenceShape.Width;
-                float referenceAspectRatio = referenceWidth / referenceHeight;
-
                 float shapeWidth = shapeToAdjust.Width;
                 float shapeHeight = shapeToAdjust.Height;
                 float shapeAspectRatio = shapeWidth / shapeHeight;
@@ -170,35 +169,26 @@ namespace 课件帮PPT助手
                 shapeToAdjust.LockAspectRatio = MsoTriState.msoFalse; // 允许改变宽高比
 
                 // 调整形状尺寸以匹配参考形状的纵横比
-                if (shapeAspectRatio != referenceAspectRatio)
+                if (shapeAspectRatio > referenceAspectRatio)
                 {
-                    if (shapeAspectRatio > referenceAspectRatio)
-                    {
-                        // 如果当前形状比例宽于参考比例，调整宽度
-                        float newHeight = shapeHeight;  // 保持当前高度
-                        float newWidth = newHeight * referenceAspectRatio;  // 调整宽度以匹配宽高比
-                        float cropWidth = (shapeWidth - newWidth) / 2;  // 计算需要裁剪的宽度
-                        shapeToAdjust.PictureFormat.CropLeft = cropWidth;
-                        shapeToAdjust.PictureFormat.CropRight = cropWidth;
-                    }
-                    else
-                    {
-                        // 如果当前形状比例窄于参考比例，调整高度
-                        float newWidth = shapeWidth;  // 保持当前宽度
-                        float newHeight = newWidth / referenceAspectRatio;  // 调整高度以匹配宽高比
-                        float cropHeight = (shapeHeight - newHeight) / 2;  // 计算需要裁剪的高度
-                        shapeToAdjust.PictureFormat.CropTop = cropHeight;
-                        shapeToAdjust.PictureFormat.CropBottom = cropHeight;
-                    }
+                    // 如果当前形状比例宽于参考比例，调整宽度
+                    float newWidth = shapeHeight * referenceAspectRatio;  // 调整宽度以匹配宽高比
+                    float cropWidth = (shapeWidth - newWidth) / 2;  // 计算需要裁剪的宽度
+                    shapeToAdjust.PictureFormat.CropLeft = cropWidth;
+                    shapeToAdjust.PictureFormat.CropRight = cropWidth;
+                }
+                else if (shapeAspectRatio < referenceAspectRatio)
+                {
+                    // 如果当前形状比例窄于参考比例，调整高度
+                    float newHeight = shapeWidth / referenceAspectRatio;  // 调整高度以匹配宽高比
+                    float cropHeight = (shapeHeight - newHeight) / 2;  // 计算需要裁剪的高度
+                    shapeToAdjust.PictureFormat.CropTop = cropHeight;
+                    shapeToAdjust.PictureFormat.CropBottom = cropHeight;
                 }
 
                 // 设置形状大小与参考形状一致
                 shapeToAdjust.Width = referenceWidth;
                 shapeToAdjust.Height = referenceHeight;
-
-                // 移动形状到原位置
-                shapeToAdjust.Left = shapeToAdjust.Left + (shapeWidth - referenceWidth) / 2;
-                shapeToAdjust.Top = shapeToAdjust.Top + (shapeHeight - referenceHeight) / 2;
             }
         }
 
@@ -826,19 +816,43 @@ namespace 课件帮PPT助手
                     cell.Shape.Fill.Transparency = 1;
                     cell.Shape.TextFrame.TextRange.Font.Size = 1;
 
-                    SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderTop], borderWidth, colorRgb);
-                    SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb);
-                    SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderLeft], borderWidth, colorRgb);
-                    SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb);
+                    // 外部边框设置为实线
+                    if (i == 1)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderTop], borderWidth, colorRgb, true);
+                    }
+                    if (i == table.Rows.Count)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb, true);
+                    }
+                    if (j == 1)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderLeft], borderWidth, colorRgb, true);
+                    }
+                    if (j == table.Columns.Count)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb, true);
+                    }
+
+                    // 内部边框设置为虚线
+                    if (i < table.Rows.Count)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb, false);
+                    }
+                    if (j < table.Columns.Count)
+                    {
+                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb, false);
+                    }
                 }
             }
         }
 
-        private void SetCellBorder(PowerPoint.LineFormat border, float borderWidth, int colorRgb)
+        private void SetCellBorder(PowerPoint.LineFormat border, float borderWidth, int colorRgb, bool isOuterCell)
         {
             border.Weight = borderWidth;
             border.ForeColor.RGB = colorRgb;
             border.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+            border.DashStyle = isOuterCell ? Microsoft.Office.Core.MsoLineDashStyle.msoLineSolid : Microsoft.Office.Core.MsoLineDashStyle.msoLineDash;
         }
 
         private int ConvertColor(Color color)
