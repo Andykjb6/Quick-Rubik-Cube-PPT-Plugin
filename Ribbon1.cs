@@ -598,7 +598,7 @@ namespace 课件帮PPT助手
                 int count = 1;
                 int xOffset = 100;  // 初始 x 坐标
                 int yOffset = 100;  // 初始 y 坐标
-                int xSpacing = 2; // 每个 SVG 之间的水平间隔
+                int xSpacing = 2; // 插入PPT的每个 SVG 之间的水平间隔
 
                 foreach (var svgContent in svgContents)
                 {
