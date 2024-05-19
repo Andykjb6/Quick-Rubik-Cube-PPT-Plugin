@@ -615,10 +615,8 @@ namespace 课件帮PPT助手
                     }
 
                     string updatedSvg = InsertSvgAttributesWithDimensions(svgContent, width, height);
-
                     string tempSvgPath = Path.Combine(Path.GetTempPath(), $"{inputChar}-第{count}笔.svg");
                     File.WriteAllText(tempSvgPath, updatedSvg);
-
                     slide.Shapes.AddPicture(tempSvgPath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoCTrue, xOffset, yOffset);
 
                     File.Delete(tempSvgPath);
