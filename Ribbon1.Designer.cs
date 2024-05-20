@@ -29,30 +29,34 @@ namespace 课件帮PPT助手
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Ribbon1));
             this.课件帮PPT助手 = this.Factory.CreateRibbonTab();
             this.group3 = this.Factory.CreateRibbonGroup();
-            this.button7 = this.Factory.CreateRibbonButton();
             this.group1 = this.Factory.CreateRibbonGroup();
+            this.group2 = this.Factory.CreateRibbonGroup();
+            this.group4 = this.Factory.CreateRibbonGroup();
+            this.group5 = this.Factory.CreateRibbonGroup();
+            this.button7 = this.Factory.CreateRibbonButton();
             this.button1 = this.Factory.CreateRibbonButton();
             this.button2 = this.Factory.CreateRibbonButton();
             this.button6 = this.Factory.CreateRibbonButton();
-            this.group2 = this.Factory.CreateRibbonGroup();
             this.button3 = this.Factory.CreateRibbonButton();
             this.button4 = this.Factory.CreateRibbonButton();
             this.button5 = this.Factory.CreateRibbonButton();
             this.button8 = this.Factory.CreateRibbonButton();
             this.button9 = this.Factory.CreateRibbonButton();
             this.button12 = this.Factory.CreateRibbonButton();
-            this.group4 = this.Factory.CreateRibbonGroup();
             this.button10 = this.Factory.CreateRibbonButton();
             this.button11 = this.Factory.CreateRibbonButton();
             this.button13 = this.Factory.CreateRibbonButton();
             this.button14 = this.Factory.CreateRibbonButton();
             this.button15 = this.Factory.CreateRibbonButton();
             this.button16 = this.Factory.CreateRibbonButton();
+            this.button17 = this.Factory.CreateRibbonButton();
+            this.button18 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group1.SuspendLayout();
             this.group2.SuspendLayout();
             this.group4.SuspendLayout();
+            this.group5.SuspendLayout();
             this.SuspendLayout();
             // 
             // 课件帮PPT助手
@@ -61,6 +65,7 @@ namespace 课件帮PPT助手
             this.课件帮PPT助手.Groups.Add(this.group1);
             this.课件帮PPT助手.Groups.Add(this.group2);
             this.课件帮PPT助手.Groups.Add(this.group4);
+            this.课件帮PPT助手.Groups.Add(this.group5);
             this.课件帮PPT助手.Label = "快捷魔方";
             this.课件帮PPT助手.Name = "课件帮PPT助手";
             // 
@@ -70,6 +75,43 @@ namespace 课件帮PPT助手
             this.group3.Label = "关于我";
             this.group3.Name = "group3";
             // 
+            // group1
+            // 
+            this.group1.Items.Add(this.button1);
+            this.group1.Items.Add(this.button2);
+            this.group1.Items.Add(this.button6);
+            this.group1.Label = "图形";
+            this.group1.Name = "group1";
+            // 
+            // group2
+            // 
+            this.group2.Items.Add(this.button3);
+            this.group2.Items.Add(this.button4);
+            this.group2.Items.Add(this.button5);
+            this.group2.Items.Add(this.button8);
+            this.group2.Items.Add(this.button9);
+            this.group2.Items.Add(this.button12);
+            this.group2.Label = "文本";
+            this.group2.Name = "group2";
+            // 
+            // group4
+            // 
+            this.group4.Items.Add(this.button10);
+            this.group4.Items.Add(this.button11);
+            this.group4.Items.Add(this.button13);
+            this.group4.Items.Add(this.button14);
+            this.group4.Items.Add(this.button15);
+            this.group4.Items.Add(this.button16);
+            this.group4.Label = "对齐";
+            this.group4.Name = "group4";
+            // 
+            // group5
+            // 
+            this.group5.Items.Add(this.button17);
+            this.group5.Items.Add(this.button18);
+            this.group5.Label = "抠图";
+            this.group5.Name = "group5";
+            // 
             // button7
             // 
             this.button7.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -78,14 +120,6 @@ namespace 课件帮PPT助手
             this.button7.Name = "button7";
             this.button7.ShowImage = true;
             this.button7.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button7_Click);
-            // 
-            // group1
-            // 
-            this.group1.Items.Add(this.button1);
-            this.group1.Items.Add(this.button2);
-            this.group1.Items.Add(this.button6);
-            this.group1.Label = "图形";
-            this.group1.Name = "group1";
             // 
             // button1
             // 
@@ -110,17 +144,6 @@ namespace 课件帮PPT助手
             this.button6.Name = "button6";
             this.button6.ShowImage = true;
             this.button6.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button6_Click);
-            // 
-            // group2
-            // 
-            this.group2.Items.Add(this.button3);
-            this.group2.Items.Add(this.button4);
-            this.group2.Items.Add(this.button5);
-            this.group2.Items.Add(this.button8);
-            this.group2.Items.Add(this.button9);
-            this.group2.Items.Add(this.button12);
-            this.group2.Label = "文本";
-            this.group2.Name = "group2";
             // 
             // button3
             // 
@@ -170,17 +193,6 @@ namespace 课件帮PPT助手
             this.button12.ShowImage = true;
             this.button12.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button12_Click);
             // 
-            // group4
-            // 
-            this.group4.Items.Add(this.button10);
-            this.group4.Items.Add(this.button11);
-            this.group4.Items.Add(this.button13);
-            this.group4.Items.Add(this.button14);
-            this.group4.Items.Add(this.button15);
-            this.group4.Items.Add(this.button16);
-            this.group4.Label = "对齐";
-            this.group4.Name = "group4";
-            // 
             // button10
             // 
             this.button10.Image = ((System.Drawing.Image)(resources.GetObject("button10.Image")));
@@ -229,6 +241,22 @@ namespace 课件帮PPT助手
             this.button16.ShowImage = true;
             this.button16.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button16_Click);
             // 
+            // button17
+            // 
+            this.button17.Image = ((System.Drawing.Image)(resources.GetObject("button17.Image")));
+            this.button17.Label = "抠图Beta";
+            this.button17.Name = "button17";
+            this.button17.ShowImage = true;
+            this.button17.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button17_Click);
+            // 
+            // button18
+            // 
+            this.button18.Image = ((System.Drawing.Image)(resources.GetObject("button18.Image")));
+            this.button18.Label = "清除缓存";
+            this.button18.Name = "button18";
+            this.button18.ShowImage = true;
+            this.button18.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button18_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -245,6 +273,8 @@ namespace 课件帮PPT助手
             this.group2.PerformLayout();
             this.group4.ResumeLayout(false);
             this.group4.PerformLayout();
+            this.group5.ResumeLayout(false);
+            this.group5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -272,6 +302,9 @@ namespace 课件帮PPT助手
         internal RibbonButton button14;
         internal RibbonButton button15;
         internal RibbonButton button16;
+        internal RibbonGroup group5;
+        internal RibbonButton button17;
+        internal RibbonButton button18;
     }
 
     partial class ThisRibbonCollection

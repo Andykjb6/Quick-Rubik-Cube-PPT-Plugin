@@ -184,7 +184,7 @@ namespace 课件帮PPT助手
                 Size = new System.Drawing.Size(100, 30),
                 Minimum = 0,
                 Maximum = 100,
-                Value = 6
+                Value = 45
             };
             middleOutlineNumericUpDown.ValueChanged += (s, e) =>
             {
@@ -206,7 +206,7 @@ namespace 课件帮PPT助手
                 Size = new System.Drawing.Size(100, 30),
                 Minimum = 0,
                 Maximum = 100,
-                Value = 12
+                Value = 55
             };
             bottomOutlineNumericUpDown.ValueChanged += (s, e) =>
             {

@@ -17,6 +17,9 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Drawing.Imaging;
+using System.Net;
+
 
 
 
@@ -25,9 +28,11 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace 课件帮PPT助手
 {
+
     public partial class Ribbon1
     {
         private CustomCloudTextGenerator cloudTextGenerator;
+        
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
@@ -1479,10 +1484,68 @@ namespace 课件帮PPT助手
             UpdateShapes();
             form.ShowDialog();
         }
+
+        
+
+
+        private void button17_Click(object sender, RibbonControlEventArgs e)
+            {
+            var pptApp = Globals.ThisAddIn.Application;
+            var slide = pptApp.ActiveWindow.View.Slide;
+            var selection = pptApp.ActiveWindow.Selection;
+
+            if (selection.Type == PpSelectionType.ppSelectionShapes &&
+                selection.ShapeRange.Count == 1 &&
+                selection.ShapeRange[1].Type == Microsoft.Office.Core.MsoShapeType.msoPicture)
+            {
+                var shape = selection.ShapeRange[1];
+                var tempImagePath = Path.Combine(Path.GetTempPath(), "temp_image_" + Guid.NewGuid().ToString() + ".png");
+
+                try
+                {
+                    // 使用文件路径直接导出图片
+                    shape.Export(tempImagePath, PpShapeFormat.ppShapeFormatPNG);
+
+                    using (var img = Image.FromFile(tempImagePath))
+                    {
+                        using (var form = new BackgroundRemovalForm(img, pptApp, slide, tempImagePath))
+                        {
+                            form.ShowDialog();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("导出图片失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一张图片进行操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void button18_Click(object sender, RibbonControlEventArgs e)
+        {
+            var tempFolderPath = Path.GetTempPath();
+            var tempFiles = Directory.GetFiles(tempFolderPath, "temp_image_*.png");
+
+            foreach (var file in tempFiles)
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show("临时文件删除失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            MessageBox.Show("所有临时文件已删除", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }
-
-
 
 
 
