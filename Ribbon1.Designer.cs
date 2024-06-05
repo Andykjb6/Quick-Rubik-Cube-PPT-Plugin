@@ -78,6 +78,7 @@ namespace 课件帮PPT助手
             this.Sizescaling = this.Factory.CreateRibbonButton();
             this.button20 = this.Factory.CreateRibbonButton();
             this.button21 = this.Factory.CreateRibbonButton();
+            this.分组对齐 = this.Factory.CreateRibbonButton();
             this.Type = this.Factory.CreateRibbonButton();
             this.Selectsize = this.Factory.CreateRibbonButton();
             this.SelectedColor = this.Factory.CreateRibbonButton();
@@ -92,6 +93,7 @@ namespace 课件帮PPT助手
             this.Fillblank = this.Factory.CreateRibbonButton();
             this.Timer = this.Factory.CreateRibbonButton();
             this.Boardpasting = this.Factory.CreateRibbonButton();
+            this.任意拆分 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -151,6 +153,7 @@ namespace 课件帮PPT助手
             this.group1.Items.Add(this.button6);
             this.group1.Items.Add(this.Masking);
             this.group1.Items.Add(this.Gradientrectangle);
+            this.group1.Items.Add(this.任意拆分);
             this.group1.Items.Add(this.Mosaic);
             this.group1.Items.Add(this.ApplyFilter);
             this.group1.Items.Add(this.Expandimage);
@@ -175,6 +178,7 @@ namespace 课件帮PPT助手
             this.group8.Items.Add(this.Sizescaling);
             this.group8.Items.Add(this.button20);
             this.group8.Items.Add(this.button21);
+            this.group8.Items.Add(this.分组对齐);
             this.group8.Label = "便捷常用";
             this.group8.Name = "group8";
             // 
@@ -509,6 +513,14 @@ namespace 课件帮PPT助手
             this.button21.SuperTip = "选择一个或多个对象，输入前缀名称，按照选择顺序进行编号和命名。";
             this.button21.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button21_Click_1);
             // 
+            // 分组对齐
+            // 
+            this.分组对齐.Image = ((System.Drawing.Image)(resources.GetObject("分组对齐.Image")));
+            this.分组对齐.Label = "平移对齐";
+            this.分组对齐.Name = "分组对齐";
+            this.分组对齐.ShowImage = true;
+            this.分组对齐.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.分组对齐_Click);
+            // 
             // Type
             // 
             this.Type.Image = ((System.Drawing.Image)(resources.GetObject("Type.Image")));
@@ -651,6 +663,12 @@ namespace 课件帮PPT助手
     "trl键，单击“板贴辅助”，则支持导入txt格式的分行文本进行批量创建。";
             this.Boardpasting.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Boardpasting_Click);
             // 
+            // 任意拆分
+            // 
+            this.任意拆分.Label = "任意拆分";
+            this.任意拆分.Name = "任意拆分";
+            this.任意拆分.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.任意拆分_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -742,6 +760,8 @@ namespace 课件帮PPT助手
         internal RibbonButton button21;
         internal RibbonButton toggleTaskPaneButton;
         internal RibbonGroup group10;
+        internal RibbonButton 分组对齐;
+        internal RibbonButton 任意拆分;
     }
 
     partial class ThisRibbonCollection

@@ -372,27 +372,25 @@ namespace 课件帮PPT助手
 
         private void AddWavyLine(PowerPoint.Slide slide, float left, float top, float width, Color color)
         {
-            float step = 5f;
-            float amplitude = 2f;
+            float step = 5f; // 每个波浪的宽度
+            float amplitude = 2f; // 波浪的高度
 
             List<float> points = new List<float>();
 
+            // 计算波浪线的点
+            bool goingUp = true;
             for (float x = left; x <= left + width; x += step)
             {
                 points.Add(x);
-                if ((x - left) / step % 2 == 0)
-                {
-                    points.Add(top + amplitude); // 波峰
-                }
-                else
-                {
-                    points.Add(top - amplitude); // 波谷
-                }
+                points.Add(top + (goingUp ? amplitude : -amplitude));
+                goingUp = !goingUp;
             }
 
+            // 确保波浪线在结束时回到中间水平线
             points.Add(left + width);
             points.Add(top);
 
+            // 将计算的点转换为 PowerPoint 安全数组
             Array safeArray = Array.CreateInstance(typeof(float), new int[] { points.Count / 2, 2 }, new int[] { 1, 1 });
             for (int i = 0; i < points.Count; i += 2)
             {
@@ -400,6 +398,7 @@ namespace 课件帮PPT助手
                 safeArray.SetValue(points[i + 1], i / 2 + 1, 2);
             }
 
+            // 创建波浪线形状
             PowerPoint.Shape waveShape = slide.Shapes.AddPolyline(safeArray);
             waveShape.Name = "Annotation_WavyLine";
             waveShape.Line.ForeColor.RGB = ColorTranslator.ToOle(color);
@@ -408,6 +407,7 @@ namespace 课件帮PPT助手
             waveShape.Line.EndArrowheadStyle = Office.MsoArrowheadStyle.msoArrowheadNone;
             waveShape.Line.BeginArrowheadStyle = Office.MsoArrowheadStyle.msoArrowheadNone;
         }
+
 
         private void AddRepeatedSymbols(PowerPoint.Slide slide, float left, float top, float width, Color color, string symbol, int count, float baseFontSize)
         {
@@ -828,13 +828,13 @@ namespace 课件帮PPT助手
                     text = RemoveAnnotations(text);
                     textRange.Text = text;
 
-                    // Remove shapes behind the text range if they overlap
+                    // Remove shapes behind the selected text range if they overlap
                     PowerPoint.Slide slide = (PowerPoint.Slide)app.ActiveWindow.View.Slide;
                     List<PowerPoint.Shape> shapesToDelete = new List<PowerPoint.Shape>();
 
                     foreach (PowerPoint.Shape shape in slide.Shapes)
                     {
-                        if (shape.Name.StartsWith("Annotation_"))
+                        if (shape.Name.StartsWith("Annotation_") && IsShapeOverlappingTextRange(shape, textRange))
                         {
                             shapesToDelete.Add(shape);
                         }
@@ -847,6 +847,24 @@ namespace 课件帮PPT助手
                 }
             }
 
+            private bool IsShapeOverlappingTextRange(PowerPoint.Shape shape, PowerPoint.TextRange textRange)
+            {
+                // Check if the shape overlaps with the text range bounds
+                float textLeft = textRange.BoundLeft;
+                float textTop = textRange.BoundTop;
+                float textWidth = textRange.BoundWidth;
+                float textHeight = textRange.BoundHeight;
+
+                float shapeLeft = shape.Left;
+                float shapeTop = shape.Top;
+                float shapeWidth = shape.Width;
+                float shapeHeight = shape.Height;
+
+                return !(shapeLeft + shapeWidth < textLeft ||
+                         shapeLeft > textLeft + textWidth ||
+                         shapeTop + shapeHeight < textTop ||
+                         shapeTop > textTop + textHeight);
+            }
             private string RemoveAnnotations(string text)
             {
                 // Define both default and custom symbols to remove
@@ -876,24 +894,6 @@ namespace 课件帮PPT助手
                 }
 
                 return text;
-            }
-            private bool IsShapeOverlappingTextRange(PowerPoint.Shape shape, PowerPoint.TextRange textRange)
-            {
-                // Check if the shape overlaps with the text range bounds
-                float textLeft = textRange.BoundLeft;
-                float textTop = textRange.BoundTop;
-                float textWidth = textRange.BoundWidth;
-                float textHeight = textRange.BoundHeight;
-
-                float shapeLeft = shape.Left;
-                float shapeTop = shape.Top;
-                float shapeWidth = shape.Width;
-                float shapeHeight = shape.Height;
-
-                return !(shapeLeft + shapeWidth < textLeft ||
-                         shapeLeft > textLeft + textWidth ||
-                         shapeTop + shapeHeight < textTop ||
-                         shapeTop > textTop + textHeight);
             }
 
             private void DeleteCustomAnnotationButton_Click(object sender, EventArgs e)
@@ -1110,9 +1110,17 @@ namespace 课件帮PPT助手
         private Panel adjustPanel;
         private ListBox listBox;
         private Dictionary<string, NumericUpDown> durationControls;
+        private Label durationLabel;
+        private NumericUpDown durationControl;
+
 
         private void 书写动画_Click(object sender, EventArgs ev)
         {
+            if (animationForm != null)
+            {
+                animationForm.Dispose();
+            }
+
             animationForm = new Form();
             animationForm.Text = "书写动画辅助生成";
             animationForm.Size = new System.Drawing.Size(520, 555);
@@ -1145,7 +1153,6 @@ namespace 课件帮PPT助手
             tabPage1.Controls.Add(inputLabel);
             tabPage1.Controls.Add(textBox);
 
-
             // 第二页内容
             Label label2 = new Label();
             label2.Text = "提示：“智能全选”→“智能动画”。";
@@ -1154,7 +1161,7 @@ namespace 课件帮PPT助手
 
             Button selectAllButton = new Button();
             selectAllButton.Text = "②智能全选";
-            selectAllButton.BackColor=System.Drawing.Color.FromArgb(47, 85, 151);
+            selectAllButton.BackColor = System.Drawing.Color.FromArgb(47, 85, 151);
             selectAllButton.ForeColor = System.Drawing.Color.White;
             selectAllButton.Width = 220;
             selectAllButton.Height = 40;
@@ -1163,7 +1170,7 @@ namespace 课件帮PPT助手
 
             Button animateButton = new Button();
             animateButton.Text = "③智能动画";
-            animateButton.BackColor= System.Drawing.Color.FromArgb(47, 85, 151);
+            animateButton.BackColor = System.Drawing.Color.FromArgb(47, 85, 151);
             animateButton.ForeColor = System.Drawing.Color.White;
             animateButton.Width = 220;
             animateButton.Height = 40;
@@ -1174,17 +1181,18 @@ namespace 课件帮PPT助手
             adjustAnimationButton.Text = "动画调整";
             adjustAnimationButton.BackColor = System.Drawing.Color.FromArgb(47, 85, 151);
             adjustAnimationButton.ForeColor = System.Drawing.Color.White;
-           adjustAnimationButton.Width = 458;
+            adjustAnimationButton.Width = 458;
             adjustAnimationButton.Height = 40;
             adjustAnimationButton.Location = new System.Drawing.Point(10, 120);
             adjustAnimationButton.Click += AdjustAnimationButton_Click;
 
             adjustPanel = new Panel();
-            adjustPanel.Size = new System.Drawing.Size(460, 500);
+            adjustPanel.Size = new System.Drawing.Size(460, 510);
             adjustPanel.Location = new System.Drawing.Point(10, 180);
             adjustPanel.Visible = false;
 
             listBox = new ListBox();
+            listBox.SelectionMode = SelectionMode.MultiExtended;
             listBox.Location = new System.Drawing.Point(10, 10);
             listBox.Size = new System.Drawing.Size(200, 200);
 
@@ -1197,28 +1205,54 @@ namespace 课件帮PPT助手
                     adjustPanel.Controls.Remove(control);
                 }
 
-                int yOffset = listBox.Height + 20;  // 将数值标签放在动画窗格底部
+                PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+                pptApp.ActiveWindow.Selection.Unselect();
 
-                foreach (var selectedItem in listBox.SelectedItems)
+                if (listBox.SelectedItems.Count > 1)
                 {
-                    string shapeName = selectedItem.ToString();
-                    NumericUpDown durationControl;
-                    if (!durationControls.TryGetValue(shapeName, out durationControl))
+                    foreach (var selectedItem in listBox.SelectedItems)
                     {
-                        durationControl = new NumericUpDown();
-                        durationControl.Minimum = 0.25m;
-                        durationControl.Maximum = 10m;
-                        durationControl.DecimalPlaces = 2;
-                        durationControl.Increment = 0.25m;
-                        durationControl.Value = 0.50m;
-                        durationControl.Tag = shapeName;
-                        durationControl.ValueChanged += DurationControl_ValueChanged;
-                        durationControls[shapeName] = durationControl;
+                        string shapeName = selectedItem.ToString();
+                        var shape = pptApp.ActiveWindow.View.Slide.Shapes[shapeName];
+                        shape.Select(Office.MsoTriState.msoFalse);
                     }
 
-                    durationControl.Location = new System.Drawing.Point(10, yOffset);
-                    adjustPanel.Controls.Add(durationControl);
-                    yOffset += 30;
+                    NumericUpDown multiDurationControl = new NumericUpDown();
+                    multiDurationControl.Minimum = 0.1m;
+                    multiDurationControl.Maximum = 10m;
+                    multiDurationControl.DecimalPlaces = 2;
+                    multiDurationControl.Increment = 0.1m;
+                    multiDurationControl.Value = 0.50m;
+                    multiDurationControl.ValueChanged += MultiDurationControl_ValueChanged;
+
+                    multiDurationControl.Location = new System.Drawing.Point(270, 170);
+                    adjustPanel.Controls.Add(multiDurationControl);
+                }
+                else
+                {
+                    foreach (var selectedItem in listBox.SelectedItems)
+                    {
+                        string shapeName = selectedItem.ToString();
+                        var shape = pptApp.ActiveWindow.View.Slide.Shapes[shapeName];
+                        shape.Select(Office.MsoTriState.msoFalse);
+
+                        NumericUpDown durationControl;
+                        if (!durationControls.TryGetValue(shapeName, out durationControl))
+                        {
+                            durationControl = new NumericUpDown();
+                            durationControl.Minimum = 0.1m;
+                            durationControl.Maximum = 10m;
+                            durationControl.DecimalPlaces = 2;
+                            durationControl.Increment = 0.1m;
+                            durationControl.Value = 0.50m;
+                            durationControl.Tag = shapeName;
+                            durationControl.ValueChanged += DurationControl_ValueChanged;
+                            durationControls[shapeName] = durationControl;
+                        }
+
+                        durationControl.Location = new System.Drawing.Point(270, 170);
+                        adjustPanel.Controls.Add(durationControl);
+                    }
                 }
             };
 
@@ -1245,6 +1279,12 @@ namespace 课件帮PPT助手
             rightButton.Size = new System.Drawing.Size(50, 50);
             rightButton.Location = new System.Drawing.Point(370, 40);
             rightButton.Click += (s, ev5) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionLeft);
+
+            durationLabel = new Label();
+            durationLabel.Text = "动画持续时间：";
+            durationLabel.AutoSize = true;
+            durationLabel.Location = new System.Drawing.Point(270, 135);
+            adjustPanel.Controls.Add(durationLabel);
 
             adjustPanel.Controls.Add(listBox);
             adjustPanel.Controls.Add(upButton);
@@ -1333,13 +1373,14 @@ namespace 课件帮PPT助手
             PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
 
             PowerPoint.TimeLine timeLine = slide.TimeLine;
+            bool isFirstEffect = true;
             foreach (PowerPoint.Shape shape in selectedShapes)
             {
                 PowerPoint.Effect effect = timeLine.MainSequence.AddEffect(
                     shape,
                     PowerPoint.MsoAnimEffect.msoAnimEffectWipe,
                     PowerPoint.MsoAnimateByLevel.msoAnimateLevelNone,
-                    PowerPoint.MsoAnimTriggerType.msoAnimTriggerAfterPrevious
+                    isFirstEffect ? PowerPoint.MsoAnimTriggerType.msoAnimTriggerOnPageClick : PowerPoint.MsoAnimTriggerType.msoAnimTriggerAfterPrevious
                 );
 
                 if (shape.Width > shape.Height)
@@ -1356,6 +1397,8 @@ namespace 课件帮PPT助手
                 {
                     effect.Timing.Duration = (float)durationControl.Value;
                 }
+
+                isFirstEffect = false;
             }
         }
 
@@ -1364,9 +1407,14 @@ namespace 课件帮PPT助手
             if (selectedShapes != null)
             {
                 listBox.Items.Clear();
+                string currentPrefix = selectedShapes[0].Name.Split('-')[0]; // 获取前缀
+
                 foreach (var shape in selectedShapes)
                 {
-                    listBox.Items.Add(shape.Name);
+                    if (shape.Name.StartsWith(currentPrefix))
+                    {
+                        listBox.Items.Add(shape.Name);
+                    }
                 }
             }
             adjustPanel.Visible = !adjustPanel.Visible;
@@ -1400,6 +1448,30 @@ namespace 课件帮PPT助手
             if (effect != null)
             {
                 effect.Timing.Duration = (float)durationControl.Value;
+            }
+        }
+
+        private void MultiDurationControl_ValueChanged(object sender, EventArgs ev)
+        {
+            NumericUpDown multiDurationControl = sender as NumericUpDown;
+            float newDuration = (float)multiDurationControl.Value;
+
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
+
+            foreach (string shapeName in listBox.SelectedItems)
+            {
+                var effect = slide.TimeLine.MainSequence.Cast<PowerPoint.Effect>().FirstOrDefault(e => e.Shape.Name == shapeName);
+                if (effect != null)
+                {
+                    effect.Timing.Duration = newDuration;
+                }
+
+                NumericUpDown durationControl;
+                if (durationControls.TryGetValue(shapeName, out durationControl))
+                {
+                    durationControl.Value = (decimal)newDuration;
+                }
             }
         }
 

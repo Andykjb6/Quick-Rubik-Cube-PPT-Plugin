@@ -34,18 +34,21 @@ using Microsoft.Office.Tools;
 
 
 
+
 namespace 课件帮PPT助手
 {
 
     public partial class Ribbon1 : Office.IRibbonExtensibility
     {
         private CustomCloudTextGenerator cloudTextGenerator;
-        
+        private Alignment defaultAlignment;
 
         public Ribbon1(RibbonFactory factory) : base(factory)
         {
             Debug.WriteLine("Ribbon1 constructor called.");
             InitializeCloudTextGenerator();
+            InitializeComponent();
+            defaultAlignment = SettingsHelper.LoadAlignmentSetting();
         }
 
         private void InitializeCloudTextGenerator()
@@ -3021,6 +3024,7 @@ namespace 课件帮PPT助手
             {
                 // 创建并显示输入文本的窗口
                 InputTextForm inputForm = new InputTextForm();
+                inputForm.Text = "请输入分行文本"; 
                 DialogResult result = inputForm.ShowDialog();
 
                 // 如果用户点击了确定按钮
@@ -3233,41 +3237,7 @@ namespace 课件帮PPT助手
             presentation.PageSetup.SlideHeight = height;
         }
 
-        private void Insertwebpage_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 显示输入网址的窗口
-            WebpageInputForm inputForm = new WebpageInputForm();
-            DialogResult result = inputForm.ShowDialog();
-
-            // 如果用户点击了嵌入按钮
-            if (result == DialogResult.OK)
-            {
-                string url = inputForm.WebpageUrl;
-
-                // 获取当前活动窗口
-                PowerPoint.DocumentWindow activeWindow = Globals.ThisAddIn.Application.ActiveWindow;
-                if (activeWindow != null)
-                {
-                    // 获取当前页幻灯片
-                    PowerPoint.Slide currentSlide = activeWindow.View.Slide;
-
-                    // 在当前页幻灯片中嵌入网页
-                    PowerPoint.Shape LiveWebShape = currentSlide.Shapes.AddOLEObject(
-                        Left: 100, // 可以根据需要调整位置
-                        Top: 100, // 可以根据需要调整位置
-                        Width: 600, // 可以根据需要调整大小
-                        Height: 400, // 可以根据需要调整大小
-                        ClassName: "Shell.Explorer",
-                        FileName: "",
-                        DisplayAsIcon: Office.MsoTriState.msoFalse
-                    );
-
-                    // 设置WebBrowser控件的网址
-                    dynamic webBrowser = LiveWebShape.OLEFormat.Object;
-                    webBrowser.Navigate(url);
-                }
-            }
-        }
+      
 
         private void Gradientrectangle_Click(object sender, RibbonControlEventArgs e)
         {
@@ -3725,6 +3695,122 @@ namespace 课件帮PPT助手
         {
             var addIn = Globals.ThisAddIn;
             addIn.ToggleTaskPaneVisibility();
+        }
+
+
+
+        private void 分组对齐_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 检查是否按住Ctrl键
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                // 弹出设置窗口
+                using (AlignmentSettingsForm settingsForm = new AlignmentSettingsForm(defaultAlignment))
+                {
+                    if (settingsForm.ShowDialog() == DialogResult.OK)
+                    {
+                        defaultAlignment = settingsForm.SelectedAlignment;
+                    }
+                }
+                return;
+            }
+
+            // 获取当前活动的PPT应用程序
+            Application pptApp = Globals.ThisAddIn.Application;
+            // 获取当前活动窗口
+            DocumentWindow activeWindow = pptApp.ActiveWindow;
+
+            // 检查当前活动窗口是否有选中的形状
+            if (activeWindow.Selection.Type != PpSelectionType.ppSelectionShapes)
+            {
+                System.Windows.Forms.MessageBox.Show("请先选择一个或多个形状。");
+                return;
+            }
+
+            // 获取当前选中的形状
+            var selectedShapes = new List<Shape>();
+            foreach (Shape shape in activeWindow.Selection.ShapeRange)
+            {
+                selectedShapes.Add(shape);
+            }
+
+            // 找出目标对齐对象和独立对象
+            Shape targetShape = null;
+            var independentShapes = new List<Shape>();
+
+            // 假设第一个选中的对象是目标对齐对象
+            if (selectedShapes.Count > 0)
+            {
+                targetShape = selectedShapes[0];
+                selectedShapes.RemoveAt(0);
+                independentShapes.AddRange(selectedShapes);
+            }
+
+            if (targetShape == null || independentShapes.Count == 0)
+            {
+                System.Windows.Forms.MessageBox.Show("请选中一个目标对齐对象和一个或多个独立对象。");
+                return;
+            }
+
+            // 计算目标对齐对象的边界
+            float targetLeft = targetShape.Left;
+            float targetTop = targetShape.Top;
+            float targetRight = targetLeft + targetShape.Width;
+            float targetBottom = targetTop + targetShape.Height;
+
+            // 计算独立对象的边界
+            float shapesLeft = float.MaxValue;
+            float shapesTop = float.MaxValue;
+            float shapesRight = float.MinValue;
+            float shapesBottom = float.MinValue;
+
+            foreach (var shape in independentShapes)
+            {
+                if (shape.Left < shapesLeft) shapesLeft = shape.Left;
+                if (shape.Top < shapesTop) shapesTop = shape.Top;
+                if (shape.Left + shape.Width > shapesRight) shapesRight = shape.Left + shape.Width;
+                if (shape.Top + shape.Height > shapesBottom) shapesBottom = shape.Top + shape.Height;
+            }
+
+            // 计算偏移量
+            float offsetX = 0;
+            float offsetY = 0;
+
+            switch (defaultAlignment)
+            {
+                case Alignment.Center:
+                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
+                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
+                    break;
+                case Alignment.Left:
+                    offsetX = targetLeft - shapesLeft;
+                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
+                    break;
+                case Alignment.Right:
+                    offsetX = targetRight - shapesRight;
+                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
+                    break;
+                case Alignment.Top:
+                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
+                    offsetY = targetTop - shapesTop;
+                    break;
+                case Alignment.Bottom:
+                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
+                    offsetY = targetBottom - shapesBottom;
+                    break;
+            }
+
+            // 移动独立对象
+            foreach (var shape in independentShapes)
+            {
+                shape.Left += offsetX;
+                shape.Top += offsetY;
+            }
+        }
+
+        private void 任意拆分_Click(object sender, RibbonControlEventArgs e)
+        {
+          
         }
     }
 }

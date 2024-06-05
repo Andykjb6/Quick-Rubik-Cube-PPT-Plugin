@@ -77,6 +77,9 @@
     <OfficeApplication>PowerPoint</OfficeApplication>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AlignmentSettingsForm.resx">
+      <DependentUpon>AlignmentSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="C:\Users\Andy\source\repos\课件帮PPT助手\汉字笔画\*.svg" />
   </ItemGroup>
   <!--
@@ -341,6 +344,13 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="Alignment.cs" />
+    <Compile Include="AlignmentSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AlignmentSettingsForm.Designer.cs">
+      <DependentUpon>AlignmentSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="BackgroundRemovalForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -363,15 +373,10 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SettingsHelper.cs" />
     <Compile Include="SplitterTool.cs" />
     <Compile Include="TransparencyForm.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WebpageInputForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WebpageInputForm.Designer.cs">
-      <DependentUpon>WebpageInputForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="ConvenientTools.resx">
       <DependentUpon>ConvenientTools.cs</DependentUpon>
@@ -397,9 +402,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TransparencyForm.resx">
       <DependentUpon>TransparencyForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WebpageInputForm.resx">
-      <DependentUpon>WebpageInputForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="app.config" />
@@ -499,7 +501,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Ribbon5.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="汉字笔画\美.svg" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

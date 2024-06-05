@@ -122,14 +122,29 @@ public class SplitterTool
         clientStartPoint.X -= pptWindowRect.Left;
         clientStartPoint.Y -= pptWindowRect.Top;
 
-        int titleBarHeight = -670;
-        int borderWidth = 309;
+        // 使用参考值并根据比例调整
+        int referenceTitleBarHeight = -670;
+        int referenceBorderWidth = 309;
+        float baseZoom = 0.67f; // 67%
 
+        int titleBarHeight = (int)(referenceTitleBarHeight * (zoom / baseZoom));
+        int borderWidth = (int)(referenceBorderWidth * (zoom / baseZoom));
+
+        // 调整坐标
         clientStartPoint.X -= borderWidth;
-        clientStartPoint.Y -= (titleBarHeight + borderWidth);
+        clientStartPoint.Y -= titleBarHeight;
 
-        clientStartPoint.X += 37;
+        // 动态调整微调参数
+        int baseFineTuneX = 37; // 基准缩放比例(67%)下的X微调参数
+        int baseFineTuneY = -310; // 基准缩放比例(67%)下的Y微调参数
 
+        int fineTuneX = (int)(baseFineTuneX * (zoom / baseZoom));
+        int fineTuneY = (int)(baseFineTuneY * (zoom / baseZoom));
+
+        clientStartPoint.X += fineTuneX;
+        clientStartPoint.Y += fineTuneY;
+
+        // 转换像素到点并调整缩放比例
         float left = ConvertPixelsToPoints(clientStartPoint.X, screenDpiX) / zoom;
         float top = ConvertPixelsToPoints(clientStartPoint.Y, screenDpiY) / zoom;
         float width = ConvertPixelsToPoints(splitRectangle.Width, screenDpiX) / zoom;
@@ -178,7 +193,6 @@ public class SplitterTool
         PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(new[] { splitShape.Name, selectedShape.Name });
         shapeRange.MergeShapes(Office.MsoMergeCmd.msoMergeFragment);
 
-        // 检查并移除白色边框
         foreach (PowerPoint.Shape shape in shapeRange)
         {
             try
@@ -202,3 +216,5 @@ public class SplitterTool
         return pixels * 72f / dpi;
     }
 }
+
+
