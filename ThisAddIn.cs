@@ -38,12 +38,11 @@ namespace 课件帮PPT助手
 
         private void Application_PresentationClose(PowerPoint.Presentation Pres)
         {
-            // 在关闭文档时移除 CustomTaskPane
+            // 在关闭文档时隐藏 CustomTaskPane 而不是移除
             if (customTaskPanes.ContainsKey(Pres))
             {
                 CustomTaskPane taskPane = customTaskPanes[Pres];
-                this.CustomTaskPanes.Remove(taskPane);
-                customTaskPanes.Remove(Pres);
+                taskPane.Visible = false;  // 隐藏 CustomTaskPane
             }
         }
 

@@ -3734,17 +3734,9 @@ namespace 课件帮PPT助手
                 selectedShapes.Add(shape);
             }
 
-            // 找出目标对齐对象和独立对象
-            Shape targetShape = null;
-            var independentShapes = new List<Shape>();
-
             // 假设第一个选中的对象是目标对齐对象
-            if (selectedShapes.Count > 0)
-            {
-                targetShape = selectedShapes[0];
-                selectedShapes.RemoveAt(0);
-                independentShapes.AddRange(selectedShapes);
-            }
+            Shape targetShape = selectedShapes.FirstOrDefault();
+            var independentShapes = selectedShapes.Skip(1).ToList();
 
             if (targetShape == null || independentShapes.Count == 0)
             {
@@ -3758,7 +3750,7 @@ namespace 课件帮PPT助手
             float targetRight = targetLeft + targetShape.Width;
             float targetBottom = targetTop + targetShape.Height;
 
-            // 计算独立对象的边界
+            // 计算独立对象和编组对象的边界
             float shapesLeft = float.MaxValue;
             float shapesTop = float.MaxValue;
             float shapesRight = float.MinValue;
@@ -3766,10 +3758,23 @@ namespace 课件帮PPT助手
 
             foreach (var shape in independentShapes)
             {
-                if (shape.Left < shapesLeft) shapesLeft = shape.Left;
-                if (shape.Top < shapesTop) shapesTop = shape.Top;
-                if (shape.Left + shape.Width > shapesRight) shapesRight = shape.Left + shape.Width;
-                if (shape.Top + shape.Height > shapesBottom) shapesBottom = shape.Top + shape.Height;
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    foreach (Shape subShape in shape.GroupItems)
+                    {
+                        if (subShape.Left < shapesLeft) shapesLeft = subShape.Left;
+                        if (subShape.Top < shapesTop) shapesTop = subShape.Top;
+                        if (subShape.Left + subShape.Width > shapesRight) shapesRight = subShape.Left + subShape.Width;
+                        if (subShape.Top + subShape.Height > shapesBottom) shapesBottom = subShape.Top + subShape.Height;
+                    }
+                }
+                else
+                {
+                    if (shape.Left < shapesLeft) shapesLeft = shape.Left;
+                    if (shape.Top < shapesTop) shapesTop = shape.Top;
+                    if (shape.Left + shape.Width > shapesRight) shapesRight = shape.Left + shape.Width;
+                    if (shape.Top + shape.Height > shapesBottom) shapesBottom = shape.Top + shape.Height;
+                }
             }
 
             // 计算偏移量
@@ -3800,20 +3805,29 @@ namespace 课件帮PPT助手
                     break;
             }
 
-            // 移动独立对象
+            // 移动独立对象和编组对象
             foreach (var shape in independentShapes)
             {
-                shape.Left += offsetX;
-                shape.Top += offsetY;
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    foreach (Shape subShape in shape.GroupItems)
+                    {
+                        subShape.Left += offsetX;
+                        subShape.Top += offsetY;
+                    }
+                }
+                else
+                {
+                    shape.Left += offsetX;
+                    shape.Top += offsetY;
+                }
             }
-        }
-
-        private void 任意拆分_Click(object sender, RibbonControlEventArgs e)
-        {
-          
         }
     }
 }
+
+
+
 
 
 

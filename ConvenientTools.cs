@@ -29,14 +29,8 @@ namespace 课件帮PPT助手
         {
             InitializeComponent();
             splitterTool = new SplitterTool();
-
-
         }
 
-        private void Backgroundgeneration_Click(object sender, EventArgs e)
-        {
-            
-        }
 
         private void 字源字形_Click(object sender, EventArgs e)
         {
@@ -1479,6 +1473,22 @@ namespace 课件帮PPT助手
         private void button1_Click(object sender, EventArgs e)
         {
             splitterTool.StartSplitting();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DesignTools_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 汉字字典_Click(object sender, EventArgs e)
+        {
+            HanziDictionaryForm dictionaryForm = new HanziDictionaryForm();
+            dictionaryForm.ShowDialog();
         }
     }
 }
