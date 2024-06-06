@@ -9,5 +9,10 @@ namespace 课件帮PPT助手
         {
             InitializeComponent();
         }
+
+        private void hanziDictionaryControl_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

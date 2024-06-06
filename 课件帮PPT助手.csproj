@@ -565,6 +565,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Ribbon5.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon\search_icon.png" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

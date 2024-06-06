@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -24,13 +25,25 @@ namespace 课件帮PPT助手
 
         private void LoadHanziDictionary()
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 设置许可证上下文
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             hanziDictionary = new Dictionary<string, HanziInfo>();
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "汉字字典", "汉字字典.xlsx");
+            string filePath = @"C:\Users\Andy\source\repos\课件帮PPT助手\汉字字典\汉字字典.xlsx";
+
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show($"未找到文件：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
+                if (package.Workbook.Worksheets.Count == 0)
+                {
+                    MessageBox.Show("Excel文件中没有工作表。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 var worksheet = package.Workbook.Worksheets[0];
 
                 for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
@@ -67,15 +80,16 @@ namespace 课件帮PPT助手
                 structureLabel.Text = $"结构: {info.Structure}";
 
                 wordsPanel.Controls.Clear();
-                foreach (var word in info.RelatedWords)
+                for (int i = 0; i < info.RelatedWords.Length; i++)
                 {
                     var button = new Button
                     {
-                        Text = word,
+                        Text = info.RelatedWords[i],
                         AutoSize = true,
-                        Margin = new Padding(5)
+                        Margin = new Padding(5),
+                        Dock = DockStyle.Fill
                     };
-                    wordsPanel.Controls.Add(button);
+                    wordsPanel.Controls.Add(button, i % 4, i / 4);
                 }
             }
             else
