@@ -110,10 +110,13 @@
             // 
             // 汉字字典
             // 
-            this.汉字字典.ForeColor = System.Drawing.Color.Blue;
+            this.汉字字典.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.汉字字典.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(220)))), ((int)(((byte)(253)))));
+            this.汉字字典.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(239)))), ((int)(((byte)(254)))));
             resources.ApplyResources(this.汉字字典, "汉字字典");
+            this.汉字字典.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(7)))), ((int)(((byte)(80)))), ((int)(((byte)(233)))));
             this.汉字字典.Name = "汉字字典";
-            this.汉字字典.UseVisualStyleBackColor = true;
+            this.汉字字典.UseVisualStyleBackColor = false;
             this.汉字字典.Click += new System.EventHandler(this.汉字字典_Click);
             // 
             // DesignTools

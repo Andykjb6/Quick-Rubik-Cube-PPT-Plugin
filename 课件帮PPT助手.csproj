@@ -412,12 +412,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="HanziDictionaryControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="HanziDictionaryControl.Designer.cs">
-      <DependentUpon>HanziDictionaryControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="HanziDictionaryForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -426,6 +420,12 @@
     </Compile>
     <Compile Include="InputTextForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Matchalignment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Matchalignment.Designer.cs">
+      <DependentUpon>Matchalignment.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -444,11 +444,11 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HanziDictionaryControl.resx">
-      <DependentUpon>HanziDictionaryControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HanziDictionaryForm.resx">
       <DependentUpon>HanziDictionaryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Matchalignment.resx">
+      <DependentUpon>Matchalignment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -567,6 +567,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon\search_icon.png" />
+    <Content Include="icon\中心对齐.png" />
+    <Content Include="icon\右对齐.png" />
+    <Content Include="icon\垂直居中.png" />
+    <Content Include="icon\左对齐.png" />
+    <Content Include="icon\底部对齐.png" />
+    <Content Include="icon\水平居中.png" />
+    <Content Include="icon\顶部对齐.png" />
     <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>
   <PropertyGroup>

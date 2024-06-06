@@ -1488,10 +1488,11 @@ namespace 课件帮PPT助手
         private void 汉字字典_Click(object sender, EventArgs e)
         {
             HanziDictionaryForm dictionaryForm = new HanziDictionaryForm();
-            dictionaryForm.ShowDialog();
+            dictionaryForm.Show();
         }
     }
 }
+
 
 
 

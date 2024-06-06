@@ -3823,6 +3823,99 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
+        private void 匹配对齐_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type != PowerPoint.PpSelectionType.ppSelectionShapes || selection.ShapeRange.Count < 2)
+            {
+                MessageBox.Show("请至少选择两个对象进行匹配对齐。");
+                return;
+            }
+
+            PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
+            int count = selectedShapes.Count;
+            int mid = count / 2;
+
+            // 分组
+            var referenceShapes = selectedShapes.Cast<PowerPoint.Shape>().Take(mid).ToList();
+            var targetShapes = selectedShapes.Cast<PowerPoint.Shape>().Skip(mid).ToList();
+
+            // 添加前缀名
+            for (int i = 0; i < referenceShapes.Count; i++)
+            {
+                referenceShapes[i].Name = "参考" + (i + 1) + "-" + referenceShapes[i].Name;
+            }
+
+            for (int i = 0; i < targetShapes.Count; i++)
+            {
+                targetShapes[i].Name = "目标" + (i + 1) + "-" + targetShapes[i].Name;
+            }
+
+            // 获取按键状态
+            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+            bool isShiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
+            bool isAltPressed = (Control.ModifierKeys & Keys.Alt) == Keys.Alt;
+            bool isCtrlAltPressed = isCtrlPressed && isAltPressed;
+            bool isCtrlShiftPressed = isCtrlPressed && isShiftPressed;
+            bool isAltShiftPressed = isAltPressed && isShiftPressed;
+
+            // 对齐操作
+            for (int i = 0; i < referenceShapes.Count; i++)
+            {
+                var referenceShape = referenceShapes[i];
+                var targetShape = targetShapes[i];
+
+                if (isCtrlPressed && !isAltPressed && !isShiftPressed)
+                {
+                    // 左对齐
+                    targetShape.Left = referenceShape.Left;
+                }
+                else if (isShiftPressed && !isCtrlPressed && !isAltPressed)
+                {
+                    // 右对齐
+                    targetShape.Left = referenceShape.Left + referenceShape.Width - targetShape.Width;
+                }
+                else if (isAltPressed && !isCtrlPressed && !isShiftPressed)
+                {
+                    // 顶部对齐
+                    targetShape.Top = referenceShape.Top;
+                }
+                else if (isCtrlAltPressed)
+                {
+                    // 底部对齐
+                    targetShape.Top = referenceShape.Top + referenceShape.Height - targetShape.Height;
+                }
+                else if (isCtrlShiftPressed)
+                {
+                    // 水平居中对齐
+                    targetShape.Left = referenceShape.Left + (referenceShape.Width - targetShape.Width) / 2;
+                }
+                else if (isAltShiftPressed)
+                {
+                    // 垂直居中对齐
+                    targetShape.Top = referenceShape.Top + (referenceShape.Height - targetShape.Height) / 2;
+                }
+                else
+                {
+                    // 中心对齐
+                    targetShape.Left = referenceShape.Left + (referenceShape.Width - targetShape.Width) / 2;
+                    targetShape.Top = referenceShape.Top + (referenceShape.Height - targetShape.Height) / 2;
+                }
+            }
+
+            // 删除前缀名
+            foreach (PowerPoint.Shape shape in selectedShapes)
+            {
+                if (shape.Name.StartsWith("参考") || shape.Name.StartsWith("目标"))
+                {
+                    int prefixLength = shape.Name.IndexOf('-') + 1;
+                    shape.Name = shape.Name.Substring(prefixLength);
+                }
+            }
+        }
     }
 }
 
