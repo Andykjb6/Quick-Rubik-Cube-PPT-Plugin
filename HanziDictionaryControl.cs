@@ -1,7 +1,6 @@
 ﻿using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -25,7 +24,7 @@ namespace 课件帮PPT助手
 
         private void LoadHanziDictionary()
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 设置许可证上下文
 
             hanziDictionary = new Dictionary<string, HanziInfo>();
             string filePath = @"C:\Users\Andy\source\repos\课件帮PPT助手\汉字字典\汉字字典.xlsx";
@@ -62,6 +61,8 @@ namespace 课件帮PPT助手
                         Structure = structure,
                         Strokes = strokes,
                         RelatedWords = relatedWords.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .Select(word => word.Trim())
+                                                    .ToArray()
                     };
                 }
             }
@@ -82,20 +83,32 @@ namespace 课件帮PPT助手
                 wordsPanel.Controls.Clear();
                 for (int i = 0; i < info.RelatedWords.Length; i++)
                 {
+                    var word = info.RelatedWords[i];
                     var button = new Button
                     {
-                        Text = info.RelatedWords[i],
+                        Text = word,
                         AutoSize = true,
-                        Margin = new Padding(5),
-                        Dock = DockStyle.Fill
+                        Margin = new Padding(5)
                     };
-                    wordsPanel.Controls.Add(button, i % 4, i / 4);
+
+                    wordsPanel.Controls.Add(button);
+
+                    if ((i + 1) % 5 == 0)
+                    {
+                        // Set the FlowBreak property to true for every 5th word
+                        wordsPanel.SetFlowBreak(button, true);
+                    }
                 }
             }
             else
             {
                 MessageBox.Show("未找到该汉字的信息。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void hanziLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

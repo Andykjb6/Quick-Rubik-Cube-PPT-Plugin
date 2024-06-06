@@ -567,6 +567,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon\search_icon.png" />
+    <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
