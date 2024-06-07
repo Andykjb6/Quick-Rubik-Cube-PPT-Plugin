@@ -77,8 +77,8 @@
     <OfficeApplication>PowerPoint</OfficeApplication>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AlignmentSettingsForm.resx">
-      <DependentUpon>AlignmentSettingsForm.cs</DependentUpon>
+    <EmbeddedResource Include="AlignToolWindow.resx">
+      <DependentUpon>AlignToolWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="C:\Users\Andy\source\repos\课件帮PPT助手\汉字笔画\*.svg" />
   </ItemGroup>
@@ -389,15 +389,20 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="Alignment.cs" />
-    <Compile Include="AlignmentSettingsForm.cs">
+    <Compile Include="AlignToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AlignmentSettingsForm.Designer.cs">
-      <DependentUpon>AlignmentSettingsForm.cs</DependentUpon>
+    <Compile Include="AlignToolWindow.Designer.cs">
+      <DependentUpon>AlignToolWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="BackgroundRemovalForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Centralalignment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Centralalignment.Designer.cs">
+      <DependentUpon>Centralalignment.cs</DependentUpon>
     </Compile>
     <Compile Include="ConvenientTools.cs">
       <SubType>UserControl</SubType>
@@ -421,20 +426,19 @@
     <Compile Include="InputTextForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Matchalignment.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Matchalignment.Designer.cs">
-      <DependentUpon>Matchalignment.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SettingsHelper.cs" />
     <Compile Include="SplitterTool.cs" />
     <Compile Include="TransparencyForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TransparencyForm.Designer.cs">
+      <DependentUpon>TransparencyForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Centralalignment.resx">
+      <DependentUpon>Centralalignment.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ConvenientTools.resx">
       <DependentUpon>ConvenientTools.cs</DependentUpon>
     </EmbeddedResource>
@@ -446,9 +450,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HanziDictionaryForm.resx">
       <DependentUpon>HanziDictionaryForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Matchalignment.resx">
-      <DependentUpon>Matchalignment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -462,9 +463,6 @@
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TransparencyForm.resx">
-      <DependentUpon>TransparencyForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="app.config" />
@@ -497,6 +495,9 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="TransparencyForm.resx">
+      <DependentUpon>TransparencyForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="汉字字典\汉字字典.xlsx" />
     <None Include="课件帮PPT助手_TemporaryKey.pfx" />
   </ItemGroup>

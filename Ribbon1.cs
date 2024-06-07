@@ -41,14 +41,14 @@ namespace 课件帮PPT助手
     public partial class Ribbon1 : Office.IRibbonExtensibility
     {
         private CustomCloudTextGenerator cloudTextGenerator;
-        private Alignment defaultAlignment;
+     
 
         public Ribbon1(RibbonFactory factory) : base(factory)
         {
             Debug.WriteLine("Ribbon1 constructor called.");
             InitializeCloudTextGenerator();
             InitializeComponent();
-            defaultAlignment = SettingsHelper.LoadAlignmentSetting();
+          
         }
 
         private void InitializeCloudTextGenerator()
@@ -2993,15 +2993,6 @@ namespace 课件帮PPT助手
         }
 
 
-
-        private void Masking_Click(object sender, RibbonControlEventArgs e)
-        {
-            TransparencyForm transparencyForm = new TransparencyForm();
-            transparencyForm.ShowDialog();
-        }
-
-        
-
         private void Boardpasting_Click(object sender, RibbonControlEventArgs e)
         {
             // 检查 Ctrl 键是否被按下
@@ -3698,230 +3689,27 @@ namespace 课件帮PPT助手
         }
 
 
-
-        private void 分组对齐_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 检查是否按住Ctrl键
-            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
-            {
-                // 弹出设置窗口
-                using (AlignmentSettingsForm settingsForm = new AlignmentSettingsForm(defaultAlignment))
-                {
-                    if (settingsForm.ShowDialog() == DialogResult.OK)
-                    {
-                        defaultAlignment = settingsForm.SelectedAlignment;
-                    }
-                }
-                return;
-            }
-
-            // 获取当前活动的PPT应用程序
-            Application pptApp = Globals.ThisAddIn.Application;
-            // 获取当前活动窗口
-            DocumentWindow activeWindow = pptApp.ActiveWindow;
-
-            // 检查当前活动窗口是否有选中的形状
-            if (activeWindow.Selection.Type != PpSelectionType.ppSelectionShapes)
-            {
-                System.Windows.Forms.MessageBox.Show("请先选择一个或多个形状。");
-                return;
-            }
-
-            // 获取当前选中的形状
-            var selectedShapes = new List<Shape>();
-            foreach (Shape shape in activeWindow.Selection.ShapeRange)
-            {
-                selectedShapes.Add(shape);
-            }
-
-            // 假设第一个选中的对象是目标对齐对象
-            Shape targetShape = selectedShapes.FirstOrDefault();
-            var independentShapes = selectedShapes.Skip(1).ToList();
-
-            if (targetShape == null || independentShapes.Count == 0)
-            {
-                System.Windows.Forms.MessageBox.Show("请选中一个目标对齐对象和一个或多个独立对象。");
-                return;
-            }
-
-            // 计算目标对齐对象的边界
-            float targetLeft = targetShape.Left;
-            float targetTop = targetShape.Top;
-            float targetRight = targetLeft + targetShape.Width;
-            float targetBottom = targetTop + targetShape.Height;
-
-            // 计算独立对象和编组对象的边界
-            float shapesLeft = float.MaxValue;
-            float shapesTop = float.MaxValue;
-            float shapesRight = float.MinValue;
-            float shapesBottom = float.MinValue;
-
-            foreach (var shape in independentShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    foreach (Shape subShape in shape.GroupItems)
-                    {
-                        if (subShape.Left < shapesLeft) shapesLeft = subShape.Left;
-                        if (subShape.Top < shapesTop) shapesTop = subShape.Top;
-                        if (subShape.Left + subShape.Width > shapesRight) shapesRight = subShape.Left + subShape.Width;
-                        if (subShape.Top + subShape.Height > shapesBottom) shapesBottom = subShape.Top + subShape.Height;
-                    }
-                }
-                else
-                {
-                    if (shape.Left < shapesLeft) shapesLeft = shape.Left;
-                    if (shape.Top < shapesTop) shapesTop = shape.Top;
-                    if (shape.Left + shape.Width > shapesRight) shapesRight = shape.Left + shape.Width;
-                    if (shape.Top + shape.Height > shapesBottom) shapesBottom = shape.Top + shape.Height;
-                }
-            }
-
-            // 计算偏移量
-            float offsetX = 0;
-            float offsetY = 0;
-
-            switch (defaultAlignment)
-            {
-                case Alignment.Center:
-                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
-                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
-                    break;
-                case Alignment.Left:
-                    offsetX = targetLeft - shapesLeft;
-                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
-                    break;
-                case Alignment.Right:
-                    offsetX = targetRight - shapesRight;
-                    offsetY = (targetTop + targetBottom) / 2 - (shapesTop + shapesBottom) / 2;
-                    break;
-                case Alignment.Top:
-                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
-                    offsetY = targetTop - shapesTop;
-                    break;
-                case Alignment.Bottom:
-                    offsetX = (targetLeft + targetRight) / 2 - (shapesLeft + shapesRight) / 2;
-                    offsetY = targetBottom - shapesBottom;
-                    break;
-            }
-
-            // 移动独立对象和编组对象
-            foreach (var shape in independentShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    foreach (Shape subShape in shape.GroupItems)
-                    {
-                        subShape.Left += offsetX;
-                        subShape.Top += offsetY;
-                    }
-                }
-                else
-                {
-                    shape.Left += offsetX;
-                    shape.Top += offsetY;
-                }
-            }
-        }
-
         private void 匹配对齐_Click(object sender, RibbonControlEventArgs e)
         {
             PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            AlignToolWindow alignToolWindow = new AlignToolWindow(app);
+            alignToolWindow.Show();
+        }
 
-            if (selection.Type != PowerPoint.PpSelectionType.ppSelectionShapes || selection.ShapeRange.Count < 2)
-            {
-                MessageBox.Show("请至少选择两个对象进行匹配对齐。");
-                return;
-            }
+        private void 平移居中_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            CentralalignmentForm form = new CentralalignmentForm(pptApp);
+            form.Show();
+        }
 
-            PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-            int count = selectedShapes.Count;
-            int mid = count / 2;
-
-            // 分组
-            var referenceShapes = selectedShapes.Cast<PowerPoint.Shape>().Take(mid).ToList();
-            var targetShapes = selectedShapes.Cast<PowerPoint.Shape>().Skip(mid).ToList();
-
-            // 添加前缀名
-            for (int i = 0; i < referenceShapes.Count; i++)
-            {
-                referenceShapes[i].Name = "参考" + (i + 1) + "-" + referenceShapes[i].Name;
-            }
-
-            for (int i = 0; i < targetShapes.Count; i++)
-            {
-                targetShapes[i].Name = "目标" + (i + 1) + "-" + targetShapes[i].Name;
-            }
-
-            // 获取按键状态
-            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
-            bool isShiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
-            bool isAltPressed = (Control.ModifierKeys & Keys.Alt) == Keys.Alt;
-            bool isCtrlAltPressed = isCtrlPressed && isAltPressed;
-            bool isCtrlShiftPressed = isCtrlPressed && isShiftPressed;
-            bool isAltShiftPressed = isAltPressed && isShiftPressed;
-
-            // 对齐操作
-            for (int i = 0; i < referenceShapes.Count; i++)
-            {
-                var referenceShape = referenceShapes[i];
-                var targetShape = targetShapes[i];
-
-                if (isCtrlPressed && !isAltPressed && !isShiftPressed)
-                {
-                    // 左对齐
-                    targetShape.Left = referenceShape.Left;
-                }
-                else if (isShiftPressed && !isCtrlPressed && !isAltPressed)
-                {
-                    // 右对齐
-                    targetShape.Left = referenceShape.Left + referenceShape.Width - targetShape.Width;
-                }
-                else if (isAltPressed && !isCtrlPressed && !isShiftPressed)
-                {
-                    // 顶部对齐
-                    targetShape.Top = referenceShape.Top;
-                }
-                else if (isCtrlAltPressed)
-                {
-                    // 底部对齐
-                    targetShape.Top = referenceShape.Top + referenceShape.Height - targetShape.Height;
-                }
-                else if (isCtrlShiftPressed)
-                {
-                    // 水平居中对齐
-                    targetShape.Left = referenceShape.Left + (referenceShape.Width - targetShape.Width) / 2;
-                }
-                else if (isAltShiftPressed)
-                {
-                    // 垂直居中对齐
-                    targetShape.Top = referenceShape.Top + (referenceShape.Height - targetShape.Height) / 2;
-                }
-                else
-                {
-                    // 中心对齐
-                    targetShape.Left = referenceShape.Left + (referenceShape.Width - targetShape.Width) / 2;
-                    targetShape.Top = referenceShape.Top + (referenceShape.Height - targetShape.Height) / 2;
-                }
-            }
-
-            // 删除前缀名
-            foreach (PowerPoint.Shape shape in selectedShapes)
-            {
-                if (shape.Name.StartsWith("参考") || shape.Name.StartsWith("目标"))
-                {
-                    int prefixLength = shape.Name.IndexOf('-') + 1;
-                    shape.Name = shape.Name.Substring(prefixLength);
-                }
-            }
+        private void Masking_Click_1(object sender, RibbonControlEventArgs e)
+        {
+            TransparencyForm transparencyForm = new TransparencyForm();
+            transparencyForm.Show(); // 使用 Show 方法以非模态方式显示窗体
         }
     }
 }
-
-
-
-
 
 
 
