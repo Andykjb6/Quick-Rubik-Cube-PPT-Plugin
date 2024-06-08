@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI onLoad="Ribbon_Load" xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+    <ribbon>
+        <tabs>
+            <tab id="课件帮PPT助手" label="快捷魔方">
+                <group id="group3" label="关于我">
+                    <button id="button7" onAction="button7_Click" screentip="关于我：" supertip="访问Andy老师创建的资源分享博客" label="Andy" size="large" />
+                </group>
+                <group id="group10">
+                    <button id="toggleTaskPaneButton" onAction="toggleTaskPane_Click" label="学科工具" size="large" />
+                </group>
+                <group id="group2" label="字音字形">
+                    <button id="button3" onAction="button3_Click" screentip="使用说明：" supertip="选中带有汉字的文本框，一键转换并在其顶部插入对应的无声调拼音。" label="拼音转换" />
+                    <button id="便捷注音" onAction="便捷注音_Click" label="便捷注音" />
+                    <button id="button5" onAction="button5_Click_1" screentip="使用说明：" supertip="支持自定义参数，一键生成云朵字（多重描边艺术字），支持参数动态调节更新。" label="云朵字形" />
+                    <button id="笔顺图解" onAction="笔顺图解_Click" label="笔顺图解" />
+                    <button id="生字格子" onAction="生字格子_Click" label="生字格子" />
+                    <button id="生字赋格" onAction="生字赋格_Click" label="生字赋格" />
+                </group>
+                <group id="group1" label="图形处理">
+                    <button id="button1" onAction="button1_Click" screentip="使用说明：" supertip="选中一张图片或形状，放大至全屏。" label="全屏图形" />
+                    <button id="button2" onAction="button2_Click" screentip="使用说明：" supertip="选中多张图片，以选中的第一张图片的宽高和比例为参考，统一后面选中的所有图片大小。" label="参考裁剪" />
+                    <button id="button6" onAction="button6_Click" screentip="使用说明：" supertip="复制一段SVG代码到剪切板，将代码转换成SVG矢量图插入当前页幻灯片。" label="SVG粘贴" />
+                    <button id="Masking" onAction="Masking_Click_1" screentip="使用说明：" supertip="除了的基础的透明化以外，还支持不同方向的图片渐变透明处理，且支持叠加颜色，转换灰度图。" label="图片透明" />
+                    <button id="Gradientrectangle" onAction="Gradientrectangle_Click" screentip="使用说明：" supertip="1.在没有选中任何对象时，则一键添加与幻灯片等大的黑色透明渐变蒙版；2.如果选中了一个或多个对象时，则在该对象顶层插入一块与它等大的渐变蒙版。3.默认渐变角度为0°，按住Ctrl键单击则插入的蒙版渐变角度为90°；按住Shfit键单间则插入的蒙版渐变角度为45°。" label="渐变蒙版" />
+                    <button id="button19" onAction="button19_Click" screentip="使用说明：" supertip="该在线抠图工具对于抠图处理更加精细，开发作者为B站UP主@设计学姐。如有更精细的抠图处理需求，可前往这个工具网站进行处理。" label="在线抠图" />
+                    <button id="矩形拆分" showImage="false" />
+                    <button id="Mosaic" showImage="false" />
+                    <button id="ApplyFilter" showImage="false" />
+                    <button id="Expandimage" showImage="false" />
+                </group>
+                <group id="group4" label="参考对齐">
+                    <button id="button10" onAction="button10_Click" screentip="使用说明：" supertip="选中两个对象，以第一个选中的对象为对齐基准（固定位置不变），两者居中对齐。" label="参考居中" />
+                    <button id="button11" onAction="button11_Click_1" screentip="使用说明：" supertip="选中多个对象，以第一个被选中的对象为基准，其他对象从左到右无缝贴边对齐。" label="左右贴边" />
+                    <button id="button13" onAction="button13_Click" screentip="使用说明：" supertip="选中多个对象，以第一个被选中的对象为基准，其他所有对象从上往下无缝贴边对齐。" label="上下贴边" />
+                    <button id="button14" onAction="button14_Click" screentip="使用说明：" supertip="选中多个对象，以第一个被选中的对象为基准，从左到右保持一定距离排列（默认间距为10）。" label="水平分布" />
+                    <button id="button15" onAction="button15_Click" screentip="使用说明：" supertip="选中多个对象，以第一个被选中的对象为基准，从上往下保持一定距离排列（默认间距为10）。" label="垂直分布" />
+                    <button id="button16" onAction="button16_Click" screentip="使用说明：" supertip="当选中多个对象时，以第一个选中的对象为基准，排列成一个环形。当选中一个对象时，可开启环形复制-分布。" label="环形分布" />
+                    <button id="Pagecentered" onAction="Pagecentered_Click" label="页内居中" />
+                    <button id="平移居中" onAction="平移居中_Click" label="平移居中" />
+                    <button id="匹配对齐" onAction="匹配对齐_Click" label="匹配对齐" />
+                </group>
+                <group id="group8" label="便捷常用">
+                    <splitButton id="筛选" size="large">
+                        <button id="筛选__btn" label="筛选" />
+                        <menu id="筛选__mnu">
+                            <button id="Type" onAction="Type_Click" screentip="使用说明" supertip="选中一个对象后单击“类型”，可同时选中当前幻灯片与它同类型的所有对象。" label="类型" />
+                            <button id="Selectsize" onAction="Selectsize_Click1" screentip="使用说明：" supertip="选中一个对象，单击“尺寸”，可同时选中当前幻灯片与它同尺寸（大小）的所有对象。" label="尺寸" />
+                            <button id="SelectedColor" onAction="SelectedColor_Click" screentip="使用说明：" supertip="选中一个对象，单击“颜色”，可同时选中当前幻灯片与它相同颜色的所有对象。" label="颜色" />
+                            <button id="Selectedline" onAction="Selectedline_Click" screentip="使用说明：" supertip="选中一个对象：1.单击，则同时选中与他线条宽度相同的所有对象；2.按住Ctrl键单击，则同时选中当前幻灯片线条颜色与它相同的所有对象；3.按住Shift键单击，则同时选中与它相同线条类型（如虚线、实线）的所有对象。" label="线条" />
+                            <button id="Selectfontsize" onAction="Selectfontsize_Click" screentip="使用说明：" supertip="选中一个文本框或带有文字的形状，可同时选中字号相同的所有对象。" label="字号" />
+                        </menu>
+                    </splitButton>
+                    <button id="Supercopy" onAction="Supercopy_Click" label="原位复制" />
+                    <button id="Sizescaling" onAction="Sizescaling_Click" screentip="使用说明：" supertip="1.输入单个数值，所选对象缩放对应数值百分比；2.输入两个数值，中间用逗号分隔，则所选对象按照选择的顺序等差缩放。" label="尺寸缩放" />
+                    <button id="button20" onAction="button20_Click" screentip="使用说明：" supertip="选择对象，切换对象图层显隐状态。" label="图层显隐" />
+					<editBox id="批量命名EditBox" label="批量命名" onChange="批量命名_TextChanged" />
+                </group>
+                <group id="group7" label="批量替换">
+                    <button id="Replaceimage" onAction="Replaceimage_Click" screentip="使用说明：" supertip="1.选中多张图片，单击则一键原位批量换图；2.按住Ctrl键单击，则一键原位换图，且保持与原图尺寸相等大小。" label="批量换图" />
+                    <button id="Replaceaudio" onAction="Replaceaudio_Click" screentip="使用说明：" supertip="选中音频图标，可直接替换原音频，并获取原音频的部分相同属性。" label="音频替换" />
+                    <button id="批量改字" onAction="批量改字_Click" label="批量改字" />
+                </group>
+                <group id="group6" label="辅助">
+                    <button id="Fillblank" onAction="Fillblank_Click_1" screentip="使用说明：" supertip="在文本框内选中一个字词，单击此处可一键挖词填空。（字词可能存在错位）" label="挖词填空" />
+                    <button id="Timer" onAction="Timer_Click" screentip="使用说明：" supertip="支持“倒计时”和“顺计时”，默认为“倒计时”。支持定义界面样式。" label="计时器" />
+                    <button id="Boardpasting" onAction="Boardpasting_Click" screentip="使用说明：" supertip="选中已设定好的文本样式（如云朵字），单击“板贴辅助”，可手动输入多行的分行文本（每个词语回车换行），则一键套用选中的板贴样式并根据分行文本数量创建多页板贴。按住Ctrl键，单击“板贴辅助”，则支持导入txt格式的分行文本进行批量创建。" label="板贴辅助" />
+                </group>
+                <group id="group9" label="页面布局">
+                    <comboBox id="comboBox1" onChange="comboBox1_TextChanged" label="页面尺寸">
+                        <item id="__id53" label="A4" />
+                        <item id="__id54" label="A3" />
+                        <item id="__id55" label="A1" />
+                        <item id="__id56" label="A2" />
+                        <item id="__id57" label="16:9" />
+                        <item id="__id58" label="4:3" />
+                        <item id="__id59" label="公众号封面" />
+                        <item id="__id60" label="小红书图文" />
+                    </comboBox>
+                    <comboBox id="comboBox2" onChange="comboBox2_TextChanged" label="页面方向">
+                        <item id="__id61" label="纵向" />
+                        <item id="__id62" label="横向" />
+                    </comboBox>
+                </group>
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>

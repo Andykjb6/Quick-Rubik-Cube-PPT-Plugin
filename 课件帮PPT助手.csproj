@@ -80,6 +80,12 @@
     <EmbeddedResource Include="AlignToolWindow.resx">
       <DependentUpon>AlignToolWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AnimationForm.resx">
+      <DependentUpon>AnimationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AnnotationToolForm.resx">
+      <DependentUpon>AnnotationToolForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="C:\Users\Andy\source\repos\课件帮PPT助手\汉字笔画\*.svg" />
   </ItemGroup>
   <!--
@@ -395,8 +401,17 @@
     <Compile Include="AlignToolWindow.Designer.cs">
       <DependentUpon>AlignToolWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="BackgroundRemovalForm.cs">
+    <Compile Include="AnimationForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AnimationForm.Designer.cs">
+      <DependentUpon>AnimationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AnnotationToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AnnotationToolForm.Designer.cs">
+      <DependentUpon>AnnotationToolForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Centralalignment.cs">
       <SubType>Form</SubType>
@@ -410,12 +425,17 @@
     <Compile Include="ConvenientTools.Designer.cs">
       <DependentUpon>ConvenientTools.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomCloudTextGenerator.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="CustomCloudTextGeneratorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="CustomCloudTextGeneratorForm.Designer.cs">
+      <DependentUpon>CustomCloudTextGeneratorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomizeAnnotationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomizeAnnotationForm.Designer.cs">
+      <DependentUpon>CustomizeAnnotationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HanziDictionaryForm.cs">
       <SubType>Form</SubType>
@@ -423,13 +443,49 @@
     <Compile Include="HanziDictionaryForm.Designer.cs">
       <DependentUpon>HanziDictionaryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="InputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputForm.Designer.cs">
+      <DependentUpon>InputForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="InputTextForm.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PinyinSelectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PinyinSelectorForm.Designer.cs">
+      <DependentUpon>PinyinSelectorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SplitterTool.cs" />
+    <Compile Include="SvgSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SvgSelectionForm.Designer.cs">
+      <DependentUpon>SvgSelectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SVGSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SVGSettingsForm.Designer.cs">
+      <DependentUpon>SVGSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TableSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TableSettingsForm.Designer.cs">
+      <DependentUpon>TableSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TableSettingsFormButton12.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TableSettingsFormButton12.Designer.cs">
+      <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
+    </Compile>
     <Compile Include="TransparencyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -445,11 +501,20 @@
     <EmbeddedResource Include="ConvenientTools.zh-CN.resx">
       <DependentUpon>ConvenientTools.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="CustomCloudTextGeneratorForm.resx">
+      <DependentUpon>CustomCloudTextGeneratorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomizeAnnotationForm.resx">
+      <DependentUpon>CustomizeAnnotationForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HanziDictionaryForm.resx">
       <DependentUpon>HanziDictionaryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputForm.resx">
+      <DependentUpon>InputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PinyinSelectorForm.resx">
+      <DependentUpon>PinyinSelectorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -495,6 +560,18 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="SvgSelectionForm.resx">
+      <DependentUpon>SvgSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SVGSettingsForm.resx">
+      <DependentUpon>SVGSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TableSettingsForm.resx">
+      <DependentUpon>TableSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TableSettingsFormButton12.resx">
+      <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TransparencyForm.resx">
       <DependentUpon>TransparencyForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -575,6 +652,15 @@
     <Content Include="icon\底部对齐.png" />
     <Content Include="icon\水平居中.png" />
     <Content Include="icon\顶部对齐.png" />
+    <EmbeddedResource Include="Ribbon15.xml" />
+    <EmbeddedResource Include="Ribbon14.xml" />
+    <EmbeddedResource Include="Ribbon13.xml" />
+    <EmbeddedResource Include="Ribbon12.xml" />
+    <EmbeddedResource Include="Ribbon11.xml" />
+    <EmbeddedResource Include="Ribbon10.xml" />
+    <EmbeddedResource Include="Ribbon9.xml" />
+    <EmbeddedResource Include="Ribbon8.xml" />
+    <EmbeddedResource Include="Ribbon7.xml" />
     <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>
   <PropertyGroup>

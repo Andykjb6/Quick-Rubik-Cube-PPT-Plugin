@@ -85,7 +85,6 @@ namespace 课件帮PPT助手
             this.pinyinLabel.Name = "pinyinLabel";
             this.pinyinLabel.Size = new System.Drawing.Size(300, 30);
             this.pinyinLabel.TabIndex = 3;
-         
             // 
             // radicalLabel
             // 
@@ -94,7 +93,6 @@ namespace 课件帮PPT助手
             this.radicalLabel.Name = "radicalLabel";
             this.radicalLabel.Size = new System.Drawing.Size(300, 30);
             this.radicalLabel.TabIndex = 4;
-        
             // 
             // strokesLabel
             // 
@@ -103,7 +101,6 @@ namespace 课件帮PPT助手
             this.strokesLabel.Name = "strokesLabel";
             this.strokesLabel.Size = new System.Drawing.Size(300, 30);
             this.strokesLabel.TabIndex = 5;
-        
             // 
             // structureLabel
             // 
@@ -112,7 +109,6 @@ namespace 课件帮PPT助手
             this.structureLabel.Name = "structureLabel";
             this.structureLabel.Size = new System.Drawing.Size(300, 30);
             this.structureLabel.TabIndex = 6;
-     
             // 
             // relatedWordsLabel
             // 
@@ -186,8 +182,8 @@ namespace 课件帮PPT助手
             // 
             // HanziDictionaryForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(255)))));
             this.ClientSize = new System.Drawing.Size(526, 719);
             this.Controls.Add(this.导出);

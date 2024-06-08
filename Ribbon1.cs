@@ -28,36 +28,17 @@ using System.Reflection;
 using Microsoft.Office.Tools;
 
 
-
-
-
-
-
-
-
 namespace 课件帮PPT助手
 {
 
     public partial class Ribbon1 : Office.IRibbonExtensibility
     {
-        private CustomCloudTextGenerator cloudTextGenerator;
-     
+        private CustomCloudTextGeneratorForm cloudTextGeneratorForm;
 
         public Ribbon1(RibbonFactory factory) : base(factory)
         {
             Debug.WriteLine("Ribbon1 constructor called.");
-            InitializeCloudTextGenerator();
             InitializeComponent();
-          
-        }
-
-        private void InitializeCloudTextGenerator()
-        {
-            if (cloudTextGenerator == null)
-            {
-                cloudTextGenerator = new CustomCloudTextGenerator();
-                Debug.WriteLine("cloudTextGenerator has been initialized.");
-            }
         }
 
         public string GetCustomUI(string ribbonID)
@@ -84,24 +65,21 @@ namespace 课件帮PPT助手
         public void Ribbon_Load(object sender, RibbonUIEventArgs e)
         {
             Debug.WriteLine("Ribbon_Load called.");
-            InitializeCloudTextGenerator();
         }
 
         private void button5_Click_1(object sender, RibbonControlEventArgs e)
         {
-            Debug.WriteLine("button5_Click_1 called.");
-            InitializeCloudTextGenerator();
+            if (cloudTextGeneratorForm == null || cloudTextGeneratorForm.IsDisposed)
+            {
+                cloudTextGeneratorForm = new CustomCloudTextGeneratorForm();
+            }
 
-            if (cloudTextGenerator != null)
-            {
-                Debug.WriteLine("cloudTextGenerator is not null, calling InitializeForm.");
-                cloudTextGenerator.InitializeForm();
-            }
-            else
-            {
-                MessageBox.Show("cloudTextGenerator 未被初始化.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine("cloudTextGenerator is null.");
-            }
+            cloudTextGeneratorForm.InitializeForm();
+
+            // 设置窗体总在最前并激活
+            cloudTextGeneratorForm.TopMost = true;
+            cloudTextGeneratorForm.BringToFront();
+            cloudTextGeneratorForm.Show();
         }
 
 
@@ -320,126 +298,7 @@ namespace 课件帮PPT助手
         }
         private Form form; // 保持 form 的引用，以便可以随时调用或修改它
 
-        private void button4_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 检查窗口是否已存在并未关闭
-            if (form == null || form.IsDisposed)
-            {
-                CreateSelectionForm();
-            }
-
-            UpdateComboBoxOptions(); // 更新下拉框内容
-            form.Show(); // 显示窗口
-            form.BringToFront(); // 确保窗口在前台
-        }
-
-        private void CreateSelectionForm()
-        {
-            form = new Form()
-            {
-                Text = "Pinyin Selector",
-                Size = new System.Drawing.Size(400, 200),
-                StartPosition = FormStartPosition.CenterScreen,
-                TopMost = true // 使窗口始终位于最顶部
-            };
-
-            ComboBox comboBox = new ComboBox()
-            {
-                Location = new System.Drawing.Point(20, 20),
-                Width = 360,
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            form.Controls.Add(comboBox);
-
-            Button refreshButton = new Button()
-            {
-                Text = "刷新",
-                Location = new System.Drawing.Point(20, 60),
-                Width = 100,
-                Height = 40 // 设置按钮高度为40像素
-        };
-            refreshButton.Click += (sender, e) =>
-            {
-                UpdateComboBoxOptions();
-            };
-            form.Controls.Add(refreshButton);
-
-            Button replaceButton = new Button()
-            {
-                Text = "注音",
-                Location = new System.Drawing.Point(140, 60),
-                Width = 100,
-                Height = 40 // 设置按钮高度为40像素
-            };
-            replaceButton.Click += (sender, e) =>
-            {
-                var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                if (selection.Type == PpSelectionType.ppSelectionText && comboBox.SelectedItem != null)
-                {
-                    selection.TextRange2.Text = comboBox.SelectedItem.ToString();
-                }
-            };
-            form.Controls.Add(replaceButton);
-
-            // Optional: Add a Close button to manually close the form
-            Button closeButton = new Button()
-            {
-                Text = "退出",
-                Location = new System.Drawing.Point(260, 60),
-                Width = 100,
-                Height = 40 // 设置按钮高度为40像素
-            };
-            closeButton.Click += (sender, e) => { form.Close(); };
-            form.Controls.Add(closeButton);
-
-            form.FormClosing += (sender, e) => { form = null; }; // Reset the form reference when closed
-        }
-
-        private void UpdateComboBoxOptions()
-        {
-            if (form != null && Globals.ThisAddIn.Application.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionText)
-            {
-                ComboBox comboBox = form.Controls.OfType<ComboBox>().FirstOrDefault();
-                if (comboBox != null)
-                {
-                    string selectedText = Globals.ThisAddIn.Application.ActiveWindow.Selection.TextRange2.Text.Trim().ToLower();
-                    string[] pinyinOptions;
-
-                    if (selectedText == "yu") // 如果选中的文本是 "yu"
-                    {
-                        pinyinOptions = new string[] { "yū", "yú", "yǔ", "yù" }; // 直接设置拼音选项
-                    }
-                    else
-                    {
-                        pinyinOptions = FindClosestPinyin(selectedText); // 否则，按照原来的逻辑查找最接近的拼音选项
-                    }
-
-                    comboBox.DataSource = pinyinOptions;
-                }
-            }
-        }
-
-        private string[] FindClosestPinyin(string inputText)
-        {
-            string[] pinyinLibrary = { "ā", "á", "ǎ", "à", "āi", "ái", "ǎi", "ài", "ān", "án", "ǎn", "àn", "ānɡ", "ánɡ", "ǎnɡ", "ànɡ", "āo", "áo", "ǎo", "ào", "bā", "bá", "bǎ", "bà", "bāi", "bái", "bǎi", "bài", "bān", "bán", "bǎn", "bàn", "bānɡ", "bánɡ", "bǎnɡ", "bànɡ", "bāo", "báo", "bǎo", "bào", "bēi", "béi", "běi", "bèi", "bēn", "bén", "běn", "bèn", "bēnɡ", "bénɡ", "běnɡ", "bènɡ", "bī", "bí", "bǐ", "bì", "biān", "bián", "biǎn", "biàn", "biāo", "biáo", "biǎo", "biào", "biē", "bié", "biě", "biè", "bīn", "bín", "bǐn", "bìn", "bīnɡ", "bínɡ", "bǐnɡ", "bìnɡ", "bō", "bó", "bǒ", "bò", "bū", "bú", "bǔ", "bù", "cā", "cá", "cǎ", "cà", "cāi", "cái", "cǎi", "cài", "cān", "cán", "cǎn", "càn", "cāng", "cáng", "cǎng", "càng", "cāo", "cáo", "cǎo", "cào", "cē", "cé", "cě", "cè", "cēn", "cén", "cěn", "cèn", "cēng", "céng", "cěng", "cèng", "chā", "chá", "chǎ", "chà", "chāi", "chái", "chǎi", "chài", "chān", "chán", "chǎn", "chàn", "chāng", "cháng", "chǎng", "chàng", "chāo", "cháo", "chǎo", "chào", "chē", "ché", "chě", "chè", "chēn", "chén", "chěn", "chèn", "chēng", "chéng", "chěng", "chèng", "chī", "chí", "chǐ", "chì", "chōng", "chóng", "chǒng", "chòng", "chōu", "chóu", "chǒu", "chòu", "chū", "chú", "chǔ", "chù", "chuā", "chuá", "chuǎ", "chuà", "chuāi", "chuái", "chuǎi", "chuài", "chuān", "chuán", "chuǎn", "chuàn", "chuāng", "chuáng", "chuǎng", "chuàng", "chuī", "chuí", "chuǐ", "chuì", "chūn", "chún", "chǔn", "chùn", "chuō", "chuó", "chuǒ", "chuò", "cī", "cí", "cǐ", "cì", "cōng", "cóng", "cǒng", "còng", "cōu", "cóu", "cǒu", "còu", "cū", "cú", "cǔ", "cù", "cuān", "cuán", "cuǎn", "cuàn", "cuī", "cuí", "cuǐ", "cuì", "cūn", "cún", "cǔn", "cùn", "cuō", "cuó", "cuǒ", "cuò", "dā", "dá", "dǎ", "dà", "dāi", "dái", "dǎi", "dài", "dān", "dán", "dǎn", "dàn", "dāng", "dáng", "dǎng", "dàng", "dāo", "dáo", "dǎo", "dào", "dē", "dé", "dě", "dè", "dēi", "déi", "děi", "dèi", "dēn", "dén", "děn", "dèn", "dēng", "déng", "děng", "dèng", "dī", "dí", "dǐ", "dì", "diān", "dián", "diǎn", "diàn", "diāo", "diáo", "diǎo", "diào", "diē", "dié", "diě", "diè", "dīng", "díng", "dǐng", "dìng", "diū", "diú", "diǔ", "diù", "dōng", "dóng", "dǒng", "dòng", "dōu", "dóu", "dǒu", "dòu", "dū", "dú", "dǔ", "dù", "duān", "duán", "duǎn", "duàn", "duī", "duí", "duǐ", "duì", "dūn", "dún", "dǔn", "dùn", "duō", "duó", "duǒ", "duò", "ē", "é", "ě", "è", "ēi", "éi", "ěi", "èi", "ēn", "én", "ěn", "èn", "ēnɡ", "énɡ", "ěnɡ", "ènɡ", "ēr", "ér", "ěr", "èr", "fā", "fá", "fǎ", "fà", "fān", "fán", "fǎn", "fàn", "fāng", "fáng", "fǎng", "fàng", "fēi", "féi", "fěi", "fèi", "fēn", "fén", "fěn", "fèn", "fēng", "féng", "fěng", "fèng", "fō", "fó", "fǒ", "fò", "fōu", "fóu", "fǒu", "fòu", "fū", "fú", "fǔ", "fù", "gā", "gá", "gǎ", "gà", "gāi", "gái", "gǎi", "gài", "gān", "gán", "gǎn", "gàn", "gāng", "gáng", "gǎng", "gàng", "gāo", "gáo", "gǎo", "gào", "gē", "gé", "gě", "gè", "gēi", "géi", "gěi", "gèi", "gēn", "gén", "gěn", "gèn", "gēng", "géng", "gěng", "gèng", "gōng", "góng", "gǒng", "gòng", "gōu", "góu", "gǒu", "gòu", "gū", "gú", "gǔ", "gù", "guā", "guá", "guǎ", "guà", "guāi", "guái", "guǎi", "guài", "guān", "guán", "guǎn", "guàn", "guāng", "guáng", "guǎng", "guàng", "guī", "guí", "guǐ", "guì", "gūn", "gún", "gǔn", "gùn", "guō", "guó", "guǒ", "gùo", "hā", "há", "hǎ", "hà", "hāi", "hái", "hǎi", "hài", "hān", "hán", "hǎn", "hàn", "hāng", "háng", "hǎng", "hàng", "hāo", "háo", "hǎo", "hào", "hē", "hé", "hě", "hè", "hēi", "héi", "hěi", "hèi", "hēn", "hén", "hěn", "hèn", "hēng", "héng", "hěng", "hèng", "hōng", "hóng", "hǒng", "hòng", "hōu", "hóu", "hǒu", "hòu", "hū", "hú", "hǔ", "hù", "huā", "huá", "huǎ", "huà", "huāi", "huái", "huǎi", "huài", "huān", "huán", "huǎn", "huàn", "huāng", "huáng", "huǎng", "huàng", "huī", "huí", "huǐ", "huì", "hūn", "hún", "hǔn", "hùn", "huō", "huó", "huǒ", "huò", "ī", "í", "ǐ", "ì", "iē", "ié", "iě", "iè", "īn", "ín", "ǐn", "ìn", "īnɡ", "ínɡ", "ǐnɡ", "ìnɡ", "iū", "iú", "iǔ", "iù", "jī", "jí", "jǐ", "jì", "jiā", "jiá", "jiǎ", "jià", "jiāi", "jiái", "jiǎi", "jiài", "jiān", "jián", "jiǎn", "jiàn", "jiāng", "jiáng", "jiǎng", "jiàng", "jiāo", "jiáo", "jiǎo", "jiào", "jiē", "jié", "jiě", "jiè", "jīn", "jín", "jǐn", "jìn", "jīng", "jíng", "jǐng", "jìng", "jiōng", "jióng", "jiǒng", "jiòng", "jiū", "jiú", "jiǔ", "jiù", "jū", "jú", "jǔ", "jù", "juān", "juán", "juǎn", "juàn", "juē", "jué", "juě", "juè", "jūn", "jún", "jǔn", "jùn", "kā", "ká", "kǎ", "kà", "kāi", "kái", "kǎi", "kài", "kān", "kán", "kǎn", "kàn", "kāng", "káng", "kǎng", "kàng", "kāo", "káo", "kǎo", "kào", "kē", "ké", "kě", "kè", "kēn", "kén", "kěn", "kèn", "kēng", "kéng", "kěng", "kèng", "kōng", "kóng", "kǒng", "kòng", "kōu", "kóu", "kǒu", "kòu", "kū", "kú", "kǔ", "kù", "kuā", "kuá", "kuǎ", "kuà", "kuāi", "kuái", "kuǎi", "kuài", "kuān", "kuán", "kuǎn", "kuàn", "kuāng", "kuáng", "kuǎng", "kuàng", "kuī", "kuí", "kuǐ", "kuì", "kūn", "kún", "kǔn", "kùn", "kuō", "kuó", "kuǒ", "kuò", "lā", "lá", "lǎ", "là", "laī", "laí", "lǎi", "laì", "lān", "lán", "lǎn", "làn", "lāng", "láng", "lǎng", "làng", "lāo", "láo", "lǎo", "lào", "lē", "lé", "lě", "lè", "lēi", "léi", "lěi", "lèi", "lēng", "léng", "lěng", "lèng", "lī", "lí", "lǐ", "lì", "liān", "lián", "liǎn", "liàn", "liāng", "liáng", "liǎng", "liàng", "liāo", "liáo", "liǎo", "liào", "liē", "lié", "liě", "liè", "līn", "lín", "lǐn", "lìn", "līng", "líng", "lǐng", "lìng", "liū", "liú", "liǔ", "liù", "lōng", "lóng", "lǒng", "lòng", "lōu", "lóu", "lǒu", "lòu", "lū", "lú", "lǔ", "lù", "luān", "luán", "luǎn", "luàn", "luē", "lué", "luě", "luè", "lūn", "lún", "lǔn", "lùn", "luō", "luó", "luǒ", "luò", "mā", "má", "mǎ", "mà", "maī", "maí", "mǎi", "maì", "mān", "mán", "mǎn", "màn", "māng", "máng", "mǎng", "màng", "māo", "máo", "mǎo", "mào", "mē", "mé", "mě", "mè", "mēi", "méi", "měi", "mèi", "mēn", "mén", "měn", "mèn", "mēng", "méng", "měng", "mèng", "mī", "mí", "mǐ", "mì", "miān", "mián", "miǎn", "miàn", "miāo", "miáo", "miǎo", "miào", "miē", "mié", "miě", "miè", "mīn", "mín", "mǐn", "mìn", "mīng", "míng", "mǐng", "mìng", "miū", "miú", "miǔ", "miù", "mō", "mó", "mǒ", "mò", "mōu", "móu", "mǒu", "mòu", "mū", "mú", "mǔ", "mù", "nā", "ná", "nǎ", "nà", "naī", "naí", "nǎi", "naì", "nān", "nán", "nǎn", "nàn", "nāng", "náng", "nǎng", "nàng", "nāo", "náo", "nǎo", "nào", "nē", "né", "ně", "nè", "neī", "neí", "něi", "neì", "nēn", "nén", "něn", "nèn", "nēng", "néng", "něng", "nèng", "nī", "ní", "nǐ", "nì", "niān", "nián", "niǎn", "niàn", "niāng", "niáng", "niǎng", "niàng", "niāo", "niáo", "niǎo", "niào", "niē", "nié", "niě", "niè", "nīn", "nín", "nǐn", "nìn", "nīng", "níng", "nǐng", "nìng", "niū", "niú", "niǔ", "niù", "nōng", "nóng", "nǒng", "nòng", "nū", "nú", "nǔ", "nù", "nuān", "nuán", "nuǎn", "nuàn", "nuē", "nué", "nuě", "nuè", "nuō", "nuó", "nuǒ", "nuò", "nǘ", "nǚ", "nǜ", "nǘè", "ō", "ó", "ǒ", "ò", "ōnɡ", "ónɡ", "ǒnɡ", "ònɡ", "ōu", "óu", "ǒu", "òu", "pā", "pá", "pǎ", "pà", "pāi", "pái", "pǎi", "pài", "pān", "pán", "pǎn", "pàn", "pāng", "páng", "pǎng", "pàng", "pāo", "páo", "pǎo", "pào", "pēi", "péi", "pěi", "pèi", "pēn", "pén", "pěn", "pèn", "pēng", "péng", "pěng", "pèng", "pī", "pí", "pǐ", "pì", "piān", "pián", "piǎn", "piàn", "piāo", "piáo", "piǎo", "piào", "piē", "pié", "piě", "piè", "pīn", "pín", "pǐn", "pìn", "pīng", "píng", "pǐng", "pìng", "pō", "pó", "pǒ", "pò", "pōu", "póu", "pǒu", "pòu", "pū", "pú", "pǔ", "pù", "qī", "qí", "qǐ", "qì", "qiā", "qiá", "qǐa", "qìa", "qiān", "qián", "qǐan", "qìan", "qiāng", "qiáng", "qǐang", "qìang", "qiāo", "qiáo", "qǐao", "qìao", "qiē", "qié", "qǐe", "qìe", "qīn", "qín", "qǐn", "qìn", "qīng", "qíng", "qǐng", "qìng", "qiōnɡ", "qiónɡ", "qiǒnɡ", "qiònɡ", "qiū", "qiú", "qiǔ", "qiù", "qū", "qú", "qǔ", "qù", "quān", "quán", "quǎn", "quàn", "quē", "qué", "quě", "què", "qūn", "qún", "qǔn", "qùn", "rān", "rán", "rǎn", "ràn", "rāng", "ráng", "rǎng", "ràng", "rāo", "ráo", "rǎo", "rào", "rē", "ré", "rě", "rè", "rēn", "rén", "rěn", "rèn", "rēng", "réng", "rěng", "rèng", "rī", "rí", "rǐ", "rì", "rōng", "róng", "rǒng", "ròng", "rōu", "róu", "rǒu", "ròu", "rū", "rú", "rǔ", "rù", "ruān", "ruán", "ruǎn", "ruàn", "ruī", "ruí", "ruǐ", "ruì", "rūn", "rún", "rǔn", "rùn", "ruō", "ruó", "ruǒ", "ruò", "sā", "sá", "sǎ", "sà", "sāi", "sái", "sǎi", "sài", "sān", "sán", "sǎn", "sàn", "sāng", "sáng", "sǎng", "sàng", "sāo", "sáo", "sǎo", "sào", "sē", "sé", "sě", "sè", "sēn", "sén", "sěn", "sèn", "sēng", "séng", "sěng", "sèng", "shā", "shá", "shǎ", "shà", "shāi", "shái", "shǎi", "shài", "shān", "shán", "shǎn", "shàn", "shāng", "sháng", "shǎng", "shàng", "shāo", "sháo", "shǎo", "shào", "shē", "shé", "shě", "shè", "shēi", "shéi", "shěi", "shèi", "shēn", "shén", "shěn", "shèn", "shēng", "shéng", "shěng", "shèng", "shī", "shí", "shǐ", "shì", "shōu", "shóu", "shǒu", "shòu", "shū", "shú", "shǔ", "shù", "shuā", "shuá", "shuǎ", "shuà", "shuāi", "shuái", "shuǎi", "shuài", "shuān", "shuán", "shuǎn", "shuàn", "shuāng", "shuáng", "shuǎng", "shuàng", "shuī", "shuí", "shuǐ", "shuì", "shu?n", "shú", "shǔn", "shùn", "shuō", "shuó", "shuǒ", "shuò", "sī", "sí", "sǐ", "sì", "sōng", "sóng", "sǒng", "sòng", "sū", "sú", "sǔ", "sù", "suān", "suán", "suǎn", "suàn", "suī", "suí", "suǐ", "suì", "su?n", "sún", "sǔn", "sùn", "suō", "suó", "suǒ", "suò", "tā", "tá", "tǎ", "tà", "tāi", "tái", "tǎi", "tài", "tān", "tán", "tǎn", "tàn", "tāng", "táng", "tǎng", "tàng", "tāo", "táo", "tǎo", "tào", "tē", "té", "tě", "tè", "tēng", "téng", "těng", "tèng", "tī", "tí", "tǐ", "tì", "tiān", "tián", "tiǎn", "tiàn", "tiāo", "tiáo", "tiǎo", "tiào", "tiē", "tié", "tiě", "tiè", "tīng", "tíng", "tǐng", "tìng", "tōng", "tóng", "tǒng", "tòng", "tōu", "tóu", "tǒu", "tòu", "tū", "tú", "tǔ", "tù", "tuān", "tuán", "tuǎn", "tuàn", "tuī", "tuí", "tuǐ", "tuì", "tūn", "tún", "tǔn", "tùn", "tuō", "tuó", "tuǒ", "tuò", "ū", "ú", "ǔ", "ù", "uē", "ué", "uě", "uè", "uī", "uí", "uǐ", "uì", "ūn", "ún", "ǔn", "ùn", "ǖ", "ǘ", "ǚ", "ǜ", "ǖn", "ǘn", "ǚn", "ǜn", "wā", "wá", "wǎ", "wà", "wāi", "wái", "wǎi", "wài", "wān", "wán", "wǎn", "wàn", "wāng", "wáng", "wǎng", "wàng", "wēi", "wéi", "wěi", "wèi", "wēn", "wén", "wěn", "wèn", "wēng", "wéng", "wěng", "wèng", "wō", "wó", "wǒ", "wò", "wū", "wú", "wǔ", "wù", "xī", "xí", "xǐ", "xì", "xiā", "xiá", "xiǎ", "xià", "xiān", "xián", "xiǎn", "xiàn", "xiāng", "xiáng", "xiǎng", "xiàng", "xiāo", "xiáo", "xiǎo", "xiào", "xiē", "xié", "xiě", "xiè", "xīn", "xín", "xǐn", "xìn", "xīng", "xíng", "xǐng", "xìng", "xiōng", "xióng", "xiǒng", "xiòng", "xiū", "xiú", "xiǔ", "xiù", "xū", "xú", "xǔ", "xù", "xuān", "xuán", "xuǎn", "xuàn", "xuē", "xué", "xuě", "xuè", "xūn", "xún", "xǔn", "xùn", "yā", "yá", "yǎ", "yà", "yān", "yán", "yǎn", "yàn", "yāng", "yáng", "yǎng", "yàng", "yāo", "yáo", "yǎo", "yào", "yē", "yé", "yě", "yè", "yī", "yí", "yǐ", "yì", "yīn", "yín", "yǐn", "yìn", "yīng", "yíng", "yǐng", "yìng", "yō", "yó", "yǒ", "yò", "yōng", "yóng", "yǒng", "yòng", "yōu", "yóu", "yǒu", "yòu", "yū", "yú", "yǔ", "yù", "yuān", "yuán", "yuǎn", "yuàn", "yuē", "yué", "yuě", "yuè", "yūn", "yún", "yǔn", "yùn", "zā", "zá", "zǎ", "zà", "zāi", "zái", "zǎi", "zài", "zān", "zán", "zǎn", "zàn", "zāng", "záng", "zǎng", "zàng", "zāo", "záo", "zǎo", "zào", "zē", "zé", "zě", "zè", "zēi", "zéi", "zěi", "zèi", "zēn", "zén", "zěn", "zèn", "zēng", "zéng", "zěng", "zèng", "zhā", "zhá", "zhǎ", "zhà", "zhāi", "zhái", "zhǎi", "zhài", "zhān", "zhán", "zhǎn", "zhàn", "zhāng", "zháng", "zhǎng", "zhàng", "zhāo", "zháo", "zhǎo", "zhào", "zhē", "zhé", "zhě", "zhè", "zhēi", "zhéi", "zhěi", "zhèi", "zhēn", "zhén", "zhěn", "zhèn", "zhēng", "zhéng", "zhěng", "zhèng", "zhī", "zhí", "zhǐ", "zhì", "zhōng", "zhóng", "zhǒng", "zhòng", "zhōu", "zhóu", "zhǒu", "zhòu", "zhū", "zhú", "zhǔ", "zhù", "zhuā", "zhuá", "zhuǎ", "zhuà", "zhuāi", "zhuái", "zhuǎi", "zhuài", "zhuān", "zhuán", "zhuǎn", "zhuàn", "zhuānɡ", "zhuánɡ", "zhuǎnɡ", "zhuàng", "zhuī", "zhuí", "zhuǐ", "zhuì", "zhūn", "zhún", "zhǔn", "zhùn", "zī", "zí", "zǐ", "zì", "zōng", "zóng", "zǒng", "zòng", "zōu", "zóu", "zǒu", "zòu", "zū", "zú", "zǔ", "zù", "zuān", "zuán", "zuǎn", "zuàn", "zuī", "zuí", "zuǐ", "zuì", "zūn", "zún", "zǔn", "zùn", "zuō", "zuó", "zuǒ", "zuò", };
-            return pinyinLibrary.Where(p => NormalizePinyin(p).StartsWith(NormalizePinyin(inputText))).Take(4).ToArray();
-        }
-
-
-        private string NormalizePinyin(string pinyin)
-        {
-            Dictionary<char, char> accentMapping = new Dictionary<char, char>
-            {
-                { 'ā', 'a' }, { 'á', 'a' }, { 'ǎ', 'a' }, { 'à', 'a' },
-                { 'ō', 'o' }, { 'ó', 'o' }, { 'ǒ', 'o' }, { 'ò', 'o' },
-                { 'ē', 'e' }, { 'é', 'e' }, { 'ě', 'e' }, { 'è', 'e' },
-                { 'ī', 'i' }, { 'í', 'i' }, { 'ǐ', 'i' }, { 'ì', 'i' },
-                { 'ū', 'u' }, { 'ú', 'u' }, { 'ǔ', 'u' }, { 'ù', 'u' },
-                { 'ǖ', 'ü' }, { 'ǘ', 'ü' }, { 'ǚ', 'ü' }, { 'ǜ', 'ü' }
-               
-            };
-            return new string(pinyin.Select(c => accentMapping.ContainsKey(c) ? accentMapping[c] : c).ToArray());
-        }
+        
 
         /// <summary>
         /// 在给定的SVG字符串中插入新的宽度和高度属性。
@@ -571,417 +430,7 @@ namespace 课件帮PPT助手
                 Console.WriteLine("打开网页时出错：" + ex.Message);
             }
         }
-        private List<string> selectedSVGs = new List<string>();
-        private const int MaxPerRow = 5;
-        private const int Margin = 10;
-        private int currentX = 50;
-        private int currentY = 50;
-
-
-
-        private void button8_Click(object sender, RibbonControlEventArgs e)
-        {
-            string inputChar = Microsoft.VisualBasic.Interaction.InputBox("请输入目标汉字（需联网，且一次仅支持查询单个汉字）:", "一键获取汉字笔顺图解", "");
-            if (!string.IsNullOrWhiteSpace(inputChar))
-            {
-                string url = $"https://hanyu.baidu.com/s?wd={inputChar}&ptype=zici";
-                ExtractSVGFromWebpage(url, inputChar);
-            }
-        }
-
-        private void ExtractSVGFromWebpage(string url, string inputChar)
-        {
-            try
-            {
-                HtmlWeb web = new HtmlWeb();
-                HtmlAgilityPack.HtmlDocument doc = web.Load(url);
-                var svgNodes = doc.DocumentNode.SelectNodes("//svg");
-                if (svgNodes != null)
-                {
-                    ShowSVGSelectionWindow(svgNodes, inputChar);
-                }
-                else
-                {
-                    MessageBox.Show("未查询到对应SVG笔顺图！");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("出现错误：" + ex.Message);
-            }
-        }
-
-        private void ShowSVGSelectionWindow(HtmlNodeCollection svgNodes, string inputChar)
-        {
-            Form svgSelectionForm = new Form();
-            svgSelectionForm.Text = "请选择生字笔顺SVG分步图";
-            svgSelectionForm.Size = new System.Drawing.Size(600, 400);
-
-            ListBox svgListBox = new ListBox();
-            svgListBox.Dock = DockStyle.Fill;
-
-            int count = 1;
-            foreach (var svgNode in svgNodes)
-            {
-                string scientificName = $"{inputChar}-第{count}笔";
-                svgListBox.Items.Add(new KeyValuePair<string, string>(scientificName, svgNode.OuterHtml));
-                count++;
-            }
-
-            svgListBox.SelectionMode = SelectionMode.MultiExtended;
-            svgSelectionForm.Controls.Add(svgListBox);
-
-            Button selectButton = new Button();
-            selectButton.Text = "确认插入";
-            selectButton.Size = new System.Drawing.Size(150, 50);
-            selectButton.Dock = DockStyle.Bottom;
-            selectButton.Click += (sender, e) =>
-            {
-                List<string> selectedSVGs = new List<string>();
-                foreach (var selectedItem in svgListBox.SelectedItems)
-                {
-                    var kvp = (KeyValuePair<string, string>)selectedItem;
-                    selectedSVGs.Add(kvp.Value);
-                }
-                svgSelectionForm.Close();
-                InsertSVGsIntoPresentation(selectedSVGs, inputChar);
-            };
-            svgSelectionForm.Controls.Add(selectButton);
-            svgSelectionForm.ShowDialog();
-        }
-
-        private void InsertSVGsIntoPresentation(List<string> svgContents, string inputChar)
-        {
-            try
-            {
-                PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-                PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
-
-                int count = 1;
-                int xOffset = 100;  // 初始 x 坐标
-                int yOffset = 100;  // 初始 y 坐标
-                int xSpacing = 2; // 插入PPT的每个 SVG 之间的水平间隔
-
-                foreach (var svgContent in svgContents)
-                {
-                    string pattern = @"width:(\s*\d+)px;\s*height:(\s*\d+)px;";
-                    Match match = Regex.Match(svgContent, pattern);
-
-                    string width = "100";  // 默认宽度
-                    string height = "100"; // 默认高度
-
-                    if (match.Success)
-                    {
-                        width = match.Groups[1].Value.Trim();
-                        height = match.Groups[2].Value.Trim();
-                    }
-
-                    string updatedSvg = InsertSvgAttributesWithDimensions(svgContent, width, height);
-                    string tempSvgPath = Path.Combine(Path.GetTempPath(), $"{inputChar}-第{count}笔.svg");
-                    File.WriteAllText(tempSvgPath, updatedSvg);
-                    slide.Shapes.AddPicture(tempSvgPath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoCTrue, xOffset, yOffset);
-
-                    File.Delete(tempSvgPath);
-
-                    // 更新 xOffset，以便下一个 SVG 水平排列
-                    xOffset += int.Parse(width) + xSpacing;
-
-                    count++;
-                }
-
-                MessageBox.Show("成功插入SVG到PPT中！");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("出现错误：" + ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// 在给定的SVG字符串中插入新的宽度和高度属性。
-        /// </summary>
-        /// <param name="svg">原始的SVG字符串</param>
-        /// <param name="width">要插入的宽度值</param>
-        /// <param name="height">要插入的高度值</param>
-        /// <returns>带有新属性的SVG字符串</returns>
-        private string InsertSvgAttributesWithDimensions(string svg, string width, string height)
-        {
-            int index = svg.IndexOf("<svg ");
-            if (index != -1)
-            {
-                int spaceIndex = svg.IndexOf(' ', index);
-                if (spaceIndex != -1)
-                {
-                    string attributes = $"width='{width}' height='{height}' ";
-                    return svg.Insert(spaceIndex + 1, attributes);
-                }
-            }
-            return svg;
-        }
-
-        private PowerPoint.Shape tableShape;
-        private Form settingsForm;
-        private Color borderColor = Color.Black;
-
-        private void button9_Click(object sender, RibbonControlEventArgs e)
-        {
-            if (settingsForm == null || settingsForm.IsDisposed)
-            {
-                settingsForm = new Form
-                {
-                    Text = "设置表格边框",
-                    Size = new Size(400, 500),
-                    StartPosition = FormStartPosition.CenterScreen
-                };
-
-                Label labelRows = new Label { Text = "行数:", Location = new DrawingPoint(65, 40), AutoSize = true };
-                NumericUpDown numericUpDownRows = new NumericUpDown { Location = new DrawingPoint(190, 40), Minimum = 1, Maximum = 10, Value = 2 };
-                numericUpDownRows.ValueChanged += ApplySettings;
-
-                Label labelColumns = new Label { Text = "列数:", Location = new DrawingPoint(65, 80), AutoSize = true };
-                NumericUpDown numericUpDownColumns = new NumericUpDown { Location = new DrawingPoint(190, 80), Minimum = 1, Maximum = 10, Value = 2 };
-                numericUpDownColumns.ValueChanged += ApplySettings;
-
-                Label labelRowSpacing = new Label { Text = "行间距:", Location = new DrawingPoint(65, 120), AutoSize = true };
-                NumericUpDown numericUpDownRowSpacing = new NumericUpDown { Location = new DrawingPoint(190, 120), Minimum = 0, Maximum = 100, Value = 10 };
-                numericUpDownRowSpacing.ValueChanged += ApplySettings;
-
-                Label labelColumnSpacing = new Label { Text = "列间距:", Location = new DrawingPoint(65, 160), AutoSize = true };
-                NumericUpDown numericUpDownColumnSpacing = new NumericUpDown { Location = new DrawingPoint(190, 160), Minimum = 0, Maximum = 100, Value = 10 };
-                numericUpDownColumnSpacing.ValueChanged += ApplySettings;
-
-                Label labelWidth = new Label { Text = "边框宽度:", Location = new DrawingPoint(65, 200), AutoSize = true };
-                NumericUpDown numericUpDownBorderWidth = new NumericUpDown { Location = new DrawingPoint(190, 200), Minimum = 0, Maximum = 10, DecimalPlaces = 2, Value = 1.25m };
-                numericUpDownBorderWidth.ValueChanged += ApplySettings;
-
-                Label labelScale = new Label { Text = "缩放比例:", Location = new DrawingPoint(65, 300), AutoSize = true };
-                TrackBar trackBarScale = new TrackBar { Location = new DrawingPoint(190, 300), Minimum = 50, Maximum = 200, Value = 100, TickFrequency = 10, Width = 120 };
-                trackBarScale.ValueChanged += ApplySettings;
-
-                Label labelColor = new Label { Text = "边框颜色:", Location = new DrawingPoint(65, 240), AutoSize = true };
-                Button buttonChooseColor = new Button { Text = "自定义", Location = new DrawingPoint(190, 240), Size = new Size(120, 40) };
-
-                buttonChooseColor.Click += (s, args) =>
-                {
-                    using (ColorDialog colorDialog = new ColorDialog())
-                    {
-                        if (colorDialog.ShowDialog() == DialogResult.OK)
-                        {
-                            borderColor = colorDialog.Color;
-                            ApplySettings(s, args);
-                        }
-                    }
-                };
-
-                Button buttonOK = new Button { Text = "生成", Location = new DrawingPoint(65, 350), Size = new Size(100, 40) };
-
-                settingsForm.Controls.Add(labelRows);
-                settingsForm.Controls.Add(numericUpDownRows);
-                settingsForm.Controls.Add(labelColumns);
-                settingsForm.Controls.Add(numericUpDownColumns);
-                settingsForm.Controls.Add(labelRowSpacing);
-                settingsForm.Controls.Add(numericUpDownRowSpacing);
-                settingsForm.Controls.Add(labelColumnSpacing);
-                settingsForm.Controls.Add(numericUpDownColumnSpacing);
-                settingsForm.Controls.Add(labelWidth);
-                settingsForm.Controls.Add(numericUpDownBorderWidth);
-                settingsForm.Controls.Add(labelScale);
-                settingsForm.Controls.Add(trackBarScale);
-                settingsForm.Controls.Add(labelColor);
-                settingsForm.Controls.Add(buttonChooseColor);
-                settingsForm.Controls.Add(buttonOK);
-
-                buttonOK.Click += GenerateTable;
-            }
-
-            settingsForm.Show();
-            settingsForm.TopMost = true;
-        }
-
-        private void GenerateTable(object sender, EventArgs e)
-        {
-            int rows = (int)((NumericUpDown)settingsForm.Controls[1]).Value;
-            int columns = (int)((NumericUpDown)settingsForm.Controls[3]).Value;
-            float rowSpacing = (float)((NumericUpDown)settingsForm.Controls[5]).Value;
-            float columnSpacing = (float)((NumericUpDown)settingsForm.Controls[7]).Value;
-            float borderWidth = (float)((NumericUpDown)settingsForm.Controls[9]).Value;
-            float scale = ((TrackBar)settingsForm.Controls[11]).Value / 100f;
-
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
-
-            float startX = 100; // 初始X位置，可以根据需要调整
-            float startY = 100; // 初始Y位置，可以根据需要调整
-            float squareSize = 100 * scale; // 根据缩放比例调整每个正方形表格的大小
-
-            // 保存现有对象的位置和顺序
-            var originalShapes = new List<PowerPoint.Shape>();
-            for (int i = 1; i <= activeSlide.Shapes.Count; i++)
-            {
-                originalShapes.Add(activeSlide.Shapes[i]);
-            }
-
-            // 生成表格
-            List<PowerPoint.Shape> newTableShapes = new List<PowerPoint.Shape>();
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < columns; j++)
-                {
-                    float left = startX + j * (squareSize + columnSpacing);
-                    float top = startY + i * (squareSize + rowSpacing);
-
-                    PowerPoint.Shape tableShape = activeSlide.Shapes.AddTable(2, 2, left, top, squareSize, squareSize);
-                    tableShape.LockAspectRatio = Office.MsoTriState.msoTrue; // 锁定纵横比
-
-                    PowerPoint.Table table = tableShape.Table;
-                    SetTableProperties(table, borderWidth, borderColor);
-
-                    newTableShapes.Add(tableShape);
-                }
-            }
-
-            // 检查是否有选中的对象
-            try
-            {
-                var selection = app.ActiveWindow.Selection;
-                if (selection.ShapeRange.Count > 0)
-                {
-                    int shapeIndex = 0;
-                    foreach (PowerPoint.Shape selectedShape in selection.ShapeRange)
-                    {
-                        float left = startX + (shapeIndex % columns) * (squareSize + columnSpacing);
-                        float top = startY + (shapeIndex / columns) * (squareSize + rowSpacing);
-
-                        selectedShape.Left = left + (squareSize - selectedShape.Width) / 2;
-                        selectedShape.Top = top + (squareSize - selectedShape.Height) / 2;
-
-                        shapeIndex++;
-                    }
-                }
-            }
-            catch (System.Runtime.InteropServices.COMException)
-            {
-                // 没有选中任何对象
-            }
-
-            // 恢复原始对象位置和顺序
-            foreach (var shape in originalShapes)
-            {
-                shape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
-            }
-
-            // 确保新表格在最前面
-            foreach (var tableShape in newTableShapes)
-            {
-                tableShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
-            }
-        }
-
-        private void ApplySettings(object sender, EventArgs e)
-        {
-            int rows = (int)((NumericUpDown)settingsForm.Controls[1]).Value;
-            int columns = (int)((NumericUpDown)settingsForm.Controls[3]).Value;
-            float borderWidth = (float)((NumericUpDown)settingsForm.Controls[9]).Value;
-            float scale = ((TrackBar)settingsForm.Controls[11]).Value / 100f;
-            float rowSpacing = (float)((NumericUpDown)settingsForm.Controls[5]).Value;
-            float columnSpacing = (float)((NumericUpDown)settingsForm.Controls[7]).Value;
-
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
-
-            // 检查是否有选中的对象
-            try
-            {
-                var selection = app.ActiveWindow.Selection;
-                if (selection.ShapeRange.Count == 0)
-                {
-                    // 没有选中对象，不执行对齐和大小调整
-                    return;
-                }
-
-                float startX = 100; // 初始X位置，可以根据需要调整
-                float startY = 100; // 初始Y位置，可以根据需要调整
-                float squareSize = 100 * scale; // 根据缩放比例调整每个正方形表格的大小
-
-                int shapeIndex = 0;
-
-                foreach (PowerPoint.Shape selectedShape in selection.ShapeRange)
-                {
-                    float left = startX + (shapeIndex % columns) * (squareSize + columnSpacing);
-                    float top = startY + (shapeIndex / columns) * (squareSize + rowSpacing);
-
-                    selectedShape.Left = left + (squareSize - selectedShape.Width) / 2;
-                    selectedShape.Top = top + (squareSize - selectedShape.Height) / 2;
-
-                    if (selectedShape.Type == Office.MsoShapeType.msoTable)
-                    {
-                        PowerPoint.Table table = selectedShape.Table;
-                        SetTableProperties(table, borderWidth, borderColor);
-                    }
-
-                    shapeIndex++;
-                }
-            }
-            catch (System.Runtime.InteropServices.COMException)
-            {
-                // 没有选中任何对象
-            }
-        }
-
-        private void SetTableProperties(PowerPoint.Table table, float borderWidth, Color borderColor)
-        {
-            int colorRgb = ConvertColor(borderColor);
-
-            for (int i = 1; i <= table.Rows.Count; i++)
-            {
-                for (int j = 1; j <= table.Columns.Count; j++)
-                {
-                    PowerPoint.Cell cell = table.Cell(i, j);
-
-                    cell.Shape.Fill.Transparency = 1;
-                    cell.Shape.TextFrame.TextRange.Font.Size = 1;
-
-                    if (i == 1)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderTop], borderWidth, colorRgb, true);
-                    }
-                    if (i == table.Rows.Count)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb, true);
-                    }
-                    if (j == 1)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderLeft], borderWidth, colorRgb, true);
-                    }
-                    if (j == table.Columns.Count)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb, true);
-                    }
-
-                    if (i < table.Rows.Count)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb, false);
-                    }
-                    if (j < table.Columns.Count)
-                    {
-                        SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb, false);
-                    }
-                }
-            }
-        }
-
-        private void SetCellBorder(PowerPoint.LineFormat border, float borderWidth, int colorRgb, bool isOuterCell)
-        {
-            border.Weight = borderWidth;
-            border.ForeColor.RGB = colorRgb;
-            border.Visible = Office.MsoTriState.msoTrue;
-            border.DashStyle = isOuterCell ? Office.MsoLineDashStyle.msoLineSolid : Office.MsoLineDashStyle.msoLineDash;
-        }
-
-        private int ConvertColor(Color color)
-        {
-            return (color.B << 16) | (color.G << 8) | color.R;
-        }
+      
 
 
         private void button10_Click(object sender, RibbonControlEventArgs e)
@@ -1063,143 +512,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void button12_Click(object sender, RibbonControlEventArgs e)
-        {
-            if (settingsFormButton12 == null || settingsFormButton12.IsDisposed)
-            {
-                settingsFormButton12 = new Form
-                {
-                    Text = "设置表格边框",
-                    Size = new Size(400, 300),
-                    StartPosition = FormStartPosition.CenterScreen
-                };
-
-                Label labelWidth = new Label { Text = "边框宽度:", Location = new System.Drawing.Point(65, 40), AutoSize = true };
-                NumericUpDown numericUpDownBorderWidth = new NumericUpDown { Location = new System.Drawing.Point(190, 40), Minimum = 0, Maximum = 10, DecimalPlaces = 2, Value = 1.25m };
-
-                Label labelColor = new Label { Text = "边框颜色:", Location = new System.Drawing.Point(65, 90), AutoSize = true };
-                Button buttonChooseColor = new Button { Text = "自定义", Location = new System.Drawing.Point(190, 90), Size = new Size(120, 40) };
-
-                buttonChooseColor.Click += (s, args) =>
-                {
-                    using (ColorDialog colorDialog = new ColorDialog())
-                    {
-                        if (colorDialog.ShowDialog() == DialogResult.OK)
-                        {
-                            borderColorButton12 = colorDialog.Color;
-                        }
-                    }
-                };
-
-                Button buttonOK = new Button { Text = "生成", Location = new System.Drawing.Point(75, 155), Size = new Size(100, 40) };
-                Button buttonApply = new Button { Text = "应用", Location = new System.Drawing.Point(200, 155), Size = new Size(100, 40) };
-
-                settingsFormButton12.Controls.Add(labelWidth);
-                settingsFormButton12.Controls.Add(numericUpDownBorderWidth);
-                settingsFormButton12.Controls.Add(labelColor);
-                settingsFormButton12.Controls.Add(buttonChooseColor);
-                settingsFormButton12.Controls.Add(buttonOK);
-                settingsFormButton12.Controls.Add(buttonApply);
-
-                buttonOK.Click += GenerateTableButton12;
-                buttonApply.Click += ApplySettingsButton12;
-            }
-
-            settingsFormButton12.Show();
-            settingsFormButton12.TopMost = true;
-        }
-
-        private void GenerateTableButton12(object sender, EventArgs e)
-        {
-            float borderWidth = (float)((NumericUpDown)settingsFormButton12.Controls[1]).Value;
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
-
-            if (app.ActiveWindow.Selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
-
-                foreach (PowerPoint.Shape selectedShape in selectedShapes)
-                {
-                    float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + 18;
-                    float left = selectedShape.Left + (selectedShape.Width - selectedSize) / 2;
-                    float top = selectedShape.Top + (selectedShape.Height - selectedSize) / 2;
-
-                    PowerPoint.Shape tableShapeButton12 = activeSlide.Shapes.AddTable(2, 2, left, top, selectedSize, selectedSize);
-                    tableShapeButton12.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // 锁定纵横比
-
-                    PowerPoint.Table table = tableShapeButton12.Table;
-
-                    SetTablePropertiesButton12(table, borderWidth, borderColorButton12);
-
-                    // 将表格置于底层
-                    tableShapeButton12.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoSendToBack);
-                }
-            }
-        }
-
-        private PowerPoint.Shape tableShapeButton12;
-        private Form settingsFormButton12;
-        private Color borderColorButton12 = Color.Black;
-
-        private void ApplySettingsButton12(object sender, EventArgs e)
-        {
-            float borderWidth = (float)((NumericUpDown)settingsFormButton12.Controls[1]).Value;
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
-
-            if (app.ActiveWindow.Selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
-
-                foreach (PowerPoint.Shape selectedShape in selectedShapes)
-                {
-                    if (selectedShape.Type == Office.MsoShapeType.msoTable)
-                    {
-                        PowerPoint.Table table = selectedShape.Table;
-                        SetTablePropertiesButton12(table, borderWidth, borderColorButton12);
-                    }
-                }
-            }
-        }
-
-        private void SetTablePropertiesButton12(PowerPoint.Table table, float borderWidth, Color borderColor)
-        {
-            int colorRgb = ConvertColorButton12(borderColor);
-
-            for (int i = 1; i <= table.Rows.Count; i++)
-            {
-                for (int j = 1; j <= table.Columns.Count; j++)
-                {
-                    PowerPoint.Cell cell = table.Cell(i, j);
-
-                    cell.Shape.Fill.Transparency = 1;
-                    cell.Shape.TextFrame.TextRange.Font.Size = 1; // 设置字号为1
-
-                    SetCellBorderButton12(cell.Borders[PowerPoint.PpBorderType.ppBorderTop], borderWidth, colorRgb);
-                    SetCellBorderButton12(cell.Borders[PowerPoint.PpBorderType.ppBorderBottom], borderWidth, colorRgb);
-                    SetCellBorderButton12(cell.Borders[PowerPoint.PpBorderType.ppBorderLeft], borderWidth, colorRgb);
-                    SetCellBorderButton12(cell.Borders[PowerPoint.PpBorderType.ppBorderRight], borderWidth, colorRgb);
-                }
-            }
-
-            table.Cell(1, 1).Borders[PowerPoint.PpBorderType.ppBorderBottom].DashStyle = Office.MsoLineDashStyle.msoLineDash;
-            table.Cell(1, 1).Borders[PowerPoint.PpBorderType.ppBorderRight].DashStyle = Office.MsoLineDashStyle.msoLineDash;
-            table.Cell(1, 2).Borders[PowerPoint.PpBorderType.ppBorderBottom].DashStyle = Office.MsoLineDashStyle.msoLineDash;
-            table.Cell(2, 1).Borders[PowerPoint.PpBorderType.ppBorderRight].DashStyle = Office.MsoLineDashStyle.msoLineDash;
-        }
-
-        private void SetCellBorderButton12(PowerPoint.LineFormat border, float borderWidth, int colorRgb)
-        {
-            border.Weight = borderWidth;
-            border.ForeColor.RGB = colorRgb;
-            border.Visible = Office.MsoTriState.msoTrue;
-        }
-
-        private int ConvertColorButton12(Color color)
-        {
-            return (color.B << 16) | (color.G << 8) | color.R;
-        }
+       
 
         private void button13_Click(object sender, RibbonControlEventArgs e)
         {
@@ -1606,88 +919,6 @@ namespace 课件帮PPT助手
             form.ShowDialog();
         }
 
-        
-
-
-        private void button17_Click(object sender, RibbonControlEventArgs e)
-            {
-            var pptApp = Globals.ThisAddIn.Application;
-            var slide = pptApp.ActiveWindow.View.Slide;
-            var selection = pptApp.ActiveWindow.Selection;
-
-            if (selection.Type == PpSelectionType.ppSelectionShapes &&
-                selection.ShapeRange.Count == 1 &&
-                selection.ShapeRange[1].Type == Microsoft.Office.Core.MsoShapeType.msoPicture)
-            {
-                var shape = selection.ShapeRange[1];
-                var tempImagePath = Path.Combine(Path.GetTempPath(), "temp_image_" + Guid.NewGuid().ToString() + ".png");
-
-                try
-                {
-                    // 使用文件路径直接导出图片
-                    shape.Export(tempImagePath, PpShapeFormat.ppShapeFormatPNG);
-
-                    using (var img = System.Drawing.Image.FromFile(tempImagePath))
-                    {
-                        using (var form = new BackgroundRemovalForm(img, pptApp, slide, tempImagePath))
-                        {
-                            form.ShowDialog();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("导出图片失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选择一张图片进行操作", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        
-        private void button18_Click(object sender, RibbonControlEventArgs e)
-        {
-            string tempPath = Path.GetTempPath(); // 获取系统临时文件夹路径
-            string[] targetExtensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tmp" }; // 常见的图片文件扩展名和TMP文件扩展名
-
-            try
-            {
-                // 获取临时文件夹中的所有文件（仅一级目录）
-                string[] tempFiles = Directory.GetFiles(tempPath);
-
-                // 遍历所有文件并尝试删除匹配图片和TMP文件扩展名的文件
-                foreach (string file in tempFiles)
-                {
-                    string extension = Path.GetExtension(file).ToLower();
-                    if (targetExtensions.Contains(extension))
-                    {
-                        try
-                        {
-                            File.Delete(file);
-                        }
-                        catch (IOException ex) when ((ex.HResult & 0xFFFF) == 32) // 文件被占用
-                        {
-                            // 忽略文件被占用的异常，不提醒用户
-                        }
-                        catch (Exception ex)
-                        {
-                            // 其他异常情况，记录错误信息
-                            MessageBox.Show($"无法删除文件: {file}\n错误: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
-
-                MessageBox.Show("所有临时图片文件和可删除的TMP文件已删除", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                // 如果获取文件列表或删除文件过程中发生错误，记录错误信息
-                MessageBox.Show($"删除临时图片文件和TMP文件时发生错误: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
 
 
         private void button19_Click(object sender, RibbonControlEventArgs e)
@@ -1707,50 +938,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void replacetextbutton_Click(object sender, RibbonControlEventArgs e)
-        {
-            string replacementText = GetUserInput();
-            if (string.IsNullOrEmpty(replacementText))
-            {
-                return; // 如果用户未输入任何文本，则不执行替换操作
-            }
-
-            var shapes = Globals.ThisAddIn.Application.ActiveWindow.Selection.ShapeRange;
-            foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoTextBox)
-                {
-                    shape.TextFrame.TextRange.Text = replacementText;
-                }
-            }
-        }
-
-        private string GetUserInput()
-        {
-            using (var form = new Form())
-            {
-                var textBox = new TextBox();
-                var okButton = new Button();
-
-                form.Text = "批量换字";
-                textBox.Dock = DockStyle.Top;
-                textBox.Height = 90;
-              
-                okButton.Height = 40;
-                okButton.Dock = DockStyle.Bottom;
-                okButton.Text = "确定";
-
-
-                okButton.Click += (sender, e) => form.Close();
-                form.Size = new System.Drawing.Size(500, 200);
-                form.Controls.Add(textBox);
-                form.Controls.Add(okButton);
-
-                form.ShowDialog();
-
-                return textBox.Text;
-            }
-        }
+       
 
 
         [DllImport("user32.dll")]
@@ -2802,6 +1990,7 @@ namespace 课件帮PPT助手
             }
         }
 
+        //按尺寸筛选
         private void Selectsize_Click1(object sender, RibbonControlEventArgs e)
         {
             var application = Globals.ThisAddIn.Application;
@@ -2838,6 +2027,7 @@ namespace 课件帮PPT助手
             }
         }
 
+        //按颜色筛选
         private void SelectedColor_Click(object sender, RibbonControlEventArgs e)
         {
             var application = Globals.ThisAddIn.Application;
@@ -2873,6 +2063,7 @@ namespace 课件帮PPT助手
             }
         }
 
+        //按轮廓筛选
         private void Selectedline_Click(object sender, RibbonControlEventArgs e)
         {
             var application = Globals.ThisAddIn.Application;
@@ -2943,6 +2134,7 @@ namespace 课件帮PPT助手
             }
         }
 
+        //按字号筛选
         private void Selectfontsize_Click(object sender, RibbonControlEventArgs e)
         {
             var application = Globals.ThisAddIn.Application;
@@ -3563,42 +2755,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void button21_Click_1(object sender, RibbonControlEventArgs e)
-        {
-            // 获取当前活动的PPT应用程序
-            Application pptApplication = Globals.ThisAddIn.Application;
-            // 获取当前活动的窗口
-            DocumentWindow activeWindow = pptApplication.ActiveWindow;
-            // 获取当前选中的对象
-            Selection selection = activeWindow.Selection;
-
-            if (selection.Type == PpSelectionType.ppSelectionShapes)
-            {
-                // 弹出输入框，让用户输入命名前缀
-                string prefix = Microsoft.VisualBasic.Interaction.InputBox("请输入命名前缀:", "批量重命名");
-
-                if (!string.IsNullOrEmpty(prefix))
-                {
-                    int counter = 1;
-                    foreach (Shape shape in selection.ShapeRange)
-                    {
-                        shape.Name = $"{prefix}-{counter}";
-                        counter++;
-                    }
-
-                    // 刷新视图
-                    activeWindow.View.GotoSlide(activeWindow.View.Slide.SlideIndex);
-                }
-                else
-                {
-                    MessageBox.Show("命名前缀不能为空。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选择一个或多个对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
+       
 
         private void Fillblank_Click_1(object sender, RibbonControlEventArgs e)
         {
@@ -3708,9 +2865,170 @@ namespace 课件帮PPT助手
             TransparencyForm transparencyForm = new TransparencyForm();
             transparencyForm.Show(); // 使用 Show 方法以非模态方式显示窗体
         }
+
+       
+
+        private InputForm inputForm;
+        private void 批量改字_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (inputForm == null || inputForm.IsDisposed)
+            {
+                inputForm = new InputForm();
+                inputForm.TextConfirmed += OnTextConfirmed;
+                inputForm.Show(); // 非模式对话框
+            }
+            else
+            {
+                inputForm.BringToFront();
+            }
+        }
+
+        private void OnTextConfirmed(string replacementText)
+        {
+            if (string.IsNullOrEmpty(replacementText))
+            {
+                return; // 如果用户未输入任何文本，则不执行替换操作
+            }
+
+            var shapes = Globals.ThisAddIn.Application.ActiveWindow.Selection.ShapeRange;
+            foreach (Microsoft.Office.Interop.PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoTextBox)
+                {
+                    shape.TextFrame.TextRange.Text = replacementText;
+                }
+            }
+        }
+
+        private PinyinSelectorForm pinyinForm;
+        private void 便捷注音_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (pinyinForm == null || pinyinForm.IsDisposed)
+            {
+                pinyinForm = new PinyinSelectorForm();
+                pinyinForm.Show();
+            }
+            else
+            {
+                pinyinForm.BringToFront();
+            }
+
+            pinyinForm.UpdateComboBoxOptions();
+        }
+
+        public void PinyinSelectorFormClosed()
+        {
+            pinyinForm = null;
+        }
+
+        //据字查笔顺
+        private void 笔顺图解_Click(object sender, RibbonControlEventArgs e)
+        {
+            string inputChar = Microsoft.VisualBasic.Interaction.InputBox("请输入目标汉字（需联网，且一次仅支持查询单个汉字）:", "一键获取汉字笔顺图解", "");
+            if (!string.IsNullOrWhiteSpace(inputChar))
+            {
+                string url = $"https://hanyu.baidu.com/s?wd={inputChar}&ptype=zici";
+                ExtractSVGFromWebpage(url, inputChar);
+            }
+        }
+
+        private void ExtractSVGFromWebpage(string url, string inputChar)
+        {
+            try
+            {
+                HtmlWeb web = new HtmlWeb();
+                HtmlAgilityPack.HtmlDocument doc = web.Load(url);
+                var svgNodes = doc.DocumentNode.SelectNodes("//svg");
+                if (svgNodes != null)
+                {
+                    ShowSVGSelectionWindow(svgNodes, inputChar);
+                }
+                else
+                {
+                    MessageBox.Show("未查询到对应SVG笔顺图！");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("出现错误：" + ex.Message);
+            }
+        }
+
+        private void ShowSVGSelectionWindow(HtmlNodeCollection svgNodes, string inputChar)
+        {
+            SvgSelectionForm svgSelectionForm = new SvgSelectionForm(svgNodes, inputChar);
+            svgSelectionForm.ShowDialog();
+        }
+        
+        //田字格生成
+        private TableSettingsForm settingsForm;
+        private void 生字格子_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (settingsForm == null || settingsForm.IsDisposed)
+            {
+                settingsForm = new TableSettingsForm();
+            }
+
+            settingsForm.Show();
+            settingsForm.TopMost = true;
+        }
+
+        //给生字创建田字格
+        private TableSettingsFormButton12 settingsFormButton12;
+        private Color borderColorButton12 = Color.Black;
+        private void 生字赋格_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (settingsFormButton12 == null || settingsFormButton12.IsDisposed)
+            {
+                settingsFormButton12 = new TableSettingsFormButton12();
+            }
+
+            settingsFormButton12.Show();
+            settingsFormButton12.TopMost = true;
+        }
+
+        private void 批量命名_TextChanged(object sender, RibbonControlEventArgs e)
+        {
+            var editBox = (RibbonEditBox)sender;
+            if (editBox.Text.EndsWith("\r") || editBox.Text.EndsWith("\n"))
+            {
+                string prefix = editBox.Text.Trim();
+                if (!string.IsNullOrEmpty(prefix))
+                {
+                    RenameShapes(prefix);
+                    editBox.Text = string.Empty; // 清空EditBox
+                }
+            }
+        }
+
+        private void RenameShapes(string prefix)
+        {
+            // 获取当前活动的PPT应用程序
+            PowerPoint.Application pptApplication = Globals.ThisAddIn.Application;
+            // 获取当前活动的窗口
+            PowerPoint.DocumentWindow activeWindow = pptApplication.ActiveWindow;
+            // 获取当前选中的对象
+            PowerPoint.Selection selection = activeWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                int counter = 1;
+                foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                {
+                    shape.Name = $"{prefix}-{counter}";
+                    counter++;
+                }
+
+                // 刷新视图
+                activeWindow.View.GotoSlide(activeWindow.View.Slide.SlideIndex);
+            }
+            else
+            {
+                MessageBox.Show("请选择一个或多个对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
     }
 }
-
 
 
 
