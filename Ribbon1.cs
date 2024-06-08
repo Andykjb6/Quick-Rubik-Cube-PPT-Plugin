@@ -739,187 +739,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private List<PowerPoint.Shape> copiedShapes = new List<PowerPoint.Shape>();
-        private Dictionary<int, (float Width, float Height)> initialSizes = new Dictionary<int, (float Width, float Height)>();
-        private void button16_Click(object sender, RibbonControlEventArgs e)
-        {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-            PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selectedShapes.Count >= 1)
-            {
-                float radius = 100;
-                float initialRotation = 0;
-                float finalRotation = 0;
-                float sizeIncrement = 0;
-                int copyCount = 0;
-
-                if (selectedShapes.Count == 1)
-                {
-                    ShowCircularDistributionForm(true, pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
-                }
-                else
-                {
-                    PerformCircularDistribution(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, false);
-                    ShowCircularDistributionForm(false, pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选择至少一个对象。");
-            }
-        }
-
-        void PerformCircularDistribution(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, bool isCopyMode, int copyCount = 0)
-        {
-            if (isCopyMode)
-            {
-                foreach (PowerPoint.Shape shape in copiedShapes)
-                {
-                    shape.Delete();
-                }
-                copiedShapes.Clear();
-            }
-
-            int count = isCopyMode ? copyCount : shapes.Count;
-            float angleStep = 360.0f / count;
-            float angleIncrement = (finalRotation - initialRotation) / count;
-
-            for (int i = 0; i < count; i++)
-            {
-                float angle = initialRotation + i * angleStep;
-                float radians = angle * (float)(Math.PI / 180.0);
-                float newX = (float)(radius * Math.Cos(radians));
-                float newY = (float)(radius * Math.Sin(radians));
-
-                PowerPoint.Shape shape;
-                if (isCopyMode)
-                {
-                    shape = shapes[1].Duplicate()[1];
-                    copiedShapes.Add(shape);
-                }
-                else
-                {
-                    shape = shapes[i + 1];
-                }
-
-                shape.Left = newX + (pptApp.ActivePresentation.PageSetup.SlideWidth / 2) - (shape.Width / 2);
-                shape.Top = newY + (pptApp.ActivePresentation.PageSetup.SlideHeight / 2) - (shape.Height / 2);
-                shape.Rotation = initialRotation + i * angleIncrement;
-
-                if (!initialSizes.ContainsKey(shape.Id))
-                {
-                    initialSizes[shape.Id] = (shape.Width, shape.Height);
-                }
-
-                if (sizeIncrement != 0)
-                {
-                    float newSize = shape.Width + i * sizeIncrement;
-                    shape.Width = newSize;
-                    shape.Height = newSize;
-                }
-            }
-        }
-
-        void ShowCircularDistributionForm(bool isCopyMode, PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, int copyCount)
-        {
-            Form form = new Form
-            {
-                Text = isCopyMode ? "环形-复制分布模式" : "环形分布模式",
-                Size = new System.Drawing.Size(600, 500),
-                FormBorderStyle = FormBorderStyle.SizableToolWindow,
-                StartPosition = FormStartPosition.CenterScreen
-            };
-
-            int yPosition = 20;
-
-            Label radiusLabel = new Label { Location = new System.Drawing.Point(20, yPosition), Size = new System.Drawing.Size(150, 30), Text = "环形半径：" };
-            TrackBar radiusTrackBar = new TrackBar { Location = new System.Drawing.Point(200, yPosition), Size = new System.Drawing.Size(350, 45), Minimum = 10, Maximum = 500, Value = (int)radius };
-            yPosition += 100;
-
-            Label initialRotationLabel = new Label { Location = new System.Drawing.Point(20, yPosition), Size = new System.Drawing.Size(210, 30), Text = "旋转递进起始角度：" };
-            NumericUpDown initialRotationUpDown = new NumericUpDown { Location = new System.Drawing.Point(235, yPosition), Size = new System.Drawing.Size(80, 30), Minimum = 0, Maximum = 360, Value = (int)initialRotation };
-
-            Label finalRotationLabel = new Label { Location = new System.Drawing.Point(320, yPosition), Size = new System.Drawing.Size(120, 30), Text = "~终点角度：" };
-            NumericUpDown finalRotationUpDown = new NumericUpDown { Location = new System.Drawing.Point(450, yPosition), Size = new System.Drawing.Size(80, 30), Minimum = 0, Maximum = 360, Value = (int)finalRotation };
-            yPosition += 100;
-
-            Label sizeIncrementLabel = new Label { Location = new System.Drawing.Point(20, yPosition), Size = new System.Drawing.Size(150, 30), Text = "尺寸递增：" };
-            TrackBar sizeIncrementTrackBar = new TrackBar { Location = new System.Drawing.Point(200, yPosition), Size = new System.Drawing.Size(350, 45), Minimum = 0, Maximum = 100, Value = (int)sizeIncrement };
-            yPosition += 100;
-
-            Label copyCountLabel = null;
-            TrackBar copyCountTrackBar = null;
-            if (isCopyMode)
-            {
-                copyCountLabel = new Label { Location = new System.Drawing.Point(20, yPosition), Size = new System.Drawing.Size(150, 30), Text = "复制数量：" };
-                copyCountTrackBar = new TrackBar { Location = new System.Drawing.Point(200, yPosition), Size = new System.Drawing.Size(350, 45), Minimum = 0, Maximum = 50, Value = copyCount };
-                yPosition += 100;
-            }
-
-            Button resetButton = new Button { Location = new System.Drawing.Point(20, yPosition), Size = new System.Drawing.Size(150, 50), Text = "重置大小" };
-            yPosition += 30;
-
-            void UpdateShapes()
-            {
-                radius = radiusTrackBar.Value;
-                initialRotation = (float)initialRotationUpDown.Value;
-                finalRotation = (float)finalRotationUpDown.Value;
-                sizeIncrement = sizeIncrementTrackBar.Value;
-                if (isCopyMode) copyCount = copyCountTrackBar.Value;
-
-                PerformCircularDistribution(pptApp, shapes, radius, initialRotation, finalRotation, sizeIncrement, isCopyMode, copyCount);
-            }
-
-            void ResetParameters()
-            {
-                radiusTrackBar.Value = 100;
-                initialRotationUpDown.Value = 0;
-                finalRotationUpDown.Value = 0;
-                sizeIncrementTrackBar.Value = 0;
-                if (isCopyMode) copyCountTrackBar.Value = 0;
-
-                foreach (PowerPoint.Shape shape in shapes)
-                {
-                    if (initialSizes.ContainsKey(shape.Id))
-                    {
-                        var size = initialSizes[shape.Id];
-                        shape.Width = size.Width;
-                        shape.Height = size.Height;
-                    }
-                }
-
-                UpdateShapes();
-            }
-
-            radiusTrackBar.ValueChanged += (s, ev) => UpdateShapes();
-            initialRotationUpDown.ValueChanged += (s, ev) => UpdateShapes();
-            finalRotationUpDown.ValueChanged += (s, ev) => UpdateShapes();
-            sizeIncrementTrackBar.ValueChanged += (s, ev) => UpdateShapes();
-            if (isCopyMode) copyCountTrackBar.ValueChanged += (s, ev) => UpdateShapes();
-            resetButton.Click += (s, ev) => ResetParameters();
-
-            form.Controls.Add(radiusLabel);
-            form.Controls.Add(radiusTrackBar);
-            form.Controls.Add(initialRotationLabel);
-            form.Controls.Add(initialRotationUpDown);
-            form.Controls.Add(finalRotationLabel);
-            form.Controls.Add(finalRotationUpDown);
-            form.Controls.Add(sizeIncrementLabel);
-            form.Controls.Add(sizeIncrementTrackBar);
-            if (isCopyMode)
-            {
-                form.Controls.Add(copyCountLabel);
-                form.Controls.Add(copyCountTrackBar);
-            }
-            form.Controls.Add(resetButton);
-
-            UpdateShapes();
-            form.ShowDialog();
-        }
-
-
+        
 
         private void button19_Click(object sender, RibbonControlEventArgs e)
         {
@@ -2542,71 +2362,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
-
-
-        private void Supercopy_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 获取当前活动的PowerPoint应用程序
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-
-            // 获取当前选中的幻灯片
-            PowerPoint.Slide currentSlide = pptApp.ActiveWindow.View.Slide;
-
-            // 获取当前选中的对象
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-
-            // 检查是否按住了Ctrl键
-            bool ctrlPressed = (System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control;
-
-            // 如果按住了Ctrl键
-            if (ctrlPressed)
-            {
-                // 提示用户输入要复制的次数
-                string input = Microsoft.VisualBasic.Interaction.InputBox("请输入要复制的次数:", "批量原位复制", "1");
-                int copyCount;
-                // 解析用户输入的次数
-                if (!int.TryParse(input, out copyCount) || copyCount < 1)
-                {
-                    System.Windows.Forms.MessageBox.Show("请输入一个大于0的整数。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                    return;
-                }
-
-                // 复制选中的对象多次
-                for (int i = 0; i < copyCount; i++)
-                {
-                    DuplicateSelectedShapes(selection);
-                }
-            }
-            else // 如果没有按住Ctrl键
-            {
-                // 单次复制选中的对象
-                DuplicateSelectedShapes(selection);
-            }
-        }
-
-        // 复制选中的对象并置于原对象的上一层
-        private void DuplicateSelectedShapes(PowerPoint.Selection selection)
-        {
-            // 确保至少选中了一个对象
-            if (selection.Type != PowerPoint.PpSelectionType.ppSelectionNone)
-            {
-                // 遍历选中的每一个对象
-                foreach (PowerPoint.Shape shape in selection.ShapeRange)
-                {
-                    // 复制选中的对象
-                    PowerPoint.Shape copiedShape = shape.Duplicate()[1];
-
-                    // 将复制的对象置于选中对象的上一层
-                    copiedShape.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoBringForward);
-
-                    // 将复制的对象移动到与选中对象相同的位置
-                    copiedShape.Left = shape.Left;
-                    copiedShape.Top = shape.Top;
-                }
-            }
-        }
-
         private void Pagecentered_Click(object sender, RibbonControlEventArgs e)
         {
             // 获取当前活动的PowerPoint应用程序
@@ -2643,75 +2398,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void Sizescaling_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 获取当前活动的PowerPoint应用程序
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-
-            // 获取当前选中的对象
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-
-            // 确保至少选中了一个对象
-            if (selection.Type != PowerPoint.PpSelectionType.ppSelectionNone)
-            {
-                // 解析用户输入的缩放比例
-                string input = Microsoft.VisualBasic.Interaction.InputBox("请输入缩放比例（单位：%），等差缩放比例请用逗号分隔两个数值：", "尺寸缩放", "");
-                string[] scaleValues = input.Split(',');
-
-                // 确定缩放方式
-                bool isArithmetic = scaleValues.Length == 2;
-
-                // 计算等差缩放的公差
-                float commonDifference = 0;
-                if (isArithmetic)
-                {
-                    float startScale, endScale;
-                    if (!float.TryParse(scaleValues[0], out startScale) || !float.TryParse(scaleValues[1], out endScale))
-                    {
-                       
-                        return;
-                    }
-
-                    // 计算等差缩放的公差
-                    commonDifference = (endScale - startScale) / (selection.ShapeRange.Count - 1);
-                }
-
-                // 记录当前缩放比例
-                float currentScale = isArithmetic ? float.Parse(scaleValues[0]) : float.Parse(scaleValues[0]);
-
-                // 遍历选中的每一个对象
-                foreach (PowerPoint.Shape shape in selection.ShapeRange)
-                {
-                    // 执行缩放
-                    ScaleShape(shape, currentScale);
-
-                    // 更新缩放比例
-                    if (isArithmetic)
-                    {
-                        currentScale += commonDifference;
-                    }
-                }
-            }
-        }
-
-        // 缩放指定的形状
-        private void ScaleShape(PowerPoint.Shape shape, float scale)
-        {
-            // 计算缩放后的宽度和高度
-            float newWidth = shape.Width * scale / 100;
-            float newHeight = shape.Height * scale / 100;
-
-            // 计算缩放后的左上角位置
-            float newX = shape.Left + (shape.Width - newWidth) / 2;
-            float newY = shape.Top + (shape.Height - newHeight) / 2;
-
-            // 执行缩放
-            shape.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
-            shape.Width = newWidth;
-            shape.Height = newHeight;
-            shape.Left = newX;
-            shape.Top = newY;
-        }
+       
 
         private static List<Shape> hiddenShapes = new List<Shape>();
         private void button20_Click(object sender, RibbonControlEventArgs e)
@@ -2987,30 +2674,53 @@ namespace 课件帮PPT助手
             settingsFormButton12.TopMost = true;
         }
 
-        private void 批量命名_TextChanged(object sender, RibbonControlEventArgs e)
+       
+
+        private void 功能选择_TextChanged(object sender, RibbonControlEventArgs e)
         {
-            var editBox = (RibbonEditBox)sender;
-            if (editBox.Text.EndsWith("\r") || editBox.Text.EndsWith("\n"))
-            {
-                string prefix = editBox.Text.Trim();
-                if (!string.IsNullOrEmpty(prefix))
-                {
-                    RenameShapes(prefix);
-                    editBox.Text = string.Empty; // 清空EditBox
-                }
-            }
+        }
+        private string selectedFunction = "";
+
+        private void 功能选择_Changed(object sender, RibbonControlEventArgs e)
+        {
+            selectedFunction = ((RibbonComboBox)sender).Text;
         }
 
-        private void RenameShapes(string prefix)
+        private void 参数输入_TextChanged(object sender, RibbonControlEventArgs e)
         {
-            // 获取当前活动的PPT应用程序
-            PowerPoint.Application pptApplication = Globals.ThisAddIn.Application;
-            // 获取当前活动的窗口
-            PowerPoint.DocumentWindow activeWindow = pptApplication.ActiveWindow;
-            // 获取当前选中的对象
-            PowerPoint.Selection selection = activeWindow.Selection;
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (string.IsNullOrEmpty(selectedFunction) || selection.Type == PowerPoint.PpSelectionType.ppSelectionNone)
+            {
+                MessageBox.Show("请先选择一个功能并选中一个或多个对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string input = ((RibbonEditBox)sender).Text.Trim();
+
+            switch (selectedFunction)
+            {
+                case "批量改名":
+                    批量改名(input, selection);
+                    break;
+                case "批量原位":
+                    批量原位复制(input, selection);
+                    break;
+                case "尺寸比例":
+                    尺寸缩放(input, selection);
+                    break;
+                default:
+                    MessageBox.Show("未知功能。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
+
+            ((RibbonEditBox)sender).Text = string.Empty;
+        }
+
+        private void 批量改名(string prefix, PowerPoint.Selection selection)
+        {
+            if (!string.IsNullOrEmpty(prefix))
             {
                 int counter = 1;
                 foreach (PowerPoint.Shape shape in selection.ShapeRange)
@@ -3018,18 +2728,92 @@ namespace 课件帮PPT助手
                     shape.Name = $"{prefix}-{counter}";
                     counter++;
                 }
-
-                // 刷新视图
-                activeWindow.View.GotoSlide(activeWindow.View.Slide.SlideIndex);
+                Globals.ThisAddIn.Application.ActiveWindow.View.GotoSlide(Globals.ThisAddIn.Application.ActiveWindow.View.Slide.SlideIndex);
             }
             else
             {
-                MessageBox.Show("请选择一个或多个对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("请输入命名前缀。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void 批量原位复制(string input, PowerPoint.Selection selection)
+        {
+            if (int.TryParse(input, out int copyCount) && copyCount > 0)
+            {
+                for (int i = 0; i < copyCount; i++)
+                {
+                    DuplicateSelectedShapes(selection);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请输入一个大于0的整数。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DuplicateSelectedShapes(PowerPoint.Selection selection)
+        {
+            foreach (PowerPoint.Shape shape in selection.ShapeRange)
+            {
+                PowerPoint.Shape copiedShape = shape.Duplicate()[1];
+                copiedShape.ZOrder(Microsoft.Office.Core.MsoZOrderCmd.msoBringForward);
+                copiedShape.Left = shape.Left;
+                copiedShape.Top = shape.Top;
+            }
+        }
+
+        private void 尺寸缩放(string input, PowerPoint.Selection selection)
+        {
+            string[] scaleValues = input.Split(',');
+            bool isArithmetic = scaleValues.Length == 2;
+            float commonDifference = 0;
+
+            if (isArithmetic)
+            {
+                if (float.TryParse(scaleValues[0], out float startScale) && float.TryParse(scaleValues[1], out float endScale))
+                {
+                    commonDifference = (endScale - startScale) / (selection.ShapeRange.Count - 1);
+                    float currentScale = startScale;
+
+                    foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                    {
+                        ScaleShape(shape, currentScale);
+                        currentScale += commonDifference;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请输入有效的缩放比例。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else if (float.TryParse(input, out float scale))
+            {
+                foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                {
+                    ScaleShape(shape, scale);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请输入有效的缩放比例。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ScaleShape(PowerPoint.Shape shape, float scale)
+        {
+            float newWidth = shape.Width * scale / 100;
+            float newHeight = shape.Height * scale / 100;
+            float newX = shape.Left + (shape.Width - newWidth) / 2;
+            float newY = shape.Top + (shape.Height - newHeight) / 2;
+
+            shape.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+            shape.Width = newWidth;
+            shape.Height = newHeight;
+            shape.Left = newX;
+            shape.Top = newY;
         }
     }
 }
-
 
 
 

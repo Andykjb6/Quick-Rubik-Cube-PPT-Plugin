@@ -626,24 +626,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Ribbon.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ribbon1.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ribbon2.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ribbon3.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ribbon4.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ribbon5.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icon\search_icon.png" />
     <Content Include="icon\中心对齐.png" />
     <Content Include="icon\右对齐.png" />
@@ -652,15 +634,7 @@
     <Content Include="icon\底部对齐.png" />
     <Content Include="icon\水平居中.png" />
     <Content Include="icon\顶部对齐.png" />
-    <EmbeddedResource Include="Ribbon15.xml" />
-    <EmbeddedResource Include="Ribbon14.xml" />
-    <EmbeddedResource Include="Ribbon13.xml" />
-    <EmbeddedResource Include="Ribbon12.xml" />
-    <EmbeddedResource Include="Ribbon11.xml" />
-    <EmbeddedResource Include="Ribbon10.xml" />
-    <EmbeddedResource Include="Ribbon9.xml" />
-    <EmbeddedResource Include="Ribbon8.xml" />
-    <EmbeddedResource Include="Ribbon7.xml" />
+    <EmbeddedResource Include="Ribbon.xml" />
     <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>
   <PropertyGroup>
