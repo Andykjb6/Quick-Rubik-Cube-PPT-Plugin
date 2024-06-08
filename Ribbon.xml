@@ -59,9 +59,9 @@
 					<editBox id="尺寸缩放" onChange="尺寸缩放_TextChanged" label="尺寸缩放" />
 					<editBox id="批量命名" onChange="批量命名_TextChanged" screentip="批量命名" supertip="输入前缀名，对所选对象的图层按照选择顺序进行命名，命名规则为“前缀名-+序号”。" label="批量命名" />
 					<comboBox id="功能选择" onChange="功能选择_Changed" label="功能选择" showImage="false">
-						<item id="__id201" label="批量改名" />
-						<item id="__id202" label="批量原位" />
-						<item id="__id203" label="尺寸比例" />
+						<item id="功能1" label="批量改名" />
+						<item id="功能2" label="批量原位" />
+						<item id="功能3" label="尺寸比例" />
 					</comboBox>
 					<editBox id="参数输入" onChange="参数输入_TextChanged" label="参数" screentip="输入参数" supertip="输入参数，按回车执行对应功能" />
 				</group>
@@ -77,18 +77,18 @@
                 </group>
                 <group id="group9" label="页面布局">
                     <comboBox id="comboBox1" onChange="comboBox1_TextChanged" label="页面尺寸">
-                        <item id="__id137" label="A4" />
-                        <item id="__id138" label="A3" />
-                        <item id="__id139" label="A1" />
-                        <item id="__id140" label="A2" />
-                        <item id="__id141" label="16:9" />
-                        <item id="__id142" label="4:3" />
-                        <item id="__id143" label="公众号封面" />
-                        <item id="__id144" label="小红书图文" />
+                        <item id="__id204" label="A4" />
+                        <item id="__id205" label="A3" />
+                        <item id="__id206" label="A1" />
+                        <item id="__id207" label="A2" />
+                        <item id="__id208" label="16:9" />
+                        <item id="__id209" label="4:3" />
+                        <item id="__id210" label="公众号封面" />
+                        <item id="__id211" label="小红书图文" />
                     </comboBox>
                     <comboBox id="comboBox2" onChange="comboBox2_TextChanged" label="页面方向">
-                        <item id="__id145" label="纵向" />
-                        <item id="__id146" label="横向" />
+                        <item id="__id212" label="纵向" />
+                        <item id="__id213" label="横向" />
                     </comboBox>
                 </group>
             </tab>

@@ -633,6 +633,8 @@
     <Content Include="icon\左对齐.png" />
     <Content Include="icon\底部对齐.png" />
     <Content Include="icon\水平居中.png" />
+    <Content Include="icon\选择结束.png" />
+    <Content Include="icon\选择记录中.png" />
     <Content Include="icon\顶部对齐.png" />
     <EmbeddedResource Include="Ribbon.xml" />
     <EmbeddedResource Include="icon\田字格.png" />
