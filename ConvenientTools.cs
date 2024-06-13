@@ -18,17 +18,19 @@ using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using Microsoft.Office.Core;
+using VBIDE = Microsoft.Vbe.Interop;
+using Microsoft.Office.Interop.PowerPoint;
 
 namespace 课件帮PPT助手
 {
     public partial class DesignTools : UserControl
     {
-        private SplitterTool splitterTool;
+       
 
         public DesignTools()
         {
             InitializeComponent();
-            splitterTool = new SplitterTool();
+            
         }
 
 
@@ -238,7 +240,7 @@ namespace 课件帮PPT助手
                     }
                     else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
                     {
-                        if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == Office.MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == Office.MsoTriState.msoTrue)
+                        if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
                         {
                             textRange = sel.ShapeRange[1].TextFrame.TextRange;
                         }
@@ -254,7 +256,10 @@ namespace 课件帮PPT助手
 
                             if (!string.IsNullOrEmpty(svgContent))
                             {
-                                InsertSVGIntoSlide(svgContent, app.ActiveWindow.View.Slide);
+                                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+                                PowerPoint.Shape svgShape = InsertSVGIntoSlide(svgContent, slide);
+                                SelectShape(app, svgShape);
+                                AddAndRunVBA(app);
                             }
                             else
                             {
@@ -300,7 +305,7 @@ namespace 课件帮PPT助手
             return null;
         }
 
-        private void InsertSVGIntoSlide(string svgContent, PowerPoint.Slide slide)
+        private PowerPoint.Shape InsertSVGIntoSlide(string svgContent, PowerPoint.Slide slide)
         {
             string tempSvgPath = Path.Combine(Path.GetTempPath(), "temp.svg");
             File.WriteAllText(tempSvgPath, svgContent);
@@ -308,13 +313,70 @@ namespace 课件帮PPT助手
             float left = 100;  // 可以根据需求调整
             float top = 100;   // 可以根据需求调整
 
-            PowerPoint.Shape svgShape = slide.Shapes.AddPicture(tempSvgPath, Office.MsoTriState.msoFalse, Office.MsoTriState.msoCTrue, left, top);
+            PowerPoint.Shape svgShape = slide.Shapes.AddPicture(tempSvgPath, MsoTriState.msoFalse, MsoTriState.msoCTrue, left, top);
 
             // 放大SVG
             svgShape.Width *= 2;
             svgShape.Height *= 2;
 
             File.Delete(tempSvgPath);
+
+            return svgShape;
+        }
+
+        private void SelectShape(PowerPoint.Application app, PowerPoint.Shape shape)
+        {
+            shape.Select();
+        }
+
+        private void AddAndRunVBA(PowerPoint.Application app)
+        {
+            string vbaCode = @"
+    Sub ConvertSVGToShape()
+        ' Ensure a shape is selected
+        If ActiveWindow.Selection.Type <> ppSelectionShapes Then
+            MsgBox ""Please select an SVG shape to convert."", vbExclamation
+            Exit Sub
+        End If
+        
+        Dim shp As Shape
+        Set shp = ActiveWindow.Selection.ShapeRange(1)
+        
+        ' Convert the SVG to a shape by copying and pasting it as an EMF
+        shp.Copy
+        
+        Dim slide As slide
+        Set slide = ActiveWindow.View.slide
+        Dim newShape As Shape
+        Set newShape = slide.Shapes.PasteSpecial(DataType:=ppPasteEnhancedMetafile)(1)
+        
+        ' Delete the original SVG shape
+        shp.Delete
+        
+        ' Ungroup the new shape multiple times to fully convert it to individual shapes
+        On Error Resume Next
+        Dim i As Integer
+        For i = 1 To 5
+            newShape.Ungroup
+            Set newShape = slide.Shapes(slide.Shapes.Count) ' Re-select the shape after ungrouping
+        Next i
+        
+        ' Loop through shapes to find and delete the shape with name containing ""AutoShape""
+        Dim shapeItem As Shape
+        For Each shapeItem In slide.Shapes
+            If InStr(shapeItem.Name, ""AutoShape"") > 0 Then
+                shapeItem.Delete
+            End If
+        Next shapeItem
+    End Sub";
+
+            VBIDE.VBProject vbProject = app.ActivePresentation.VBProject;
+            VBIDE.VBComponent vbModule = vbProject.VBComponents.Add(VBIDE.vbext_ComponentType.vbext_ct_StdModule);
+            vbModule.CodeModule.AddFromString(vbaCode);
+
+            app.Run("ConvertSVGToShape");
+
+            vbProject.VBComponents.Remove(vbModule);
         }
 
 
@@ -324,11 +386,6 @@ namespace 课件帮PPT助手
             animationForm.Show();
         }
 
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            splitterTool.StartSplitting();
-        }
 
         private void label1_Click(object sender, EventArgs e)
         {
@@ -437,6 +494,75 @@ namespace 课件帮PPT助手
         {
             SVGSettingsForm svgSelectionForm = new SVGSettingsForm(inputChar, svgMatrix, headers);
             svgSelectionForm.ShowDialog();
+        }
+
+        private void 分解笔顺_Click(object sender, EventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+
+                // Check if the selected shape is a group
+                if (shapeRange.Count == 1 && shapeRange[1].Type == Office.MsoShapeType.msoGroup)
+                {
+                    PowerPoint.Shape groupShape = shapeRange[1];
+                    PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
+                    int itemCount = groupItems.Count;
+
+                    // Create new groups based on the number of items in the original group
+                    List<PowerPoint.Shape> newGroups = new List<PowerPoint.Shape>();
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        // Duplicate the original group
+                        PowerPoint.Shape newGroup = groupShape.Duplicate()[1];
+                        newGroup.Left += (i + 1) * (groupShape.Width + 10); // Adjust position
+                        newGroups.Add(newGroup);
+                    }
+
+                    // Check if Ctrl key is pressed
+                    bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+                    // Set colors and remove borders based on the pattern
+                    for (int i = 0; i < newGroups.Count; i++)
+                    {
+                        PowerPoint.Shape newGroup = newGroups[i];
+                        PowerPoint.GroupShapes newGroupItems = newGroup.GroupItems;
+
+                        for (int j = 1; j <= itemCount; j++)
+                        {
+                            newGroupItems[j].Line.Visible = Office.MsoTriState.msoFalse; // Remove border
+
+                            if (j <= i + 1)
+                            {
+                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                            }
+                            if (j == i + 1)
+                            {
+                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                            }
+                            if (j > i + 1)
+                            {
+                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Gray);
+                            }
+                        }
+
+                        // Adjust positions for two-row layout if Ctrl key is pressed
+                        if (isCtrlPressed)
+                        {
+                            int columns = (int)Math.Ceiling(newGroups.Count / 2.0);
+                            int row = i / columns;
+                            int column = i % columns;
+
+                            newGroup.Left = groupShape.Left + column * (groupShape.Width + 10);
+                            newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "课件帮PPT助手", "课件帮PPT助手.csproj", "{484F501F-0CBA-483A-8C3D-B3678B99640C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "快捷魔方", "快捷魔方.csproj", "{484F501F-0CBA-483A-8C3D-B3678B99640C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

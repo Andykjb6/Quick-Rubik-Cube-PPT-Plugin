@@ -569,178 +569,6 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void button14_Click(object sender, RibbonControlEventArgs e)
-        {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count >= 2)
-            {
-                PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-
-                // 获取第一个形状所在的幻灯片
-                PowerPoint.Slide firstSlide = selectedShapes[1].Parent;
-
-                // 检查所有选定的形状是否都在同一个幻灯片上
-                foreach (PowerPoint.Shape shape in selectedShapes)
-                {
-                    if (shape.Parent != firstSlide)
-                    {
-                        System.Windows.Forms.MessageBox.Show("所有形状必须在同一个幻灯片上。");
-                        return;
-                    }
-                }
-
-                // 获取第一个被选中的对象的位置
-                PowerPoint.Shape firstShape = selectedShapes[1];
-                float firstLeft = firstShape.Left;
-                float firstTop = firstShape.Top;
-
-                // 初始间距设置为10像素
-                float initialSpacing = 10f;
-
-                // 计算每个形状的新位置
-                ArrangeShapes(selectedShapes, firstLeft, initialSpacing);
-
-                // 创建并显示窗体
-                Form form = new Form();
-                form.Text = "水平分布间距";
-                form.Width = 520;
-                form.Height = 180;
-                form.StartPosition = FormStartPosition.CenterScreen;
-
-                // 添加滑块控件
-                TrackBar trackBar = new TrackBar();
-                trackBar.Location = new System.Drawing.Point(20, 40);
-                trackBar.Size = new System.Drawing.Size(480, 50);
-                trackBar.Minimum = 0;
-                trackBar.Maximum = 200;
-                trackBar.Value = (int)initialSpacing;
-                trackBar.LargeChange = 10;
-                trackBar.SmallChange = 1;
-                trackBar.TickStyle = TickStyle.TopLeft;
-                trackBar.TickFrequency = 10;
-                trackBar.Dock = DockStyle.Top;
-
-                trackBar.ValueChanged += (s, ev) =>
-                {
-                    float spacing = trackBar.Value; // 将滑块值转换为间距值
-                    ArrangeShapes(selectedShapes, firstLeft, spacing);
-                };
-
-                // 将滑块控件添加到窗体
-                form.Controls.Add(trackBar);
-
-                // 显示窗体
-                form.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("请选择至少两个形状。");
-            }
-        }
-
-        /// <summary>
-        /// 以指定间距水平排列形状。
-        /// </summary>
-        /// <param name="shapes">要排列的形状集合</param>
-        /// <param name="startLeft">起始左坐标</param>
-        /// <param name="spacing">间距</param>
-        private void ArrangeShapes(PowerPoint.ShapeRange shapes, float startLeft, float spacing)
-        {
-            float currentLeft = startLeft;
-
-            // 跳过第一个形状，从第二个形状开始排列
-            for (int i = 2; i <= shapes.Count; i++)
-            {
-                PowerPoint.Shape shape = shapes[i];
-                currentLeft += shapes[i - 1].Width + spacing;
-                shape.Left = currentLeft;
-                shape.Top = shapes[1].Top; // 保持所有形状的垂直对齐
-            }
-        }
-
-        private void button15_Click(object sender, RibbonControlEventArgs e)
-        {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count >= 2)
-            {
-                PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-
-                // 获取第一个形状所在的幻灯片
-                PowerPoint.Slide firstSlide = selectedShapes[1].Parent;
-
-                // 检查所有选定的形状是否都在同一个幻灯片上
-                foreach (PowerPoint.Shape shape in selectedShapes)
-                {
-                    if (shape.Parent != firstSlide)
-                    {
-                        MessageBox.Show("所有形状必须在同一个幻灯片上。");
-                        return;
-                    }
-                }
-
-                // 获取第一个被选中的对象的位置
-                PowerPoint.Shape firstShape = selectedShapes[1];
-                float firstLeft = firstShape.Left;
-                float firstTop = firstShape.Top;
-
-                // 计算每个形状的新位置
-                float currentTop = firstTop;
-                float spacing = 10; // 初始间距为10
-
-                foreach (PowerPoint.Shape shape in selectedShapes)
-                {
-                    shape.Left = firstLeft;
-                    shape.Top = currentTop;
-                    currentTop += shape.Height + spacing; // 从上到下排列，保持一定间距
-                }
-
-                // 创建并显示窗体
-                Form form = new Form();
-                form.Text = "垂直分布间距";
-                form.Width = 520;
-                form.Height = 200;
-                form.StartPosition = FormStartPosition.CenterScreen;
-
-                // 添加滑块控件
-                TrackBar trackBar = new TrackBar();
-                trackBar.Location = new System.Drawing.Point(25, 5);
-                trackBar.Size = new System.Drawing.Size(440, 30);
-                trackBar.Minimum = 0;
-                trackBar.Maximum = 100;
-                trackBar.Value = 10;
-                trackBar.LargeChange = 10;
-                trackBar.SmallChange = 1;
-                trackBar.TickStyle = TickStyle.BottomRight;
-
-                trackBar.ValueChanged += (s, ev) =>
-                {
-                    spacing = trackBar.Value;
-                    float top = firstTop;
-                    foreach (PowerPoint.Shape shape in selectedShapes)
-                    {
-                        shape.Top = top;
-                        top += shape.Height + spacing; // 计算下一个形状的位置，包括间距
-                    }
-                };
-
-                // 将滑块控件添加到窗体
-                form.Controls.Add(trackBar);
-
-                // 显示窗体
-                form.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("请选择至少两个形状。");
-            }
-        }
-
-        
-
         private void button19_Click(object sender, RibbonControlEventArgs e)
         {
             string url = "https://miankoutupian.com/ai/cutout";
@@ -774,7 +602,7 @@ namespace 课件帮PPT助手
 
             if (activeWindow.Selection.Type != PpSelectionType.ppSelectionShapes)
             {
-                MessageBox.Show("Please select one or more shapes with images.");
+                MessageBox.Show("请选择一张或多张图片");
                 return;
             }
 
@@ -782,7 +610,7 @@ namespace 课件帮PPT助手
 
             if (!selectedShapes.Any())
             {
-                MessageBox.Show("Please select one or more shapes with images.");
+                MessageBox.Show("请选择一张或多张图片");
                 return;
             }
 
@@ -1040,9 +868,9 @@ namespace 课件帮PPT助手
                     MessageBox.Show("请先选中一个音频图标。", "课件帮PPT助手", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show($"发生错误: {ex.Message}", "课件帮PPT助手", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              
             }
         }
 
@@ -1104,640 +932,6 @@ namespace 课件帮PPT助手
                 MessageBox.Show($"发生错误: {ex.Message}", "课件帮PPT助手", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-
-
-        private TimerForm timerForm;
-
-        private void Timer_Click(object sender, RibbonControlEventArgs e)
-        {
-            ShowTimer();
-        }
-
-        private void ShowTimer()
-        {
-            if (timerForm == null || timerForm.IsDisposed)
-            {
-                timerForm = new TimerForm();
-                timerForm.Show();
-            }
-            else
-            {
-                timerForm.BringToFront();
-            }
-        }
-
-        public class TimerForm : System.Windows.Forms.Form
-        {
-            private System.Windows.Forms.TextBox timeTextBox;
-            private System.Windows.Forms.Button startButton;
-            private System.Windows.Forms.Button stopButton;
-            private System.Windows.Forms.Button resetButton;
-            private System.Windows.Forms.Button closeButton;
-            private System.Windows.Forms.Button settingsButton;
-            private System.Windows.Forms.Button darkModeButton;
-            private System.Windows.Forms.Timer timer;
-            private DateTime targetTime;
-            private bool isCountdown = true; // 默认倒计时
-            private System.Drawing.Font currentFont = new System.Drawing.Font("Arial", 40, System.Drawing.FontStyle.Bold);
-            private System.Drawing.Color backgroundColor = System.Drawing.Color.White;
-            private System.Drawing.Color timeTextColor = System.Drawing.Color.Black;
-            private System.Drawing.Color otherTextColor = System.Drawing.Color.Black;
-            private System.Drawing.Color darkModeButtonColor = System.Drawing.Color.LightGray;
-
-            public TimerForm()
-            {
-                InitializeComponents();
-            }
-
-            private void InitializeComponents()
-            {
-                this.Text = "计时器";
-                this.Size = new System.Drawing.Size(520, 250);
-                this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None; // 无边框
-                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-                this.BackColor = backgroundColor;
-                this.TopMost = true; // 窗口置顶
-
-                // 绘制边框
-                this.Paint += TimerForm_Paint;
-
-                // 时间输入文本框
-                timeTextBox = new System.Windows.Forms.TextBox
-                {
-                    Text = "00:00:00",
-                    Font = currentFont,
-                    TextAlign = System.Windows.Forms.HorizontalAlignment.Center,
-                    Dock = System.Windows.Forms.DockStyle.None,
-                    Height = 100,
-                    Width = 455,
-                    BorderStyle = System.Windows.Forms.BorderStyle.None,
-                    BackColor = backgroundColor, // 同步背景色
-                    ForeColor = timeTextColor,
-                    ReadOnly = false // 可编辑
-                };
-                timeTextBox.Location = new System.Drawing.Point(30, 30);
-                this.Controls.Add(timeTextBox);
-
-                // 设置按钮
-                settingsButton = new System.Windows.Forms.Button
-                {
-                    Text = "⚙",
-                    Width = 35,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                    Location = new System.Drawing.Point(5, 5)
-                };
-                settingsButton.FlatAppearance.BorderSize = 0; // 去掉边框
-                settingsButton.Click += SettingsButton_Click;
-                this.Controls.Add(settingsButton);
-                settingsButton.BringToFront(); // 将设置按钮置于顶层
-
-                // 关闭按钮
-                closeButton = new System.Windows.Forms.Button
-                {
-                    Text = "✖",
-                    Width = 35,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                    Location = new System.Drawing.Point(this.Width - 62, 2),
-                    Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right
-                };
-                closeButton.FlatAppearance.BorderSize = 0; // 去掉边框
-                closeButton.Click += CloseButton_Click;
-                this.Controls.Add(closeButton);
-                closeButton.BringToFront(); // 将关闭按钮置于顶层
-
-                // 开始按钮
-                startButton = new System.Windows.Forms.Button
-                {
-                    Text = "▶",
-                    Width = 35,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat
-                };
-                startButton.Click += StartButton_Click;
-                this.Controls.Add(startButton);
-                startButton.BringToFront(); // 将开始按钮置于顶层
-
-                // 暂停按钮
-                stopButton = new System.Windows.Forms.Button
-                {
-                    Text = "⏸",
-                    Width = 35,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                    Enabled = false
-                };
-                stopButton.Click += StopButton_Click;
-                this.Controls.Add(stopButton);
-                stopButton.BringToFront(); // 将暂停按钮置于顶层
-
-                // 重置按钮
-                resetButton = new System.Windows.Forms.Button
-                {
-                    Text = "⟳",
-                    Width = 35,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                    Enabled = false
-                };
-                resetButton.Click += ResetButton_Click;
-                this.Controls.Add(resetButton);
-                resetButton.BringToFront(); // 将重置按钮置于顶层
-
-                // 按钮布局
-                System.Windows.Forms.FlowLayoutPanel buttonPanel = new System.Windows.Forms.FlowLayoutPanel
-                {
-                    Dock = System.Windows.Forms.DockStyle.None,
-                    FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight,
-                    Height = 40,
-                    Padding = new System.Windows.Forms.Padding(0),
-                    Width = 150,
-                    Location = new System.Drawing.Point((this.Width - 120) / 2, 165) // 居中
-                };
-                buttonPanel.Controls.Add(startButton);
-                buttonPanel.Controls.Add(stopButton);
-                buttonPanel.Controls.Add(resetButton);
-                this.Controls.Add(buttonPanel);
-                buttonPanel.BringToFront(); // 将 buttonPanel 置于顶层
-
-                // 暗色模式按钮
-                darkModeButton = new System.Windows.Forms.Button
-                {
-                    Text = "🌙 暗色模式",
-                    Width = 100,
-                    Height = 35,
-                    FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                    BackColor = darkModeButtonColor,
-                    Dock = System.Windows.Forms.DockStyle.Bottom
-                };
-                darkModeButton.FlatAppearance.BorderSize = 0; // 去掉边框
-                darkModeButton.Click += DarkModeButton_Click;
-                this.Controls.Add(darkModeButton);
-
-                // 定时器
-                timer = new System.Windows.Forms.Timer
-                {
-                    Interval = 1000
-                };
-                timer.Tick += Timer_Tick;
-
-                // 使窗口支持拖动
-                this.MouseDown += (s, e) =>
-                {
-                    if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                    {
-                        this.Capture = false;
-                        System.Windows.Forms.Message m = System.Windows.Forms.Message.Create(this.Handle, 0xA1, new System.IntPtr(2), System.IntPtr.Zero);
-                        this.WndProc(ref m);
-                    }
-                };
-            }
-
-            private void TimerForm_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
-            {
-                System.Windows.Forms.ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, System.Drawing.Color.LightGray, System.Windows.Forms.ButtonBorderStyle.Solid);
-            }
-
-            private void StartButton_Click(object sender, System.EventArgs e)
-            {
-                if (System.TimeSpan.TryParseExact(timeTextBox.Text, @"hh\:mm\:ss", null, out System.TimeSpan timeSpan))
-                {
-                    if (isCountdown)
-                    {
-                        targetTime = System.DateTime.Now.Add(timeSpan);
-                    }
-                    else
-                    {
-                        targetTime = System.DateTime.Now.AddHours(-timeSpan.TotalHours).AddMinutes(-timeSpan.TotalMinutes).AddSeconds(-timeSpan.TotalSeconds);
-                    }
-
-                    startButton.Enabled = false;
-                    stopButton.Enabled = true;
-                    resetButton.Enabled = true;
-                    timeTextBox.ReadOnly = true;
-
-                    timer.Start();
-                }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("请输入有效的时间格式（hh:mm:ss）。");
-                }
-            }
-
-            private void StopButton_Click(object sender, System.EventArgs e)
-            {
-                timer.Stop();
-                startButton.Enabled = true;
-                stopButton.Enabled = false;
-                resetButton.Enabled = true;
-            }
-
-            private void ResetButton_Click(object sender, System.EventArgs e)
-            {
-                timer.Stop();
-                timeTextBox.Text = "00:00:00";
-                startButton.Enabled = true;
-                stopButton.Enabled = false;
-                resetButton.Enabled = false;
-                timeTextBox.ReadOnly = false;
-            }
-
-            private void CloseButton_Click(object sender, System.EventArgs e)
-            {
-                this.Close();
-            }
-
-            private void SettingsButton_Click(object sender, System.EventArgs e)
-            {
-                this.Hide(); // 隐藏计时器窗口
-                using (SettingsForm settingsForm = new SettingsForm(currentFont, timeTextColor, otherTextColor, isCountdown, backgroundColor, darkModeButtonColor))
-                {
-                    if (settingsForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        currentFont = settingsForm.SelectedFont;
-                        timeTextColor = settingsForm.TimeTextColor;
-                        otherTextColor = settingsForm.OtherTextColor;
-                        isCountdown = settingsForm.IsCountdown;
-                        backgroundColor = settingsForm.BackgroundColor;
-                        darkModeButtonColor = settingsForm.DarkModeButtonColor;
-
-                        timeTextBox.Font = currentFont;
-                        timeTextBox.ForeColor = timeTextColor;
-                        this.BackColor = backgroundColor;
-                        timeTextBox.BackColor = backgroundColor; // 同步背景色
-                        darkModeButton.BackColor = darkModeButtonColor;
-                    }
-                }
-                this.Show(); // 显示计时器窗口
-            }
-
-            private void DarkModeButton_Click(object sender, System.EventArgs e)
-            {
-                if (this.BackColor == System.Drawing.Color.White)
-                {
-                    // 切换到深色模式
-                    this.BackColor = System.Drawing.Color.Black;
-                    timeTextBox.BackColor = System.Drawing.Color.Black;
-                    timeTextBox.ForeColor = System.Drawing.Color.White;
-                    darkModeButton.Text = "浅色模式";
-                    darkModeButton.BackColor = System.Drawing.Color.Gray;
-
-                    // 设置按钮颜色
-                    SetButtonColors(System.Drawing.Color.White, System.Drawing.Color.Black);
-
-                    // 设置 设置按钮和关闭按钮颜色
-                    settingsButton.BackColor = System.Drawing.Color.Black;
-                    settingsButton.ForeColor = System.Drawing.Color.White;
-                    closeButton.BackColor = System.Drawing.Color.Black;
-                    closeButton.ForeColor = System.Drawing.Color.White;
-                }
-                else
-                {
-                    // 切换到浅色模式
-                    this.BackColor = System.Drawing.Color.White;
-                    timeTextBox.BackColor = System.Drawing.Color.White;
-                    timeTextBox.ForeColor = System.Drawing.Color.Black;
-                    darkModeButton.Text = "暗色模式";
-                    darkModeButton.BackColor = System.Drawing.Color.LightGray;
-
-                    // 设置按钮颜色
-                    SetButtonColors(System.Drawing.Color.White, System.Drawing.Color.Black);
-                }
-            }
-
-            private void SetButtonColors(System.Drawing.Color backColor, System.Drawing.Color foreColor)
-            {
-                startButton.BackColor = backColor;
-                startButton.ForeColor = foreColor;
-                stopButton.BackColor = backColor;
-                stopButton.ForeColor = foreColor;
-                resetButton.BackColor = backColor;
-                resetButton.ForeColor = foreColor;
-                closeButton.BackColor = backColor;
-                closeButton.ForeColor = foreColor;
-                settingsButton.BackColor = backColor;
-                settingsButton.ForeColor = foreColor;
-            }
-
-            private void Timer_Tick(object sender, System.EventArgs e)
-            {
-                System.TimeSpan remainingTime = isCountdown ? targetTime - System.DateTime.Now : System.DateTime.Now - targetTime;
-
-                if (remainingTime.TotalSeconds <= 0)
-                {
-                    timer.Stop();
-                    timeTextBox.Text = "00:00:00";
-                    System.Windows.Forms.MessageBox.Show("时间到！");
-                    startButton.Enabled = true;
-                    stopButton.Enabled = false;
-                    resetButton.Enabled = true;
-                    timeTextBox.ReadOnly = false;
-                    // 播放音效
-                    System.Media.SystemSounds.Exclamation.Play();
-                }
-                else
-                {
-                    timeTextBox.Text = remainingTime.ToString(@"hh\:mm\:ss");
-                }
-            }
-        }
-
-        public class SettingsForm : System.Windows.Forms.Form
-        {
-            public System.Drawing.Font SelectedFont { get; private set; }
-            public System.Drawing.Color TimeTextColor { get; private set; }
-            public System.Drawing.Color OtherTextColor { get; private set; }
-            public bool IsCountdown { get; private set; }
-            public System.Drawing.Color BackgroundColor { get; private set; }
-            public System.Drawing.Color DarkModeButtonColor { get; private set; }
-
-            private System.Windows.Forms.FontDialog fontDialog;
-            private System.Windows.Forms.ColorDialog colorDialog;
-            private System.Windows.Forms.Label timeFontLabel;
-            private System.Windows.Forms.Label timeTextColorLabel;
-            private System.Windows.Forms.Label otherTextColorLabel;
-            private System.Windows.Forms.Label countdownLabel;
-            private System.Windows.Forms.Label backgroundColorLabel;
-            private System.Windows.Forms.Label darkModeButtonColorLabel;
-            private System.Windows.Forms.ComboBox fontComboBox;
-            private System.Windows.Forms.TextBox timeTextColorBox;
-            private System.Windows.Forms.TextBox otherTextColorBox;
-            private System.Windows.Forms.RadioButton countdownRadioButton;
-            private System.Windows.Forms.RadioButton stopwatchRadioButton;
-            private System.Windows.Forms.TextBox backgroundColorBox;
-            private System.Windows.Forms.TextBox darkModeButtonColorBox;
-            private System.Windows.Forms.Button timeTextColorButton;
-            private System.Windows.Forms.Button otherTextColorButton;
-            private System.Windows.Forms.Button backgroundColorButton;
-            private System.Windows.Forms.Button darkModeButtonColorButton;
-            private System.Windows.Forms.Button okButton;
-            private System.Windows.Forms.Button cancelButton;
-
-            public SettingsForm(System.Drawing.Font currentFont, System.Drawing.Color timeTextColor, System.Drawing.Color otherTextColor, bool isCountdown, System.Drawing.Color backgroundColor, System.Drawing.Color darkModeButtonColor)
-            {
-                SelectedFont = currentFont;
-                TimeTextColor = timeTextColor;
-                OtherTextColor = otherTextColor;
-                IsCountdown = isCountdown;
-                BackgroundColor = backgroundColor;
-                DarkModeButtonColor = darkModeButtonColor;
-
-                InitializeComponents();
-            }
-
-            private void InitializeComponents()
-            {
-                this.Text = "设置面板";
-                this.Size = new System.Drawing.Size(480, 500);
-                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-
-                fontDialog = new System.Windows.Forms.FontDialog
-                {
-                    Font = SelectedFont
-                };
-
-                colorDialog = new System.Windows.Forms.ColorDialog();
-
-                // 时间显示字体标签
-                timeFontLabel = new System.Windows.Forms.Label
-                {
-                    Text = "时钟字体：",
-                    Location = new System.Drawing.Point(10, 20),
-                    AutoSize = true
-                };
-                this.Controls.Add(timeFontLabel);
-
-                // 时间显示字体选择
-                fontComboBox = new System.Windows.Forms.ComboBox
-                {
-                    Location = new System.Drawing.Point(150, 20),
-                    Width = 150
-                };
-                foreach (System.Drawing.FontFamily font in System.Drawing.FontFamily.Families)
-                {
-                    fontComboBox.Items.Add(font.Name);
-                }
-                fontComboBox.SelectedItem = SelectedFont.Name;
-                this.Controls.Add(fontComboBox);
-
-                // 时间显示字体颜色标签
-                timeTextColorLabel = new System.Windows.Forms.Label
-                {
-                    Text = "时钟字体颜色：",
-                    Location = new System.Drawing.Point(10, 80),
-                    AutoSize = true
-                };
-                this.Controls.Add(timeTextColorLabel);
-
-                // 时间显示字体颜色选择
-                timeTextColorBox = new System.Windows.Forms.TextBox
-                {
-                    Text = TimeTextColor.ToArgb().ToString("X"),
-                    Location = new System.Drawing.Point(190, 80),
-                    Width = 100,
-                    ReadOnly = true
-                };
-                this.Controls.Add(timeTextColorBox);
-
-                timeTextColorButton = new System.Windows.Forms.Button
-                {
-                    Text = "选择颜色",
-                    Location = new System.Drawing.Point(310, 80),
-                    Width = 130,
-                    Height = 40
-                };
-                timeTextColorButton.Click += TimeTextColorButton_Click;
-                this.Controls.Add(timeTextColorButton);
-
-                // 其他字体颜色标签
-                otherTextColorLabel = new System.Windows.Forms.Label
-                {
-                    Text = "其他字体颜色：",
-                    Location = new System.Drawing.Point(10, 130),
-                    AutoSize = true
-                };
-                this.Controls.Add(otherTextColorLabel);
-
-                // 其他字体颜色选择
-                otherTextColorBox = new System.Windows.Forms.TextBox
-                {
-                    Text = OtherTextColor.ToArgb().ToString("X"),
-                    Location = new System.Drawing.Point(190, 130),
-                    Width = 100,
-                    ReadOnly = true
-                };
-                this.Controls.Add(otherTextColorBox);
-
-                otherTextColorButton = new System.Windows.Forms.Button
-                {
-                    Text = "选择颜色",
-                    Location = new System.Drawing.Point(310, 130),
-                    Width = 130,
-                    Height = 40
-                };
-                otherTextColorButton.Click += OtherTextColorButton_Click;
-                this.Controls.Add(otherTextColorButton);
-
-                // 计时模式标签
-                countdownLabel = new System.Windows.Forms.Label
-                {
-                    Text = "计时模式：",
-                    Location = new System.Drawing.Point(10, 180),
-                    AutoSize = true
-                };
-                this.Controls.Add(countdownLabel);
-
-                // 计时模式选择
-                countdownRadioButton = new System.Windows.Forms.RadioButton
-                {
-                    Text = "倒计时",
-                    Location = new System.Drawing.Point(150, 180),
-                    Checked = IsCountdown,
-                    Height = 40,
-                    Width = 120
-                };
-                stopwatchRadioButton = new System.Windows.Forms.RadioButton
-                {
-                    Text = "顺计时",
-                    Location = new System.Drawing.Point(285, 180),
-                    Checked = !IsCountdown,
-                    Height = 40,
-                    Width = 120
-                };
-                this.Controls.Add(countdownRadioButton);
-                this.Controls.Add(stopwatchRadioButton);
-
-                // 背景颜色标签
-                backgroundColorLabel = new System.Windows.Forms.Label
-                {
-                    Text = "背景颜色：",
-                    Location = new System.Drawing.Point(10, 230),
-                    AutoSize = true
-                };
-                this.Controls.Add(backgroundColorLabel);
-
-                // 背景颜色选择
-                backgroundColorBox = new System.Windows.Forms.TextBox
-                {
-                    Text = BackgroundColor.ToArgb().ToString("X"),
-                    Location = new System.Drawing.Point(190, 230),
-                    Width = 100,
-                    ReadOnly = true
-                };
-                this.Controls.Add(backgroundColorBox);
-
-                backgroundColorButton = new System.Windows.Forms.Button
-                {
-                    Text = "选择颜色",
-                    Location = new System.Drawing.Point(310, 230),
-                    Width = 130,
-                    Height = 40
-                };
-                backgroundColorButton.Click += BackgroundColorButton_Click;
-                this.Controls.Add(backgroundColorButton);
-
-                // 深/浅模式按钮颜色标签
-                darkModeButtonColorLabel = new System.Windows.Forms.Label
-                {
-                    Text = "深/浅模式：",
-                    Location = new System.Drawing.Point(10, 280),
-                    AutoSize = true
-                };
-                this.Controls.Add(darkModeButtonColorLabel);
-
-                // 深/浅模式按钮颜色选择
-                darkModeButtonColorBox = new System.Windows.Forms.TextBox
-                {
-                    Text = DarkModeButtonColor.ToArgb().ToString("X"),
-                    Location = new System.Drawing.Point(190, 280),
-                    Width = 100,
-                    ReadOnly = true
-                };
-                this.Controls.Add(darkModeButtonColorBox);
-
-                darkModeButtonColorButton = new System.Windows.Forms.Button
-                {
-                    Text = "选择颜色",
-                    Location = new System.Drawing.Point(310, 280),
-                    Width = 130,
-                    Height = 40
-                };
-                darkModeButtonColorButton.Click += DarkModeButtonColorButton_Click;
-                this.Controls.Add(darkModeButtonColorButton);
-
-                // 确定和取消按钮
-                okButton = new System.Windows.Forms.Button
-                {
-                    Text = "确定",
-                    Location = new System.Drawing.Point(150, 350),
-                    Width = 80,
-                    Height = 50,
-                    DialogResult = System.Windows.Forms.DialogResult.OK
-                };
-                okButton.Click += OkButton_Click;
-                cancelButton = new System.Windows.Forms.Button
-                {
-                    Text = "取消",
-                    Location = new System.Drawing.Point(240, 350),
-                    Width = 80,
-                    Height = 50,
-                    DialogResult = System.Windows.Forms.DialogResult.Cancel
-                };
-                this.Controls.Add(okButton);
-                this.Controls.Add(cancelButton);
-
-                this.AcceptButton = okButton;
-                this.CancelButton = cancelButton;
-            }
-
-            private void TimeTextColorButton_Click(object sender, System.EventArgs e)
-            {
-                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    TimeTextColor = colorDialog.Color;
-                    timeTextColorBox.Text = TimeTextColor.ToArgb().ToString("X");
-                }
-            }
-
-            private void OtherTextColorButton_Click(object sender, System.EventArgs e)
-            {
-                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    OtherTextColor = colorDialog.Color;
-                    otherTextColorBox.Text = OtherTextColor.ToArgb().ToString("X");
-                }
-            }
-
-            private void BackgroundColorButton_Click(object sender, System.EventArgs e)
-            {
-                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    BackgroundColor = colorDialog.Color;
-                    backgroundColorBox.Text = BackgroundColor.ToArgb().ToString("X");
-                }
-            }
-
-            private void DarkModeButtonColorButton_Click(object sender, System.EventArgs e)
-            {
-                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    DarkModeButtonColor = colorDialog.Color;
-                    darkModeButtonColorBox.Text = DarkModeButtonColor.ToArgb().ToString("X");
-                }
-            }
-
-            private void OkButton_Click(object sender, System.EventArgs e)
-            {
-                IsCountdown = countdownRadioButton.Checked;
-                SelectedFont = new System.Drawing.Font(fontComboBox.SelectedItem.ToString(), SelectedFont.Size);
-            }
-        }
-
-
-
 
         // 按类型筛选
         private void Type_Click(object sender, RibbonControlEventArgs e)
@@ -2004,131 +1198,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
-        private void Boardpasting_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 检查 Ctrl 键是否被按下
-            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
-
-            string[] lines = null;
-
-            if (isCtrlPressed)
-            {
-                // 打开文件选择对话框
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    // 读取文件内容
-                    lines = System.IO.File.ReadAllLines(openFileDialog.FileName);
-                }
-            }
-            else
-            {
-                // 创建并显示输入文本的窗口
-                InputTextForm inputForm = new InputTextForm();
-                inputForm.Text = "请输入分行文本"; 
-                DialogResult result = inputForm.ShowDialog();
-
-                // 如果用户点击了确定按钮
-                if (result == DialogResult.OK)
-                {
-                    // 获取用户输入的文本
-                    lines = inputForm.TextLines;
-                }
-            }
-
-            // 如果获取了文本行
-            if (lines != null && lines.Length > 0)
-            {
-                // 获取当前活动窗口
-                PowerPoint.DocumentWindow activeWindow = Globals.ThisAddIn.Application.ActiveWindow;
-                if (activeWindow != null)
-                {
-                    // 获取当前页幻灯片
-                    PowerPoint.Slide currentSlide = activeWindow.View.Slide;
-
-                    // 记录当前幻灯片的索引
-                    int currentSlideIndex = currentSlide.SlideIndex;
-
-                    // 获取当前选中的文本框
-                    PowerPoint.Selection selection = activeWindow.Selection;
-                    if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-                    {
-                        PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-
-                        // 创建一个字典来存储相同文本内容的文本框
-                        Dictionary<string, List<PowerPoint.Shape>> textBoxGroups = new Dictionary<string, List<PowerPoint.Shape>>();
-
-                        foreach (PowerPoint.Shape shape in selectedShapes)
-                        {
-                            if (shape.Type == MsoShapeType.msoTextBox)
-                            {
-                                string text = shape.TextFrame.TextRange.Text;
-                                if (!textBoxGroups.ContainsKey(text))
-                                {
-                                    textBoxGroups[text] = new List<PowerPoint.Shape>();
-                                }
-                                textBoxGroups[text].Add(shape);
-                            }
-                        }
-
-                        // 计算需要复制的幻灯片次数
-                        int groupCount = textBoxGroups.Count;
-                        int slidesNeeded = (int)Math.Ceiling((double)lines.Length / groupCount);
-
-                        // 复制当前页幻灯片，复制次数为计算得到的slidesNeeded
-                        for (int i = 0; i < slidesNeeded; i++)
-                        {
-                            currentSlide.Duplicate();
-                        }
-
-                        // 获取所有幻灯片
-                        PowerPoint.Slides slides = activeWindow.Presentation.Slides;
-
-                        int lineIndex = 0;
-                        int slideOffset = 1; // 从下一页开始
-
-                        // 逐页替换文本框内容
-                        while (lineIndex < lines.Length && (currentSlideIndex + slideOffset) <= slides.Count)
-                        {
-                            PowerPoint.Slide slide = slides[currentSlideIndex + slideOffset];
-                            PowerPoint.Shapes shapes = slide.Shapes;
-
-                            foreach (var group in textBoxGroups)
-                            {
-                                foreach (PowerPoint.Shape shape in group.Value)
-                                {
-                                    if (lineIndex >= lines.Length)
-                                        break;
-
-                                    // 查找匹配的文本框并替换内容
-                                    foreach (PowerPoint.Shape s in shapes)
-                                    {
-                                        if (s.Type == MsoShapeType.msoTextBox && s.TextFrame.TextRange.Text == group.Key)
-                                        {
-                                            if (lineIndex < lines.Length)
-                                            {
-                                                s.TextFrame.TextRange.Text = lines[lineIndex];
-                                            }
-                                        }
-                                    }
-                                }
-                                lineIndex++;
-                            }
-                            slideOffset++;
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("请选择多个文本框来替换内容。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-            }
-        }
-
-
-       
 
         private void comboBox1_TextChanged(object sender, RibbonControlEventArgs e)
         {
@@ -3189,7 +2258,8 @@ namespace 课件帮PPT助手
         }
 
         private bool isRecording = false;
-        private List<(PowerPoint.Shape Shape, int OriginalLineColor)> recordedShapes = new List<(PowerPoint.Shape, int)>();
+        private List<(PowerPoint.Shape Shape, PowerPoint.Shape Marker)> recordedShapes = new List<(PowerPoint.Shape, PowerPoint.Shape)>();
+
         private void 选择增强_Click(object sender, RibbonControlEventArgs e)
         {
             var application = Globals.ThisAddIn.Application;
@@ -3202,10 +2272,10 @@ namespace 课件帮PPT助手
                 isRecording = false;
                 application.WindowSelectionChange -= Application_WindowSelectionChange;
 
-                // 恢复原来的边框颜色并选中记录的对象
-                foreach (var (shape, originalLineColor) in recordedShapes)
+                // 删除标记并选中记录的对象
+                foreach (var (shape, marker) in recordedShapes)
                 {
-                    shape.Line.ForeColor.RGB = originalLineColor;
+                    marker.Delete();
                 }
 
                 if (recordedShapes.Count > 0)
@@ -3216,7 +2286,7 @@ namespace 课件帮PPT助手
 
                 // 恢复按钮的原始显示
                 button.Label = "选择增强";
-                button.Image = Properties.Resources.NormalIcon; // 确保你有一个正常显示的图标
+                button.Image = Properties.Resources.选择结束; // 恢复到“选择结束”图标
             }
             else
             {
@@ -3227,7 +2297,7 @@ namespace 课件帮PPT助手
 
                 // 突出显示按钮
                 button.Label = "选择增强 (记录中...)";
-                button.Image = Properties.Resources.RecordingIcon; // 确保你有一个记录中显示的图标
+                button.Image = Properties.Resources.选择记录中; // 更改为“选择记录中”图标
             }
         }
 
@@ -3239,30 +2309,900 @@ namespace 课件帮PPT助手
                 {
                     if (!recordedShapes.Any(tuple => tuple.Shape.Name == shape.Name))
                     {
-                        // 记录形状和它的原始边框颜色
-                        int originalLineColor = shape.Line.ForeColor.RGB;
-                        recordedShapes.Add((shape, originalLineColor));
-
-                        // 设置红色边框
-                        shape.Line.ForeColor.RGB = ToRGB(255, 0, 0); // 红色边框
-                        shape.Line.Weight = 2; // 设置边框粗细
+                        // 记录形状
+                        var marker = AddCheckMark(shape);
+                        recordedShapes.Add((shape, marker));
                     }
                 }
             }
+        }
+
+        private PowerPoint.Shape AddCheckMark(PowerPoint.Shape shape)
+        {
+            var slide = shape.Parent;
+            float markerSize = 10f; // 标记的大小
+            float left = shape.Left + shape.Width - markerSize;
+            float top = shape.Top - markerSize;
+
+            var marker = slide.Shapes.AddShape(
+                Microsoft.Office.Core.MsoAutoShapeType.msoShapeOval,
+                left,
+                top,
+                markerSize,
+                markerSize);
+
+            marker.Fill.ForeColor.RGB = ToRGB(255, 0, 0); // 红色填充
+            marker.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse; // 无边框
+
+            var textFrame = marker.TextFrame;
+            textFrame.TextRange.Text = "√";
+            textFrame.TextRange.ParagraphFormat.Alignment = PowerPoint.PpParagraphAlignment.ppAlignCenter;
+            textFrame.TextRange.Font.Size = 8; // 适当调整字符大小
+
+            return marker;
         }
 
         private int ToRGB(int red, int green, int blue)
         {
             return (blue << 16) | (green << 8) | red;
         }
+
+
+        private void 沿线分布_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 1)
+            {
+                var lineShape = selection.ShapeRange[1];
+                if (lineShape.Type == MsoShapeType.msoLine || lineShape.Type == MsoShapeType.msoFreeform)
+                {
+                    List<PowerPoint.Shape> shapesToDistribute = new List<PowerPoint.Shape>();
+                    for (int i = 2; i <= selection.ShapeRange.Count; i++)
+                    {
+                        var shape = selection.ShapeRange[i];
+                        if (shape.Type != MsoShapeType.msoLine && shape.Type != MsoShapeType.msoFreeform)
+                        {
+                            shapesToDistribute.Add(shape);
+                        }
+                    }
+
+                    if (shapesToDistribute.Count > 0)
+                    {
+                        DistributeShapesAlongLine(lineShape, shapesToDistribute);
+                    }
+                    else
+                    {
+                        MessageBox.Show("没有其他对象可以分布。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("第一个选择的对象必须是线段或自由绘制的曲线。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请至少选择一条线段或曲线和一个对象。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DistributeShapesAlongLine(PowerPoint.Shape lineShape, List<PowerPoint.Shape> shapesToDistribute)
+        {
+            var nodes = lineShape.Nodes;
+            if (nodes.Count < 2)
+            {
+                MessageBox.Show("线段或曲线必须至少有两个节点。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 获取线段或曲线的所有节点坐标
+            List<(float X, float Y)> nodePoints = new List<(float X, float Y)>();
+            for (int i = 1; i <= nodes.Count; i++)
+            {
+                var point = nodes[i].Points;
+                nodePoints.Add((point[1, 1], point[1, 2]));
+            }
+
+            // 计算每个对象的间距
+            int count = shapesToDistribute.Count;
+            float totalLength = GetTotalLength(nodePoints);
+            float stepLength = totalLength / (count + 1);
+
+            // 沿线段或曲线分布对象
+            float currentLength = 0;
+            for (int i = 0; i < count; i++)
+            {
+                currentLength += stepLength;
+                var (newX, newY) = GetPointAtLength(nodePoints, currentLength);
+                var shape = shapesToDistribute[i];
+                shape.Left = newX - shape.Width / 2;
+                shape.Top = newY - shape.Height / 2;
+
+                // 调整对象使得曲线穿过它们的中心点
+                if (lineShape.Type == MsoShapeType.msoFreeform)
+                {
+                    AdjustShapeToLineCenter(shape, lineShape, newX, newY);
+                }
+            }
+        }
+
+        private void AdjustShapeToLineCenter(PowerPoint.Shape shape, PowerPoint.Shape lineShape, float centerX, float centerY)
+        {
+            float shapeCenterX = shape.Left + shape.Width / 2;
+            float shapeCenterY = shape.Top + shape.Height / 2;
+            float offsetX = centerX - shapeCenterX;
+            float offsetY = centerY - shapeCenterY;
+
+            shape.Left += offsetX;
+            shape.Top += offsetY;
+        }
+
+        private float GetTotalLength(List<(float X, float Y)> points)
+        {
+            float length = 0;
+            for (int i = 1; i < points.Count; i++)
+            {
+                length += GetDistance(points[i - 1], points[i]);
+            }
+            return length;
+        }
+
+        private (float X, float Y) GetPointAtLength(List<(float X, float Y)> points, float targetLength)
+        {
+            float accumulatedLength = 0;
+            for (int i = 1; i < points.Count; i++)
+            {
+                float segmentLength = GetDistance(points[i - 1], points[i]);
+                if (accumulatedLength + segmentLength >= targetLength)
+                {
+                    float ratio = (targetLength - accumulatedLength) / segmentLength;
+                    float newX = points[i - 1].X + ratio * (points[i].X - points[i - 1].X);
+                    float newY = points[i - 1].Y + ratio * (points[i].Y - points[i - 1].Y);
+                    return (newX, newY);
+                }
+                accumulatedLength += segmentLength;
+            }
+            return points.Last();
+        }
+
+        private float GetDistance((float X, float Y) point1, (float X, float Y) point2)
+        {
+            return (float)Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+        }
+
+        private void 板贴辅助_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 检查 Ctrl 键是否被按下
+            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+            string[] lines = null;
+
+            if (isCtrlPressed)
+            {
+                // 打开文件选择对话框
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // 读取文件内容
+                    lines = File.ReadAllLines(openFileDialog.FileName);
+                }
+            }
+            else
+            {
+                // 创建并显示输入文本的窗口
+                BoardInputTextForm inputForm = new BoardInputTextForm();
+                inputForm.Text = "请输入分行文本";
+                DialogResult result = inputForm.ShowDialog();
+
+                // 如果用户点击了确定按钮
+                if (result == DialogResult.OK)
+                {
+                    // 获取用户输入的文本
+                    lines = inputForm.TextLines;
+                }
+            }
+
+            // 如果获取了文本行
+            if (lines != null && lines.Length > 0)
+            {
+                // 获取当前活动窗口
+                PowerPoint.DocumentWindow activeWindow = Globals.ThisAddIn.Application.ActiveWindow;
+                if (activeWindow != null)
+                {
+                    // 获取当前页幻灯片
+                    PowerPoint.Slide currentSlide = activeWindow.View.Slide;
+
+                    // 记录当前幻灯片的索引
+                    int currentSlideIndex = currentSlide.SlideIndex;
+
+                    // 获取当前选中的文本框
+                    PowerPoint.Selection selection = activeWindow.Selection;
+                    if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                    {
+                        PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
+
+                        // 创建一个字典来存储相同文本内容的文本框
+                        Dictionary<string, List<PowerPoint.Shape>> textBoxGroups = new Dictionary<string, List<PowerPoint.Shape>>();
+
+                        foreach (PowerPoint.Shape shape in selectedShapes)
+                        {
+                            if (shape.Type == Office.MsoShapeType.msoTextBox)
+                            {
+                                string text = shape.TextFrame.TextRange.Text;
+                                if (!textBoxGroups.ContainsKey(text))
+                                {
+                                    textBoxGroups[text] = new List<PowerPoint.Shape>();
+                                }
+                                textBoxGroups[text].Add(shape);
+                            }
+                        }
+
+                        // 计算需要复制的幻灯片次数
+                        int groupCount = textBoxGroups.Count;
+                        int slidesNeeded = (int)Math.Ceiling((double)lines.Length / groupCount);
+
+                        // 复制当前页幻灯片，复制次数为计算得到的slidesNeeded
+                        for (int i = 0; i < slidesNeeded; i++)
+                        {
+                            currentSlide.Duplicate();
+                        }
+
+                        // 获取所有幻灯片
+                        PowerPoint.Slides slides = activeWindow.Presentation.Slides;
+
+                        int lineIndex = 0;
+                        int slideOffset = 1; // 从下一页开始
+
+                        // 逐页替换文本框内容
+                        while (lineIndex < lines.Length && (currentSlideIndex + slideOffset) <= slides.Count)
+                        {
+                            PowerPoint.Slide slide = slides[currentSlideIndex + slideOffset];
+                            PowerPoint.Shapes shapes = slide.Shapes;
+
+                            foreach (var group in textBoxGroups)
+                            {
+                                foreach (PowerPoint.Shape shape in group.Value)
+                                {
+                                    if (lineIndex >= lines.Length)
+                                        break;
+
+                                    // 查找匹配的文本框并替换内容
+                                    foreach (PowerPoint.Shape s in shapes)
+                                    {
+                                        if (s.Type == Office.MsoShapeType.msoTextBox && s.TextFrame.TextRange.Text == group.Key)
+                                        {
+                                            if (lineIndex < lines.Length)
+                                            {
+                                                s.TextFrame.TextRange.Text = lines[lineIndex];
+                                            }
+                                        }
+                                    }
+                                }
+                                lineIndex++;
+                            }
+                            slideOffset++;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选择多个文本框来替换内容。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+        }
+
+     
+
+        private void 统一大小_Click(object sender, RibbonControlEventArgs e)
+        {
+           
+        }
+
+        private void 去除边距_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Slide slide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
+            if (slide != null)
+            {
+                PowerPoint.ShapeRange shapeRange = app.ActiveWindow.Selection.ShapeRange;
+                foreach (PowerPoint.Shape shape in shapeRange)
+                {
+                    if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
+                    {
+                        // 设置边距为0
+                        shape.TextFrame.MarginLeft = 0;
+                        shape.TextFrame.MarginRight = 0;
+                        shape.TextFrame.MarginTop = 0;
+                        shape.TextFrame.MarginBottom = 0;
+
+                        // 调整文本框的宽度使其与文本长度相匹配
+                        string text = shape.TextFrame.TextRange.Text;
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            // 计算文本长度
+                            float textLength = shape.TextFrame.TextRange.BoundWidth;
+                            // 设置文本框宽度
+                            shape.Width = textLength;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void 单字拆分_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+                if (shapeRange.Count == 1)
+                {
+                    PowerPoint.Shape shape = shapeRange[1] as PowerPoint.Shape;
+                    if (shape != null && shape.HasTextFrame == Office.MsoTriState.msoTrue && shape.TextFrame.HasText == Office.MsoTriState.msoTrue)
+                    {
+                        string text = shape.TextFrame.TextRange.Text;
+                        float left = shape.Left;
+                        float top = shape.Top;
+                        float width = shape.Width / text.Length;
+                        float height = shape.Height;
+
+                        for (int i = 0; i < text.Length; i++)
+                        {
+                            PowerPoint.Shape newShape = shape.Duplicate()[1];
+                            newShape.Left = left + i * width;
+                            newShape.Top = top;
+                            newShape.Width = width;
+                            newShape.Height = height;
+                            newShape.TextFrame.TextRange.Text = text[i].ToString();
+                        }
+
+                        // 删除原有的文本框
+                        shape.Delete();
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("请选择一个包含文本的文本框。");
+                    }
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
+            }
+        }
+
+        private void 拆分段落_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+                if (shapeRange.Count == 1)
+                {
+                    PowerPoint.Shape shape = shapeRange[1] as PowerPoint.Shape;
+                    if (shape != null && shape.HasTextFrame == Office.MsoTriState.msoTrue && shape.TextFrame.HasText == Office.MsoTriState.msoTrue)
+                    {
+                        PowerPoint.TextRange textRange = shape.TextFrame.TextRange;
+                        int paragraphCount = textRange.Paragraphs().Count;
+                        float left = shape.Left;
+                        float top = shape.Top;
+                        float width = shape.Width;
+                        float height = shape.Height / paragraphCount;
+
+                        for (int i = 1; i <= paragraphCount; i++)
+                        {
+                            PowerPoint.TextRange paragraph = textRange.Paragraphs(i);
+                            PowerPoint.Shape newShape = shape.Duplicate()[1];
+                            newShape.Left = left;
+                            newShape.Top = top + (i - 1) * height;
+                            newShape.Width = width;
+                            newShape.Height = height;
+                            newShape.TextFrame.TextRange.Text = paragraph.Text;
+
+                            // 删除空白的文本框
+                            if (string.IsNullOrWhiteSpace(paragraph.Text))
+                            {
+                                newShape.Delete();
+                            }
+                        }
+
+                        // 删除原有的文本框
+                        shape.Delete();
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("请选择一个包含多个段落的文本框。");
+                    }
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
+            }
+        }
+
+
+        private Dictionary<string, float> originalIndents = new Dictionary<string, float>();
+        private bool isAdjusted = false;
+        private void 首行缩进_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Presentation presentation = app.ActivePresentation;
+
+            string adjustRulerVbaCode = @"
+Sub AdjustRuler()
+    Dim shp As Shape
+    Dim tr As TextRange2
+    Dim para As ParagraphFormat2
+    Dim fontSize As Single
+    Dim baseFontSize As Single
+    Dim baseIndent As Single
+    Dim indentSize As Single
+
+    baseFontSize = 18
+    baseIndent = 1.27 * 28.3465
+
+    For Each shp In Application.ActiveWindow.Selection.ShapeRange
+        If shp.HasTextFrame Then
+            Set tr = shp.TextFrame2.TextRange
+
+            For i = 1 To tr.Paragraphs.Count
+                Set para = tr.ParagraphFormat
+                fontSize = tr.Paragraphs(i).Font.Size
+                indentSize = baseIndent * (fontSize / baseFontSize)
+                para.LeftIndent = 0
+                para.FirstLineIndent = indentSize
+            Next i
+        End If
+    Next shp
+End Sub
+";
+
+            string restoreRulerVbaCode = @"
+Sub RestoreRuler()
+    Dim shp As Shape
+    Dim tr As TextRange2
+    Dim para As ParagraphFormat2
+
+    For Each shp In Application.ActiveWindow.Selection.ShapeRange
+        If shp.HasTextFrame Then
+            Set tr = shp.TextFrame2.TextRange
+
+            For i = 1 To tr.Paragraphs.Count
+                Set para = tr.ParagraphFormat
+                para.LeftIndent = 0
+                para.FirstLineIndent = 0
+            Next i
+        End If
+    Next shp
+End Sub
+";
+
+            string moduleName = "DynamicModule";
+
+            if (!isAdjusted)
+            {
+                InsertVbaCode(presentation, adjustRulerVbaCode, moduleName);
+
+                try
+                {
+                    app.Run("AdjustRuler");
+                    isAdjusted = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error running macro: " + ex.Message);
+                }
+            }
+            else
+            {
+                InsertVbaCode(presentation, restoreRulerVbaCode, moduleName);
+
+                try
+                {
+                    app.Run("RestoreRuler");
+                    isAdjusted = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error running macro: " + ex.Message);
+                }
+            }
+
+            DeleteVbaModule(presentation, moduleName);
+        }
+
+        private void InsertVbaCode(PowerPoint.Presentation presentation, string code, string moduleName)
+        {
+            var vbaProject = presentation.VBProject;
+            var vbaModule = vbaProject.VBComponents.Add(Microsoft.Vbe.Interop.vbext_ComponentType.vbext_ct_StdModule);
+            vbaModule.Name = moduleName;
+            vbaModule.CodeModule.AddFromString(code);
+        }
+
+        private void DeleteVbaModule(PowerPoint.Presentation presentation, string moduleName)
+        {
+            var vbaProject = presentation.VBProject;
+            var vbaModule = vbaProject.VBComponents.Item(moduleName);
+            vbaProject.VBComponents.Remove(vbaModule);
+        }
+
+        private void 音频导出_Click(object sender, RibbonControlEventArgs e)
+        {
+           
+        }
+
+        private void 动画触发_Click(object sender, RibbonControlEventArgs e)
+        {
+           
+        }
+
+
+        private List<PowerPoint.Shape> copiedShapes = new List<PowerPoint.Shape>();
+        private Dictionary<int, (float Width, float Height)> initialSizes = new Dictionary<int, (float Width, float Height)>();
+
+        private void 环形分布_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
+            PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selectedShapes.Count >= 1)
+            {
+                float radius = 100;
+                float initialRotation = 0;
+                float finalRotation = 0;
+                float sizeIncrement = 0;
+                int copyCount = 0;
+
+                if (selectedShapes.Count == 1)
+                {
+                    ShowSingleObjectForm(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
+                }
+                else
+                {
+                    PerformCircularDistribution(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, false);
+                    ShowMultipleObjectsForm(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择至少一个对象。");
+            }
+        }
+
+        private void PerformCircularDistribution(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, bool isCopyMode, int copyCount = 0)
+        {
+            if (isCopyMode)
+            {
+                foreach (PowerPoint.Shape shape in copiedShapes)
+                {
+                    shape.Delete();
+                }
+                copiedShapes.Clear();
+            }
+
+            int count = isCopyMode ? copyCount + 1 : shapes.Count; // 确保选中的对象也被包含
+            float angleStep = 360.0f / count;
+            float angleIncrement = (finalRotation - initialRotation) / count;
+
+            float currentRadius = radius;
+
+            for (int i = 0; i < count; i++)
+            {
+                float angle = initialRotation + i * angleStep;
+                float radians = angle * (float)(Math.PI / 180.0);
+                float newX = (float)(currentRadius * Math.Cos(radians));
+                float newY = (float)(currentRadius * Math.Sin(radians));
+
+                PowerPoint.Shape shape;
+                if (isCopyMode)
+                {
+                    if (i == 0)
+                    {
+                        shape = shapes[1]; // 第一个形状是选中的对象
+                    }
+                    else
+                    {
+                        shape = shapes[1].Duplicate()[1];
+                        copiedShapes.Add(shape);
+                    }
+                }
+                else
+                {
+                    shape = shapes[i + 1];
+                }
+
+                shape.Left = newX + (pptApp.ActivePresentation.PageSetup.SlideWidth / 2) - (shape.Width / 2);
+                shape.Top = newY + (pptApp.ActivePresentation.PageSetup.SlideHeight / 2) - (shape.Height / 2);
+                shape.Rotation = initialRotation + i * angleIncrement;
+
+                if (!initialSizes.ContainsKey(shape.Id))
+                {
+                    initialSizes[shape.Id] = (shape.Width, shape.Height);
+                }
+
+                if (sizeIncrement != 0)
+                {
+                    float newSize = initialSizes[shape.Id].Width * (1 + i * sizeIncrement / 100.0f);
+                    shape.Width = newSize;
+                    shape.Height = newSize;
+
+                    // 增加当前半径以保持间距相等
+                    currentRadius += sizeIncrement / 2.0f;
+                }
+            }
+        }
+
+        private void ShowSingleObjectForm(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, int copyCount)
+        {
+            SingleObjectForm form = new SingleObjectForm(pptApp, shapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
+            form.ShowDialog();
+        }
+
+        private void ShowMultipleObjectsForm(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement)
+        {
+            MultipleObjectsForm form = new MultipleObjectsForm(pptApp, shapes, radius, initialRotation, finalRotation, sizeIncrement);
+            form.ShowDialog();
+        }
+
+
+
+        private PowerPoint.ShapeRange selectedShapes;
+        private MatrixDistributionForm matrixForm;
+
+        // 保持原始尺寸和当前缩放比例
+        private float[] originalWidths;
+        private float[] originalHeights;
+        private float currentScale = 100.0f;
+
+        private void 矩阵分布_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取选中的对象
+            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+
+            // 检查选择是否有效
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 0)
+            {
+                selectedShapes = selection.ShapeRange;
+
+                // 保存原始尺寸
+                originalWidths = new float[selectedShapes.Count];
+                originalHeights = new float[selectedShapes.Count];
+                for (int i = 0; i < selectedShapes.Count; i++)
+                {
+                    originalWidths[i] = selectedShapes[i + 1].Width;
+                    originalHeights[i] = selectedShapes[i + 1].Height;
+                }
+
+                // 初始化当前缩放比例
+                currentScale = 100.0f;
+
+                // 显示矩阵分布设置窗体
+                if (matrixForm == null || matrixForm.IsDisposed)
+                {
+                    matrixForm = new MatrixDistributionForm();
+                    matrixForm.ParametersChanged += Form_ParametersChanged;
+                    matrixForm.FormClosed += Form_FormClosed;
+                }
+
+                if (selectedShapes.Count > 1)
+                {
+                    matrixForm.SetTotalCount(selectedShapes.Count);
+                }
+                else
+                {
+                    matrixForm.EnableTotalCountAdjustment();
+                }
+
+                matrixForm.Show();
+                matrixForm.TopMost = true;  // 设置为顶层窗体
+            }
+            else
+            {
+                MessageBox.Show("请选择一个或多个对象");
+            }
+        }
+
+        private void Form_ParametersChanged(object sender, EventArgs e)
+        {
+            var form = sender as MatrixDistributionForm;
+            int totalCount = form.TotalCount;
+            int horizontalCount = form.HorizontalCount;
+            int rowSpacing = form.RowSpacing;
+            int columnSpacing = form.ColumnSpacing;
+            int scale = form.Scale;
+
+            if (selectedShapes != null && selectedShapes.Count > 0)
+            {
+                var slide = selectedShapes[1].Parent;
+
+                // 删除现有的复制对象
+                DeleteExistingCopies(slide);
+
+                if (selectedShapes.Count > 1)
+                {
+                    // 对多个对象进行排列
+                    ArrangeShapes(selectedShapes, horizontalCount, rowSpacing, columnSpacing, scale);
+                }
+                else
+                {
+                    // 对单个对象进行复制和排列
+                    var baseShape = selectedShapes[1];
+                    CreateMatrix(baseShape, totalCount, horizontalCount, rowSpacing, columnSpacing, scale);
+                }
+            }
+        }
+
+        private void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var form = sender as MatrixDistributionForm;
+            form.ParametersChanged -= Form_ParametersChanged;
+        }
+
+        private void ArrangeShapes(PowerPoint.ShapeRange shapes, int horizontalCount, int rowSpacing, int columnSpacing, int scale)
+        {
+            // 计算每个形状的初始位置
+            float initialLeft = shapes[1].Left;
+            float initialTop = shapes[1].Top;
+
+            // 计算缩放比例的变化
+            float scaleFactor = scale / currentScale;
+
+            // 更新 currentScale
+            currentScale = scale;
+
+            // 排列选中的对象
+            for (int i = 0; i < shapes.Count; i++)
+            {
+                int row = i / horizontalCount;
+                int column = i % horizontalCount;
+
+                float left = initialLeft + column * (originalWidths[i] * scaleFactor + columnSpacing);
+                float top = initialTop + row * (originalHeights[i] * scaleFactor + rowSpacing);
+
+                var shape = shapes[i + 1];
+                shape.Left = left;
+                shape.Top = top;
+                shape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
+                shape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
+
+                // 更新原始尺寸为当前尺寸
+                originalWidths[i] = shape.Width;
+                originalHeights[i] = shape.Height;
+            }
+        }
+
+        private void CreateMatrix(PowerPoint.Shape baseShape, int totalCount, int horizontalCount, int rowSpacing, int columnSpacing, int scale)
+        {
+            // 计算每个形状的初始位置
+            float initialLeft = baseShape.Left;
+            float initialTop = baseShape.Top;
+
+            // 保存原始尺寸
+            float originalWidth = baseShape.Width;
+            float originalHeight = baseShape.Height;
+
+            // 计算缩放比例的变化
+            float scaleFactor = scale / currentScale;
+
+            // 更新 currentScale
+            currentScale = scale;
+
+            // 创建矩阵
+            for (int i = 0; i < totalCount; i++)
+            {
+                int row = i / horizontalCount;
+                int column = i % horizontalCount;
+
+                float left = initialLeft + column * (originalWidth * scaleFactor + columnSpacing);
+                float top = initialTop + row * (originalHeight * scaleFactor + rowSpacing);
+
+                // 只有在i大于0时才复制原始对象
+                if (i > 0)
+                {
+                    var newShape = baseShape.Duplicate();
+                    newShape.Left = left;
+                    newShape.Top = top;
+                    newShape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
+                    newShape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
+                    newShape.Name = "Copy_of_" + baseShape.Name + "_" + i;
+                }
+                else
+                {
+                    baseShape.Left = left;
+                    baseShape.Top = top;
+                    baseShape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
+                    baseShape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
+
+                    // 更新原始尺寸为当前尺寸
+                    originalWidths[0] = baseShape.Width;
+                    originalHeights[0] = baseShape.Height;
+                }
+            }
+        }
+
+        private void DeleteExistingCopies(PowerPoint.Slide slide)
+        {
+            for (int i = slide.Shapes.Count; i >= 1; i--)
+            {
+                var shape = slide.Shapes[i];
+                if (shape.Name.StartsWith("Copy_of_"))
+                {
+                    shape.Delete();
+                }
+            }
+        }
+
+        private void Experte抠图_Click(object sender, RibbonControlEventArgs e)
+        {
+            string url = "https://www.experte.com/background-remover";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"无法打开链接: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private SpecifyalignmentForm specifyalignmentForm;
+        private void 指定对齐_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+
+            if (specifyalignmentForm == null || specifyalignmentForm.IsDisposed)
+            {
+                specifyalignmentForm = new SpecifyalignmentForm(app);
+            }
+
+            specifyalignmentForm.Show();
+            specifyalignmentForm.BringToFront();
+        }
+
+
+        private TimerForm timerForm;
+        private void Timer_Click(object sender, RibbonControlEventArgs e)
+        {
+            ShowTimer();
+        }
+
+        private void ShowTimer()
+        {
+            if (timerForm == null || timerForm.IsDisposed)
+            {
+                timerForm = new TimerForm();
+                timerForm.Show();
+            }
+            else
+            {
+                timerForm.BringToFront();
+            }
+        }
     }
 }
-
-
-
-
-
-
 
 
 

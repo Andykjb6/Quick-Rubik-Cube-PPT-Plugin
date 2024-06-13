@@ -54,7 +54,7 @@ namespace 课件帮PPT助手
             // 创建 CustomTaskPane 并将用户控件添加到其中
             CustomTaskPane taskPane = this.CustomTaskPanes.Add(designTools, "学科", pres);
             taskPane.DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionLeft;
-            taskPane.Width = 332; // 设置侧边栏的宽度
+            taskPane.Width = 280; // 设置侧边栏的宽度
             taskPane.Visible = true;
 
             // 将 CustomTaskPane 存储在字典中，以便管理

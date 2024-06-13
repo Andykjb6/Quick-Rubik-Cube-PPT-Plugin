@@ -31,12 +31,6 @@ namespace 课件帮PPT助手
             SetDefaultValues();
             this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
-
-            confirmButton.BackColor = Color.FromArgb(47, 85, 151);
-            confirmButton.ForeColor = Color.White;
-            clearButton.BackColor = Color.FromArgb(47, 85, 151);
-            clearButton.ForeColor = Color.White;
-
             InitializeContextMenu();
             LoadCustomAnnotations();
         }
@@ -320,6 +314,11 @@ namespace 课件帮PPT助手
                     deleteCustomAnnotationButton.Enabled = false;
                 }
             }
+        }
+
+        private void AnnotationToolForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

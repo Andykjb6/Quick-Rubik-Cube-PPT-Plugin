@@ -18,29 +18,22 @@ namespace 课件帮PPT助手
         public TransparencyForm()
         {
             InitializeComponent();
-            this.TopMost = true; // 窗口总在最前
-            this.ShowInTaskbar = false; // 不在任务栏中显示
-            horizontalRadioButton.Checked = true; // 默认选中水平选项
-            flipComboBox.SelectedIndex = 0; // 默认选中无翻转
-
-            // 订阅 PictureBox 的 Paint 事件
+            this.TopMost = true;
+            this.ShowInTaskbar = false;
+            horizontalRadioButton.Checked = true;
+            flipComboBox.SelectedIndex = 0;
             this.pictureBox.Paint += new PaintEventHandler(this.PictureBox_Paint);
-
-            // 初始化颜色选项面板为不可见
             this.colorOptionsPanel.Visible = false;
         }
 
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
-            // 绘制表示透明像素的棋盘背景
             DrawCheckerboard(e.Graphics, pictureBox.ClientRectangle);
 
             if (pictureBox.Image != null)
             {
-                // 保持图像的纵横比计算目标矩形
                 Rectangle targetRect = CalculateAspectRatioRectangle(pictureBox.ClientRectangle, pictureBox.Image.Size);
-
-                // 绘制图像
+                e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 e.Graphics.DrawImage(pictureBox.Image, targetRect);
             }
         }
@@ -68,7 +61,6 @@ namespace 课件帮PPT助手
 
             if (imageAspectRatio > containerAspectRatio)
             {
-                // 图像比容器宽
                 int width = container.Width;
                 int height = (int)(width / imageAspectRatio);
                 int x = container.X;
@@ -77,7 +69,6 @@ namespace 课件帮PPT助手
             }
             else
             {
-                // 图像比容器高
                 int height = container.Height;
                 int width = (int)(height * imageAspectRatio);
                 int x = container.X + (container.Width - width) / 2;
@@ -113,7 +104,7 @@ namespace 课件帮PPT助手
             {
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    overlayColor = Color.FromArgb(128, colorDialog.Color); // Adjust alpha to mix with the original image
+                    overlayColor = Color.FromArgb(128, colorDialog.Color);
                     ApplyTransparency();
                 }
             }
@@ -127,22 +118,16 @@ namespace 课件帮PPT助手
 
         private void ColorOptionsButton_Click(object sender, EventArgs e)
         {
-            // 切换颜色选项面板的可见性
             this.colorOptionsPanel.Visible = !this.colorOptionsPanel.Visible;
-
-            // 根据面板的可见性动态调整窗体的高度
             if (this.colorOptionsPanel.Visible)
             {
-                // 如果面板可见，则增加窗口高度以容纳面板
                 this.Height += this.colorOptionsPanel.Height;
             }
             else
             {
-                // 如果面板不可见，则减小窗口高度以隐藏面板
                 this.Height -= this.colorOptionsPanel.Height;
             }
         }
-
 
         private void ApplyTransparency()
         {
@@ -156,7 +141,6 @@ namespace 课件帮PPT助手
             Color[,] pixelData = new Color[width, height];
             Color[,] resultData = new Color[width, height];
 
-            // 将 currentImage 的像素数据复制到一个数组中
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -165,7 +149,18 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // 使用并行处理加速像素操作
+            bool isFlippedHorizontally = false;
+            bool isFlippedVertically = false;
+            switch (this.flipComboBox.SelectedItem.ToString())
+            {
+                case "水平翻转":
+                    isFlippedHorizontally = true;
+                    break;
+                case "垂直翻转":
+                    isFlippedVertically = true;
+                    break;
+            }
+
             Parallel.For(0, height, y =>
             {
                 for (int x = 0; x < width; x++)
@@ -173,13 +168,16 @@ namespace 课件帮PPT助手
                     Color pixelColor = pixelData[x, y];
                     int alpha = pixelColor.A;
 
+                    int xPos = isFlippedHorizontally ? width - x - 1 : x;
+                    int yPos = isFlippedVertically ? height - y - 1 : y;
+
                     if (this.horizontalRadioButton.Checked)
                     {
-                        alpha = Math.Min(alpha, 255 - (transparencyValue * 255 / 100 * (width - x) / width));
+                        alpha = Math.Min(alpha, 255 - (transparencyValue * 255 / 100 * (width - xPos) / width));
                     }
                     else if (this.verticalRadioButton.Checked)
                     {
-                        alpha = Math.Min(alpha, 255 - (transparencyValue * 255 / 100 * (height - y) / height));
+                        alpha = Math.Min(alpha, 255 - (transparencyValue * 255 / 100 * (height - yPos) / height));
                     }
                     else if (this.fullTransparencyRadioButton.Checked)
                     {
@@ -187,13 +185,13 @@ namespace 课件帮PPT助手
                     }
                     else if (this.radialTransparencyRadioButton.Checked)
                     {
-                        double distance = Math.Sqrt(Math.Pow(x - width / 2, 2) + Math.Pow(y - height / 2, 2));
+                        double distance = Math.Sqrt(Math.Pow(xPos - width / 2, 2) + Math.Pow(yPos - height / 2, 2));
                         double maxDistance = Math.Sqrt(Math.Pow(width / 2, 2) + Math.Pow(height / 2, 2));
                         alpha = Math.Min(alpha, 255 - (int)(transparencyValue * 255 / 100 * distance / maxDistance));
                     }
                     else if (this.diagonalTransparencyRadioButton.Checked)
                     {
-                        double distance = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+                        double distance = Math.Sqrt(Math.Pow(xPos, 2) + Math.Pow(yPos, 2));
                         double maxDistance = Math.Sqrt(Math.Pow(width, 2) + Math.Pow(height, 2));
                         alpha = Math.Min(alpha, 255 - (int)(transparencyValue * 255 / 100 * distance / maxDistance));
                     }
@@ -216,7 +214,6 @@ namespace 课件帮PPT助手
                 }
             });
 
-            // 将结果数据应用到 processedImage
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -225,19 +222,18 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // Apply flip based on the selected option
-            switch (this.flipComboBox.SelectedItem.ToString())
+            if (isFlippedHorizontally)
             {
-                case "水平翻转":
-                    processedImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    break;
-                case "垂直翻转":
-                    processedImage.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    break;
+                processedImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            }
+
+            if (isFlippedVertically)
+            {
+                processedImage.RotateFlip(RotateFlipType.RotateNoneFlipY);
             }
 
             this.pictureBox.Image = processedImage;
-            this.pictureBox.Invalidate(); // Force repaint to show background
+            this.pictureBox.Invalidate();
         }
 
         private void ImportButton_Click(object sender, EventArgs e)
@@ -262,7 +258,7 @@ namespace 课件帮PPT助手
                 }
 
                 this.pictureBox.Image = currentImage;
-                this.pictureBox.Invalidate(); // Force repaint to show background
+                this.pictureBox.Invalidate();
                 File.Delete(tempPath);
             }
             else
@@ -270,7 +266,6 @@ namespace 课件帮PPT助手
                 MessageBox.Show("请先选择一张图片。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-
 
         private void ExportButton_Click(object sender, EventArgs e)
         {
@@ -302,4 +297,3 @@ namespace 课件帮PPT助手
         }
     }
 }
-

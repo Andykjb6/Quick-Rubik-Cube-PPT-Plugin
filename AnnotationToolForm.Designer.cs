@@ -58,7 +58,11 @@ namespace 课件帮PPT助手
             // 
             // annotationTypeComboBox
             // 
+            this.annotationTypeComboBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(234)))), ((int)(((byte)(255)))));
             this.annotationTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.annotationTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.annotationTypeComboBox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.annotationTypeComboBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.annotationTypeComboBox.FormattingEnabled = true;
             this.annotationTypeComboBox.Items.AddRange(new object[] {
             "横线",
@@ -70,9 +74,9 @@ namespace 课件帮PPT助手
             "大括号",
             "层级符",
             "段落符"});
-            this.annotationTypeComboBox.Location = new System.Drawing.Point(85, 20);
+            this.annotationTypeComboBox.Location = new System.Drawing.Point(93, 20);
             this.annotationTypeComboBox.Name = "annotationTypeComboBox";
-            this.annotationTypeComboBox.Size = new System.Drawing.Size(210, 32);
+            this.annotationTypeComboBox.Size = new System.Drawing.Size(210, 39);
             this.annotationTypeComboBox.TabIndex = 1;
             // 
             // annotationColorButton
@@ -91,6 +95,7 @@ namespace 课件帮PPT助手
             this.confirmButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(76)))), ((int)(((byte)(231)))));
             this.confirmButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(150)))), ((int)(((byte)(255)))));
             this.confirmButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.confirmButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.confirmButton.ForeColor = System.Drawing.Color.White;
             this.confirmButton.Location = new System.Drawing.Point(50, 210);
             this.confirmButton.Name = "confirmButton";
@@ -106,12 +111,13 @@ namespace 课件帮PPT助手
             this.clearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(76)))), ((int)(((byte)(231)))));
             this.clearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(150)))), ((int)(((byte)(255)))));
             this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.clearButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.clearButton.ForeColor = System.Drawing.Color.White;
             this.clearButton.Location = new System.Drawing.Point(190, 210);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(120, 60);
             this.clearButton.TabIndex = 9;
-            this.clearButton.Text = "清除标注";
+            this.clearButton.Text = "清除所选";
             this.clearButton.UseVisualStyleBackColor = false;
             this.clearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
@@ -123,6 +129,7 @@ namespace 课件帮PPT助手
             this.deleteCustomAnnotationButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(199)))), ((int)(((byte)(215)))), ((int)(((byte)(255)))));
             this.deleteCustomAnnotationButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(234)))), ((int)(((byte)(252)))));
             this.deleteCustomAnnotationButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.deleteCustomAnnotationButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.deleteCustomAnnotationButton.Location = new System.Drawing.Point(330, 210);
             this.deleteCustomAnnotationButton.Name = "deleteCustomAnnotationButton";
             this.deleteCustomAnnotationButton.Size = new System.Drawing.Size(120, 60);
@@ -167,7 +174,7 @@ namespace 课件帮PPT助手
             // highlightColorButton
             // 
             this.highlightColorButton.Enabled = false;
-            this.highlightColorButton.Location = new System.Drawing.Point(340, 140);
+            this.highlightColorButton.Location = new System.Drawing.Point(344, 140);
             this.highlightColorButton.Name = "highlightColorButton";
             this.highlightColorButton.Size = new System.Drawing.Size(50, 30);
             this.highlightColorButton.TabIndex = 6;
@@ -177,7 +184,7 @@ namespace 课件帮PPT助手
             // textColorButton
             // 
             this.textColorButton.BackColor = System.Drawing.Color.Red;
-            this.textColorButton.Location = new System.Drawing.Point(135, 140);
+            this.textColorButton.Location = new System.Drawing.Point(139, 140);
             this.textColorButton.Name = "textColorButton";
             this.textColorButton.Size = new System.Drawing.Size(50, 30);
             this.textColorButton.TabIndex = 7;
@@ -187,45 +194,50 @@ namespace 课件帮PPT助手
             // annotationTypeLabel
             // 
             this.annotationTypeLabel.AutoSize = true;
+            this.annotationTypeLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.annotationTypeLabel.Location = new System.Drawing.Point(20, 20);
             this.annotationTypeLabel.Name = "annotationTypeLabel";
-            this.annotationTypeLabel.Size = new System.Drawing.Size(82, 24);
+            this.annotationTypeLabel.Size = new System.Drawing.Size(86, 31);
             this.annotationTypeLabel.TabIndex = 11;
             this.annotationTypeLabel.Text = "标注：";
             // 
             // annotationColorLabel
             // 
             this.annotationColorLabel.AutoSize = true;
+            this.annotationColorLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.annotationColorLabel.Location = new System.Drawing.Point(310, 20);
             this.annotationColorLabel.Name = "annotationColorLabel";
-            this.annotationColorLabel.Size = new System.Drawing.Size(130, 24);
+            this.annotationColorLabel.Size = new System.Drawing.Size(134, 31);
             this.annotationColorLabel.TabIndex = 12;
             this.annotationColorLabel.Text = "标注颜色：";
             // 
             // textColorLabel
             // 
             this.textColorLabel.AutoSize = true;
+            this.textColorLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textColorLabel.Location = new System.Drawing.Point(20, 140);
             this.textColorLabel.Name = "textColorLabel";
-            this.textColorLabel.Size = new System.Drawing.Size(130, 24);
+            this.textColorLabel.Size = new System.Drawing.Size(134, 31);
             this.textColorLabel.TabIndex = 13;
             this.textColorLabel.Text = "文字颜色：";
             // 
             // highlightColorLabel
             // 
             this.highlightColorLabel.AutoSize = true;
+            this.highlightColorLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.highlightColorLabel.Location = new System.Drawing.Point(230, 140);
             this.highlightColorLabel.Name = "highlightColorLabel";
-            this.highlightColorLabel.Size = new System.Drawing.Size(130, 24);
+            this.highlightColorLabel.Size = new System.Drawing.Size(134, 31);
             this.highlightColorLabel.TabIndex = 14;
             this.highlightColorLabel.Text = "高亮颜色：";
             // 
             // textSettingsLabel
             // 
             this.textSettingsLabel.AutoSize = true;
+            this.textSettingsLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textSettingsLabel.Location = new System.Drawing.Point(20, 80);
             this.textSettingsLabel.Name = "textSettingsLabel";
-            this.textSettingsLabel.Size = new System.Drawing.Size(82, 24);
+            this.textSettingsLabel.Size = new System.Drawing.Size(86, 31);
             this.textSettingsLabel.TabIndex = 15;
             this.textSettingsLabel.Text = "文字：";
             // 
@@ -268,6 +280,7 @@ namespace 课件帮PPT助手
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "文字标注工具";
+            this.Load += new System.EventHandler(this.AnnotationToolForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

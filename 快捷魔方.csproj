@@ -1,8 +1,4 @@
 ﻿<Project ToolsVersion="17.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\CefSharp.Common.124.3.80\build\CefSharp.Common.props" Condition="Exists('packages\CefSharp.Common.124.3.80\build\CefSharp.Common.props')" />
-  <Import Project="packages\chromiumembeddedframework.runtime.win-x86.124.3.8\build\chromiumembeddedframework.runtime.win-x86.props" Condition="Exists('packages\chromiumembeddedframework.runtime.win-x86.124.3.8\build\chromiumembeddedframework.runtime.win-x86.props')" />
-  <Import Project="packages\chromiumembeddedframework.runtime.win-x64.124.3.8\build\chromiumembeddedframework.runtime.win-x64.props" Condition="Exists('packages\chromiumembeddedframework.runtime.win-x64.124.3.8\build\chromiumembeddedframework.runtime.win-x64.props')" />
-  <Import Project="packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\netstandard\OpenCvSharp4.runtime.win.props" Condition="Exists('packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\netstandard\OpenCvSharp4.runtime.win.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--
     This section defines project-level properties.
@@ -40,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.16</ApplicationVersion>
+    <ApplicationVersion>1.0.0.22</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -85,6 +81,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AnnotationToolForm.resx">
       <DependentUpon>AnnotationToolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BoardInputTextForm.resx">
+      <DependentUpon>BoardInputTextForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="C:\Users\Andy\source\repos\课件帮PPT助手\汉字笔画\*.svg" />
   </ItemGroup>
@@ -142,18 +141,6 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="CefSharp, Version=124.3.80.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
-      <HintPath>packages\CefSharp.Common.124.3.80\lib\net462\CefSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="CefSharp.Core, Version=124.3.80.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
-      <HintPath>packages\CefSharp.Common.124.3.80\lib\net462\CefSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CefSharp.WinForms, Version=124.3.80.0, Culture=neutral, PublicKeyToken=40c4b6fc221f4138, processorArchitecture=MSIL">
-      <HintPath>packages\CefSharp.WinForms.124.3.80\lib\net462\CefSharp.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="ChnCharInfo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=18f031bd02e5e291, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.PinYinConverter.1.0.0\lib\ChnCharInfo.dll</HintPath>
-    </Reference>
     <Reference Include="EPPlus, Version=7.1.3.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>packages\EPPlus.7.1.3\lib\net462\EPPlus.dll</HintPath>
     </Reference>
@@ -237,19 +224,10 @@
     <Reference Include="NStandard, Version=0.65.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\NStandard.0.65.1\lib\net472\NStandard.dll</HintPath>
     </Reference>
-    <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
-      <HintPath>packages\OpenCvSharp4.4.9.0.20240103\lib\netstandard2.0\OpenCvSharp.dll</HintPath>
-    </Reference>
     <Reference Include="PinYinConverterCore, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\PinYinConverterCore.1.0.2\lib\net45\PinYinConverterCore.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="PuppeteerSharp, Version=18.0.0.0, Culture=neutral, PublicKeyToken=db12f80f85d8ba23, processorArchitecture=MSIL">
-      <HintPath>packages\PuppeteerSharp.18.0.0\lib\netstandard2.0\PuppeteerSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SkiaSharp, Version=2.88.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>packages\SkiaSharp.2.88.8\lib\net462\SkiaSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -321,9 +299,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="TinyPinyin, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\TinyPinyin.Net.1.0.2\lib\net461\TinyPinyin.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\WindowsBase_Core.STW.4.0.30319.1\lib\net40\WindowsBase.dll</HintPath>
     </Reference>
@@ -413,6 +388,12 @@
     <Compile Include="AnnotationToolForm.Designer.cs">
       <DependentUpon>AnnotationToolForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="BoardInputTextForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BoardInputTextForm.Designer.cs">
+      <DependentUpon>BoardInputTextForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Centralalignment.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -452,6 +433,18 @@
     <Compile Include="InputTextForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="MatrixDistributionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MatrixDistributionForm.Designer.cs">
+      <DependentUpon>MatrixDistributionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MultipleObjectsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MultipleObjectsForm.Designer.cs">
+      <DependentUpon>MultipleObjectsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PinyinSelectorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -461,7 +454,24 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SplitterTool.cs" />
+    <Compile Include="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SingleObjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SingleObjectForm.Designer.cs">
+      <DependentUpon>SingleObjectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpecifyalignmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpecifyalignmentForm.Designer.cs">
+      <DependentUpon>SpecifyalignmentForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SvgSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -485,6 +495,12 @@
     </Compile>
     <Compile Include="TableSettingsFormButton12.Designer.cs">
       <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TimerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TimerForm.Designer.cs">
+      <DependentUpon>TimerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TransparencyForm.cs">
       <SubType>Form</SubType>
@@ -513,6 +529,12 @@
     <EmbeddedResource Include="InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MatrixDistributionForm.resx">
+      <DependentUpon>MatrixDistributionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MultipleObjectsForm.resx">
+      <DependentUpon>MultipleObjectsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PinyinSelectorForm.resx">
       <DependentUpon>PinyinSelectorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -524,6 +546,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
@@ -560,6 +583,15 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SingleObjectForm.resx">
+      <DependentUpon>SingleObjectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpecifyalignmentForm.resx">
+      <DependentUpon>SpecifyalignmentForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SvgSelectionForm.resx">
       <DependentUpon>SvgSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -571,6 +603,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TableSettingsFormButton12.resx">
       <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TimerForm.resx">
+      <DependentUpon>TimerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TransparencyForm.resx">
       <DependentUpon>TransparencyForm.cs</DependentUpon>
@@ -639,6 +674,9 @@
     <EmbeddedResource Include="Ribbon.xml" />
     <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Microsoft\Office\Interop\PowerPoint\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -667,21 +705,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets" Condition="Exists('packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SkiaSharp.NativeAssets.macOS.2.88.8\build\net462\SkiaSharp.NativeAssets.macOS.targets'))" />
-    <Error Condition="!Exists('packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets'))" />
-    <Error Condition="!Exists('packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\netstandard\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\OpenCvSharp4.runtime.win.4.9.0.20240103\build\netstandard\OpenCvSharp4.runtime.win.props'))" />
-    <Error Condition="!Exists('packages\chromiumembeddedframework.runtime.win-x64.124.3.8\build\chromiumembeddedframework.runtime.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\chromiumembeddedframework.runtime.win-x64.124.3.8\build\chromiumembeddedframework.runtime.win-x64.props'))" />
-    <Error Condition="!Exists('packages\chromiumembeddedframework.runtime.win-x86.124.3.8\build\chromiumembeddedframework.runtime.win-x86.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\chromiumembeddedframework.runtime.win-x86.124.3.8\build\chromiumembeddedframework.runtime.win-x86.props'))" />
-    <Error Condition="!Exists('packages\CefSharp.Common.124.3.80\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Common.124.3.80\build\CefSharp.Common.props'))" />
-    <Error Condition="!Exists('packages\CefSharp.Common.124.3.80\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Common.124.3.80\build\CefSharp.Common.targets'))" />
-  </Target>
-  <Import Project="packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets" Condition="Exists('packages\SkiaSharp.NativeAssets.Win32.2.88.8\build\net462\SkiaSharp.NativeAssets.Win32.targets')" />
-  <Import Project="packages\CefSharp.Common.124.3.80\build\CefSharp.Common.targets" Condition="Exists('packages\CefSharp.Common.124.3.80\build\CefSharp.Common.targets')" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

@@ -79,7 +79,6 @@ namespace 课件帮PPT助手
             this.label1.Size = new System.Drawing.Size(466, 24);
             this.label1.TabIndex = 0;
             this.label1.Text = "提示：请按照笔画顺序依次选中所有笔画。";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // inputLabel
             // 
@@ -213,7 +212,7 @@ namespace 课件帮PPT助手
             // durationLabel
             // 
             this.durationLabel.AutoSize = true;
-            this.durationLabel.Location = new System.Drawing.Point(270, 135);
+            this.durationLabel.Location = new System.Drawing.Point(269, 135);
             this.durationLabel.Name = "durationLabel";
             this.durationLabel.Size = new System.Drawing.Size(178, 24);
             this.durationLabel.TabIndex = 5;
@@ -225,6 +224,7 @@ namespace 课件帮PPT助手
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AnimationForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "书写动画";
             this.TopMost = true;
             this.tabControl.ResumeLayout(false);

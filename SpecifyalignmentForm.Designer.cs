@@ -1,6 +1,6 @@
 ﻿namespace 课件帮PPT助手
 {
-    partial class AlignToolWindow
+    partial class SpecifyalignmentForm
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -17,7 +17,7 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AlignToolWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpecifyalignmentForm));
             this.centerAlignButton = new System.Windows.Forms.Button();
             this.leftAlignButton = new System.Windows.Forms.Button();
             this.horizontalCenterAlignButton = new System.Windows.Forms.Button();
@@ -146,7 +146,7 @@
             this.bottomAlignButton.UseVisualStyleBackColor = false;
             this.bottomAlignButton.Click += new System.EventHandler(this.BottomAlignButton_Click);
             // 
-            // AlignToolWindow
+            // SpecifyalignmentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -161,9 +161,9 @@
             this.Controls.Add(this.centerAlignButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(6);
-            this.Name = "AlignToolWindow";
+            this.Name = "SpecifyalignmentForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "分组匹配";
+            this.Text = "指定对齐";
             this.ResumeLayout(false);
 
         }

@@ -25,6 +25,30 @@ namespace 课件帮PPT助手
             downButton.Click += (s, ev) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionTop);
             leftButton.Click += (s, ev) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionRight);
             rightButton.Click += (s, ev) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionLeft);
+
+            // 添加事件监听
+            Globals.ThisAddIn.Application.WindowSelectionChange += Application_WindowSelectionChange;
+        }
+
+        private void Application_WindowSelectionChange(PowerPoint.Selection Sel)
+        {
+            if (Sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                UpdateAnimationPaneSelection(Sel.ShapeRange);
+            }
+        }
+
+        private void UpdateAnimationPaneSelection(PowerPoint.ShapeRange shapeRange)
+        {
+            listBox.ClearSelected();
+            foreach (PowerPoint.Shape shape in shapeRange)
+            {
+                int index = listBox.Items.IndexOf(shape.Name);
+                if (index != -1)
+                {
+                    listBox.SetSelected(index, true);
+                }
+            }
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs ev)
@@ -250,11 +274,6 @@ namespace 课件帮PPT助手
                     adjustPanel.Controls.Add(durationControl);
                 }
             }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
