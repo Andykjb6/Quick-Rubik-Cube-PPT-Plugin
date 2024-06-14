@@ -33,7 +33,7 @@
             this.timeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.timeTextBox.Font = new System.Drawing.Font("Arial", 40F, System.Drawing.FontStyle.Bold);
             this.timeTextBox.ForeColor = System.Drawing.Color.Black;
-            this.timeTextBox.Location = new System.Drawing.Point(17, 30);
+            this.timeTextBox.Location = new System.Drawing.Point(19, 39);
             this.timeTextBox.Name = "timeTextBox";
             this.timeTextBox.Size = new System.Drawing.Size(455, 123);
             this.timeTextBox.TabIndex = 0;
@@ -91,7 +91,7 @@
             this.closeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.closeButton.FlatAppearance.BorderSize = 0;
             this.closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.closeButton.Location = new System.Drawing.Point(459, 3);
+            this.closeButton.Location = new System.Drawing.Point(454, 5);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(35, 35);
             this.closeButton.TabIndex = 2;
@@ -103,7 +103,7 @@
             this.settingsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.settingsButton.FlatAppearance.BorderSize = 0;
             this.settingsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.settingsButton.Location = new System.Drawing.Point(0, 2);
+            this.settingsButton.Location = new System.Drawing.Point(6, 5);
             this.settingsButton.Name = "settingsButton";
             this.settingsButton.Size = new System.Drawing.Size(35, 35);
             this.settingsButton.TabIndex = 1;
@@ -117,6 +117,7 @@
             this.darkModeButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.darkModeButton.FlatAppearance.BorderSize = 0;
             this.darkModeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.darkModeButton.Font = new System.Drawing.Font("微软雅黑 Light", 8F);
             this.darkModeButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.darkModeButton.Location = new System.Drawing.Point(0, 215);
             this.darkModeButton.Name = "darkModeButton";
@@ -144,12 +145,15 @@
             // TimerForm
             // 
             this.BackColor = System.Drawing.Color.White;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(494, 253);
+            this.Controls.Add(this.darkModeButton);
             this.Controls.Add(this.settingsButton);
             this.Controls.Add(this.closeButton);
-            this.Controls.Add(this.darkModeButton);
-            this.Controls.Add(this.buttonPanel);
             this.Controls.Add(this.timeTextBox);
+            this.Controls.Add(this.buttonPanel);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "TimerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

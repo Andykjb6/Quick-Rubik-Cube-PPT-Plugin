@@ -74,29 +74,30 @@ namespace 课件帮PPT助手
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.Location = new System.Drawing.Point(19, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(466, 24);
+            this.label1.Size = new System.Drawing.Size(470, 31);
             this.label1.TabIndex = 0;
             this.label1.Text = "提示：请按照笔画顺序依次选中所有笔画。";
             // 
             // inputLabel
             // 
             this.inputLabel.AutoSize = true;
-            this.inputLabel.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.inputLabel.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.inputLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(19)))), ((int)(((byte)(84)))), ((int)(((byte)(247)))));
             this.inputLabel.Location = new System.Drawing.Point(19, 90);
             this.inputLabel.Name = "inputLabel";
-            this.inputLabel.Size = new System.Drawing.Size(273, 28);
+            this.inputLabel.Size = new System.Drawing.Size(269, 37);
             this.inputLabel.TabIndex = 1;
             this.inputLabel.Text = "①请输入对应汉字：";
             // 
             // textBox
             // 
-            this.textBox.Font = new System.Drawing.Font("宋体", 16.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox.Font = new System.Drawing.Font("微软雅黑", 16.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox.Location = new System.Drawing.Point(22, 137);
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(440, 57);
+            this.textBox.Size = new System.Drawing.Size(440, 64);
             this.textBox.TabIndex = 2;
             // 
             // tabPage2
@@ -115,15 +116,17 @@ namespace 课件帮PPT助手
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.Location = new System.Drawing.Point(10, 20);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(418, 24);
+            this.label2.Size = new System.Drawing.Size(422, 31);
             this.label2.TabIndex = 0;
             this.label2.Text = "提示：“智能全选”→“智能动画”。";
             // 
             // selectAllButton
             // 
             this.selectAllButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.selectAllButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.selectAllButton.ForeColor = System.Drawing.Color.White;
             this.selectAllButton.Location = new System.Drawing.Point(10, 65);
             this.selectAllButton.Name = "selectAllButton";
@@ -135,6 +138,7 @@ namespace 课件帮PPT助手
             // animateButton
             // 
             this.animateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.animateButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.animateButton.ForeColor = System.Drawing.Color.White;
             this.animateButton.Location = new System.Drawing.Point(250, 65);
             this.animateButton.Name = "animateButton";
@@ -146,6 +150,7 @@ namespace 课件帮PPT助手
             // adjustAnimationButton
             // 
             this.adjustAnimationButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.adjustAnimationButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.adjustAnimationButton.ForeColor = System.Drawing.Color.White;
             this.adjustAnimationButton.Location = new System.Drawing.Point(10, 120);
             this.adjustAnimationButton.Name = "adjustAnimationButton";
@@ -212,14 +217,17 @@ namespace 课件帮PPT助手
             // durationLabel
             // 
             this.durationLabel.AutoSize = true;
+            this.durationLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.durationLabel.Location = new System.Drawing.Point(269, 135);
             this.durationLabel.Name = "durationLabel";
-            this.durationLabel.Size = new System.Drawing.Size(178, 24);
+            this.durationLabel.Size = new System.Drawing.Size(182, 31);
             this.durationLabel.TabIndex = 5;
             this.durationLabel.Text = "动画持续时间：";
             // 
             // AnimationForm
             // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(503, 463);
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

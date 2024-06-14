@@ -37,7 +37,7 @@ namespace 课件帮PPT助手
             // 
             // nameTextBox
             // 
-            this.nameTextBox.Location = new System.Drawing.Point(160, 60);
+            this.nameTextBox.Location = new System.Drawing.Point(160, 68);
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(300, 35);
             this.nameTextBox.TabIndex = 3;
@@ -74,8 +74,9 @@ namespace 课件帮PPT助手
             this.saveButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(111)))), ((int)(((byte)(233)))));
             this.saveButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(107)))), ((int)(((byte)(149)))), ((int)(((byte)(253)))));
             this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.saveButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.saveButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.saveButton.Location = new System.Drawing.Point(143, 299);
+            this.saveButton.Location = new System.Drawing.Point(131, 301);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(100, 50);
             this.saveButton.TabIndex = 8;
@@ -88,8 +89,9 @@ namespace 课件帮PPT助手
             this.cancelButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(111)))), ((int)(((byte)(233)))));
             this.cancelButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(107)))), ((int)(((byte)(149)))), ((int)(((byte)(253)))));
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cancelButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.cancelButton.Location = new System.Drawing.Point(273, 299);
+            this.cancelButton.Location = new System.Drawing.Point(261, 301);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(100, 50);
             this.cancelButton.TabIndex = 9;
@@ -98,25 +100,28 @@ namespace 课件帮PPT助手
             // 
             // symbolLabel
             // 
+            this.symbolLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.symbolLabel.Location = new System.Drawing.Point(20, 20);
             this.symbolLabel.Name = "symbolLabel";
-            this.symbolLabel.Size = new System.Drawing.Size(140, 23);
+            this.symbolLabel.Size = new System.Drawing.Size(140, 35);
             this.symbolLabel.TabIndex = 0;
             this.symbolLabel.Text = "标注符号：";
             // 
             // nameLabel
             // 
-            this.nameLabel.Location = new System.Drawing.Point(20, 70);
+            this.nameLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.nameLabel.Location = new System.Drawing.Point(20, 73);
             this.nameLabel.Name = "nameLabel";
-            this.nameLabel.Size = new System.Drawing.Size(140, 23);
+            this.nameLabel.Size = new System.Drawing.Size(140, 32);
             this.nameLabel.TabIndex = 2;
             this.nameLabel.Text = "符号名称：";
             // 
             // positionLabel
             // 
+            this.positionLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.positionLabel.Location = new System.Drawing.Point(20, 120);
             this.positionLabel.Name = "positionLabel";
-            this.positionLabel.Size = new System.Drawing.Size(140, 23);
+            this.positionLabel.Size = new System.Drawing.Size(140, 40);
             this.positionLabel.TabIndex = 4;
             this.positionLabel.Text = "标注位置：";
             // 
@@ -124,7 +129,7 @@ namespace 课件帮PPT助手
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(525, 402);
+            this.ClientSize = new System.Drawing.Size(489, 402);
             this.Controls.Add(this.symbolLabel);
             this.Controls.Add(this.symbolTextBox);
             this.Controls.Add(this.nameLabel);

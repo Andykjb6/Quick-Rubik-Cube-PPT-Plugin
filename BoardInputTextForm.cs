@@ -24,5 +24,10 @@ namespace 课件帮PPT助手
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
+        private void BoardInputTextForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

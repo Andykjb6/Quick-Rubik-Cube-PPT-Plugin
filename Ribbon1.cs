@@ -1511,86 +1511,7 @@ namespace 课件帮PPT助手
             }
         }
 
-       
-
-        private void Fillblank_Click_1(object sender, RibbonControlEventArgs e)
-        {
-            // 获取当前幻灯片
-            var slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
-
-            // 获取选中的文本框
-            if (Globals.ThisAddIn.Application.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionText)
-            {
-                var textRange = Globals.ThisAddIn.Application.ActiveWindow.Selection.TextRange;
-
-                // 获取选中的文本
-                string selectedText = textRange.Text;
-
-                // 如果有选中的文本
-                if (!string.IsNullOrEmpty(selectedText))
-                {
-                    // 获取原文本框的属性
-                    var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-                    var originalShape = selection.ShapeRange[1];
-                    float fontSize = textRange.Font.Size;
-                    string fontName = textRange.Font.Name;
-
-                    // 获取选中文字的位置和大小
-                    float originalLeft = textRange.BoundLeft;
-                    float originalTop = textRange.BoundTop;
-
-                    // 测量选中文本的宽度
-                    float textWidth = MeasureTextWidth(selectedText, fontSize, fontName);
-
-                    // 创建一个新的文本框，并设置其内容为选中的文本
-                    var newTextBox = slide.Shapes.AddTextbox(
-                        Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
-                        originalLeft, originalTop, textWidth, originalShape.Height);
-
-                    var newTextFrame = newTextBox.TextFrame2;
-                    var newTextRange = newTextBox.TextFrame.TextRange;
-                    newTextRange.Text = selectedText;
-                    newTextRange.Font.Color.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
-                    newTextRange.Font.Bold = Microsoft.Office.Core.MsoTriState.msoTrue;
-                    newTextRange.Font.Size = fontSize;
-                    newTextRange.Font.Name = fontName;
-
-                    // 设置文本框不自动换行
-                    newTextFrame.WordWrap = Microsoft.Office.Core.MsoTriState.msoFalse;
-
-                    // 确保下划线长度足够长但不过长
-                    string underline = new string('_', (int)(selectedText.Length * 2.5)); // 动态生成下划线
-
-                    // 将选中的文本用下划线替换
-                    textRange.Text = underline;
-
-                    // 设置新文本框的位置与被选中的文本相同
-                    newTextBox.Left = originalLeft;
-                    newTextBox.Top = originalTop - (originalShape.Height - fontSize) / 2; // 调整文本框位置
-                }
-                else
-                {
-                    MessageBox.Show("请选中文本框内的文本！");
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选中文本框内的文本！");
-            }
-        }
-
-        private float MeasureTextWidth(string text, float fontSize, string fontName)
-        {
-            using (var bmp = new System.Drawing.Bitmap(1, 1))
-            {
-                using (var g = System.Drawing.Graphics.FromImage(bmp))
-                {
-                    var font = new System.Drawing.Font(fontName, fontSize);
-                    var size = g.MeasureString(text, font);
-                    return size.Width;
-                }
-            }
-        }
+   
 
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
@@ -3152,7 +3073,7 @@ End Sub
 
         private void Experte抠图_Click(object sender, RibbonControlEventArgs e)
         {
-            string url = "https://www.experte.com/background-remover";
+            string url = "https://quzuotu.com/home";
             try
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -3201,11 +3122,259 @@ End Sub
                 timerForm.BringToFront();
             }
         }
+
+        private void 原位转图_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var presentation = application.ActivePresentation;
+            var slide = application.ActiveWindow.View.Slide;
+
+            if (application.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShapes = application.ActiveWindow.Selection.ShapeRange;
+                foreach (Shape shape in selectedShapes)
+                {
+                    // 复制选定的形状
+                    shape.Copy();
+
+                    // 粘贴为图片
+                    var pictureShape = slide.Shapes.PasteSpecial(PpPasteDataType.ppPastePNG)[1];
+
+                    // 获取原始位置和大小
+                    float left = shape.Left;
+                    float top = shape.Top;
+                    float width = shape.Width;
+                    float height = shape.Height;
+
+                    // 设置图片的位置和大小
+                    pictureShape.Left = left;
+                    pictureShape.Top = top;
+                    pictureShape.Width = width;
+                    pictureShape.Height = height;
+
+                    // 删除原来的形状
+                    shape.Delete();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选择一个或多个对象。");
+            }
+        }
+
+        private void 统一大小_Click_1(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var presentation = application.ActivePresentation;
+            var slide = application.ActiveWindow.View.Slide;
+
+            if (application.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShapes = application.ActiveWindow.Selection.ShapeRange;
+
+                if (selectedShapes.Count > 1)
+                {
+                    // 获取第一个选中的对象的宽度和高度
+                    float targetWidth = selectedShapes[1].Width;
+                    float targetHeight = selectedShapes[1].Height;
+
+                    // 遍历后续被选中的对象
+                    for (int i = 2; i <= selectedShapes.Count; i++)
+                    {
+                        Shape shape = selectedShapes[i];
+
+                        if (shape.Type == MsoShapeType.msoPicture)
+                        {
+                            // 处理透明背景图片
+                            HandleTransparentImage(shape, targetWidth, targetHeight);
+                        }
+                        else
+                        {
+                            // 统一大小
+                            shape.Width = targetWidth;
+                            shape.Height = targetHeight;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请至少选择两个对象。");
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选择一个或多个对象。");
+            }
+        }
+
+        private void HandleTransparentImage(Shape shape, float targetWidth, float targetHeight)
+        {
+            // 为透明背景图片添加一个临时背景
+            shape.Fill.Solid();
+            shape.Fill.ForeColor.RGB = Color.White.ToArgb();
+            shape.Fill.Transparency = 0.0f;
+
+            // 裁剪和调整大小
+            CropAndResizePicture(shape, targetWidth, targetHeight);
+
+            // 去掉临时背景
+            shape.Fill.Transparency = 1.0f;
+        }
+
+        private void CropAndResizePicture(Shape shape, float targetWidth, float targetHeight)
+        {
+            // 获取图片的原始宽高
+            float originalWidth = shape.Width;
+            float originalHeight = shape.Height;
+
+            // 计算目标宽高比
+            float targetRatio = targetWidth / targetHeight;
+
+            // 计算裁剪区域，使其匹配目标宽高比
+            float cropWidth = originalWidth;
+            float cropHeight = originalHeight;
+
+            if (originalWidth / originalHeight > targetRatio)
+            {
+                // 如果宽高比过大，需要裁剪宽度
+                cropWidth = originalHeight * targetRatio;
+            }
+            else
+            {
+                // 如果宽高比过小，需要裁剪高度
+                cropHeight = originalWidth / targetRatio;
+            }
+
+            // 计算裁剪区域的左上角坐标
+            float cropLeft = (originalWidth - cropWidth) / 2;
+            float cropTop = (originalHeight - cropHeight) / 2;
+
+            // 设置裁剪
+            shape.PictureFormat.CropLeft = cropLeft;
+            shape.PictureFormat.CropRight = originalWidth - cropWidth - cropLeft;
+            shape.PictureFormat.CropTop = cropTop;
+            shape.PictureFormat.CropBottom = originalHeight - cropHeight - cropTop;
+
+            // 调整大小，确保保持比例
+            shape.LockAspectRatio = MsoTriState.msoTrue;
+            shape.Width = targetWidth;
+            shape.Height = targetHeight;
+
+            // 修正最终尺寸，确保与目标尺寸一致
+            shape.LockAspectRatio = MsoTriState.msoFalse;
+            shape.Width = targetWidth;
+            shape.Height = targetHeight;
+        }
+
+        private void 统一格式_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var presentation = application.ActivePresentation;
+            var slide = application.ActiveWindow.View.Slide;
+
+            if (application.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShapes = application.ActiveWindow.Selection.ShapeRange;
+
+                if (selectedShapes.Count > 1)
+                {
+                    Shape baseShape = selectedShapes[1];
+
+                    // 遍历后续被选中的对象
+                    for (int i = 2; i <= selectedShapes.Count; i++)
+                    {
+                        Shape shape = selectedShapes[i];
+                        try
+                        {
+                            // 使用格式刷功能复制格式
+                            baseShape.PickUp();
+                            shape.Apply();
+                        }
+                        catch (Exception ex)
+                        {
+                            // 忽略不支持的格式，并记录异常
+                            Console.WriteLine($"应用格式时出错: {ex.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请至少选择两个对象。");
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选择一个或多个对象。");
+            }
+        }
+
+        private void 智能缩放_Click(object sender, RibbonControlEventArgs e)
+        {
+            SmartScalingForm scalingForm = new SmartScalingForm();
+            scalingForm.Show();
+        }
+
+        private void splitButton2_Click(object sender, RibbonControlEventArgs e)
+        {
+
+        }
+
+        private void 位图转矢量图_Click(object sender, RibbonControlEventArgs e)
+        {
+            string url = "https://svg.tmttool.com/";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"无法打开链接: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void Bgsub_Click(object sender, RibbonControlEventArgs e)
+        {
+            string url = "https://bgsub.cn/webapp/";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"无法打开链接: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //原位复制一个对象
+        private void LCopy_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                {
+                    PowerPoint.Shape newShape = shape.Duplicate()[1]; // 复制形状
+                    newShape.Left = shape.Left; // 保持原位
+                    newShape.Top = shape.Top;   // 保持原位
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选择一个或多个对象进行复制。", "提示", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            }
+        }
     }
 }
-
-
-
 
 
 

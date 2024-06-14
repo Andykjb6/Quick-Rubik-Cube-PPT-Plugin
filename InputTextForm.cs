@@ -25,17 +25,20 @@ namespace 课件帮PPT助手
             // 
             // inputTextBox
             // 
-            this.inputTextBox.Location = new System.Drawing.Point(12, 12);
+            this.inputTextBox.Location = new System.Drawing.Point(24, 24);
+            this.inputTextBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.inputTextBox.Multiline = true;
             this.inputTextBox.Name = "inputTextBox";
-            this.inputTextBox.Size = new System.Drawing.Size(260, 200);
+            this.inputTextBox.Size = new System.Drawing.Size(516, 396);
             this.inputTextBox.TabIndex = 0;
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(116, 228);
+            this.okButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
+            this.okButton.Location = new System.Drawing.Point(232, 456);
+            this.okButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.Size = new System.Drawing.Size(150, 46);
             this.okButton.TabIndex = 1;
             this.okButton.Text = "确定";
             this.okButton.UseVisualStyleBackColor = true;
@@ -43,9 +46,11 @@ namespace 课件帮PPT助手
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(197, 228);
+            this.cancelButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
+            this.cancelButton.Location = new System.Drawing.Point(394, 456);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
+            this.cancelButton.Size = new System.Drawing.Size(150, 46);
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "取消";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -53,12 +58,13 @@ namespace 课件帮PPT助手
             // 
             // InputTextForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(568, 522);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.inputTextBox);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "InputTextForm";
             this.Text = "输入文本";
             this.ResumeLayout(false);

@@ -171,6 +171,7 @@ namespace 课件帮PPT助手
             this.导出.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(62)))), ((int)(((byte)(228)))));
             this.导出.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(107)))), ((int)(((byte)(254)))));
             this.导出.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.导出.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.导出.ForeColor = System.Drawing.Color.White;
             this.导出.Location = new System.Drawing.Point(25, 603);
             this.导出.Name = "导出";
@@ -200,8 +201,11 @@ namespace 课件帮PPT助手
             this.Controls.Add(this.relatedWordsLabel);
             this.Controls.Add(this.wordsPanel);
             this.Controls.Add(this.pictureBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HanziDictionaryForm";
-            this.Text = "汉字字典";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "简易字典";
             this.Load += new System.EventHandler(this.HanziDictionaryForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

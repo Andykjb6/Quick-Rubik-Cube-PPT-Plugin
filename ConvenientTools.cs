@@ -564,10 +564,108 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
+        private void 挖词填空_Click(object sender, EventArgs e)
+        {
+            // 获取当前幻灯片
+            var slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+
+            // 获取选中的文本框
+            if (Globals.ThisAddIn.Application.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionText)
+            {
+                var textRange = Globals.ThisAddIn.Application.ActiveWindow.Selection.TextRange;
+
+                // 获取选中的文本
+                string selectedText = textRange.Text;
+
+                // 如果有选中的文本
+                if (!string.IsNullOrEmpty(selectedText))
+                {
+                    // 获取原文本框的属性
+                    var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+                    var originalShape = selection.ShapeRange[1];
+                    float fontSize = textRange.Font.Size;
+                    string fontName = textRange.Font.Name;
+                    MsoTriState fontBold = textRange.Font.Bold;
+                    MsoTriState fontItalic = textRange.Font.Italic;
+                    MsoTriState fontUnderline = textRange.Font.Underline;
+                    int fontColor = textRange.Font.Color.RGB;
+
+                    // 获取选中文字的位置和大小
+                    float originalLeft = textRange.BoundLeft;
+                    float originalTop = textRange.BoundTop;
+
+                    // 测量选中文本的宽度
+                    float textWidth = MeasureTextWidth(selectedText, fontSize, fontName);
+
+                    // 创建一个新的文本框，并设置其内容为选中的文本
+                    var newTextBox = slide.Shapes.AddTextbox(
+                        Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
+                        originalLeft, originalTop, textWidth, originalShape.Height);
+
+                    var newTextFrame = newTextBox.TextFrame2;
+                    var newTextRange = newTextBox.TextFrame.TextRange;
+                    newTextRange.Text = selectedText;
+
+                    // 应用字体属性
+                    newTextRange.Font.Name = fontName;
+                    newTextRange.Font.Size = fontSize;
+                    newTextRange.Font.Bold = MsoTriState.msoTrue; // 确保加粗
+                    newTextRange.Font.Italic = fontItalic;
+                    newTextRange.Font.Underline = fontUnderline;
+                    newTextRange.Font.Color.RGB = ColorTranslator.ToOle(Color.Red);
+
+                    // 设置文本框不自动换行
+                    newTextFrame.WordWrap = Microsoft.Office.Core.MsoTriState.msoFalse;
+
+                    // 检查是否按住Ctrl键
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        // 动态计算需要的空格字符数量
+                        float spaceWidth = MeasureTextWidth(" ", fontSize, fontName);
+                        int numSpaces = (int)Math.Ceiling((textWidth * 1.1) / spaceWidth); // 1.1倍宽度以确保足够长
+                        string underlineText = new string(' ', numSpaces);
+
+                        // 确保下划线长度适中
+                        textRange.Text = underlineText;
+                        textRange.Font.Underline = MsoTriState.msoTrue;
+                    }
+                    else
+                    {
+                        // 使用“_”字符替换选中的文本
+                        string underline = new string('_', (int)(selectedText.Length * 2.5)); // 动态生成下划线
+                        textRange.Text = underline;
+                    }
+
+                    // 设置新文本框的位置与被选中的文本相同
+                    newTextBox.Left = originalLeft;
+                    newTextBox.Top = originalTop - (originalShape.Height - fontSize) / 2; // 调整文本框位置
+                }
+                else
+                {
+                    MessageBox.Show("请选中文本框内的文本！");
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选中文本框内的文本！");
+            }
+        }
+
+        private float MeasureTextWidth(string text, float fontSize, string fontName)
+        {
+            using (var bmp = new Bitmap(1, 1))
+            {
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    var font = new System.Drawing.Font(fontName, fontSize);
+                    var size = g.MeasureString(text, font);
+                    return size.Width;
+                }
+            }
+        }
     }
 }
-
-
 
 
 

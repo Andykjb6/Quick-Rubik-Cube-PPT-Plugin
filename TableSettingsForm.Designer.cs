@@ -47,10 +47,10 @@
             // labelRows
             // 
             this.labelRows.AutoSize = true;
-            this.labelRows.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelRows.Location = new System.Drawing.Point(21, 31);
+            this.labelRows.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelRows.Location = new System.Drawing.Point(32, 29);
             this.labelRows.Name = "labelRows";
-            this.labelRows.Size = new System.Drawing.Size(80, 27);
+            this.labelRows.Size = new System.Drawing.Size(68, 31);
             this.labelRows.TabIndex = 0;
             this.labelRows.Text = "行数:";
             // 
@@ -80,10 +80,10 @@
             // labelColumns
             // 
             this.labelColumns.AutoSize = true;
-            this.labelColumns.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelColumns.Location = new System.Drawing.Point(21, 79);
+            this.labelColumns.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelColumns.Location = new System.Drawing.Point(32, 74);
             this.labelColumns.Name = "labelColumns";
-            this.labelColumns.Size = new System.Drawing.Size(80, 27);
+            this.labelColumns.Size = new System.Drawing.Size(68, 31);
             this.labelColumns.TabIndex = 2;
             this.labelColumns.Text = "列数:";
             // 
@@ -113,10 +113,10 @@
             // labelRowSpacing
             // 
             this.labelRowSpacing.AutoSize = true;
-            this.labelRowSpacing.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelRowSpacing.Location = new System.Drawing.Point(21, 127);
+            this.labelRowSpacing.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelRowSpacing.Location = new System.Drawing.Point(32, 121);
             this.labelRowSpacing.Name = "labelRowSpacing";
-            this.labelRowSpacing.Size = new System.Drawing.Size(107, 27);
+            this.labelRowSpacing.Size = new System.Drawing.Size(92, 31);
             this.labelRowSpacing.TabIndex = 4;
             this.labelRowSpacing.Text = "行间距:";
             // 
@@ -136,10 +136,10 @@
             // labelColumnSpacing
             // 
             this.labelColumnSpacing.AutoSize = true;
-            this.labelColumnSpacing.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelColumnSpacing.Location = new System.Drawing.Point(21, 175);
+            this.labelColumnSpacing.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelColumnSpacing.Location = new System.Drawing.Point(32, 169);
             this.labelColumnSpacing.Name = "labelColumnSpacing";
-            this.labelColumnSpacing.Size = new System.Drawing.Size(107, 27);
+            this.labelColumnSpacing.Size = new System.Drawing.Size(92, 31);
             this.labelColumnSpacing.TabIndex = 6;
             this.labelColumnSpacing.Text = "列间距:";
             // 
@@ -159,10 +159,10 @@
             // labelWidth
             // 
             this.labelWidth.AutoSize = true;
-            this.labelWidth.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelWidth.Location = new System.Drawing.Point(21, 223);
+            this.labelWidth.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelWidth.Location = new System.Drawing.Point(32, 217);
             this.labelWidth.Name = "labelWidth";
-            this.labelWidth.Size = new System.Drawing.Size(134, 27);
+            this.labelWidth.Size = new System.Drawing.Size(116, 31);
             this.labelWidth.TabIndex = 8;
             this.labelWidth.Text = "边框宽度:";
             // 
@@ -188,10 +188,10 @@
             // labelScale
             // 
             this.labelScale.AutoSize = true;
-            this.labelScale.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelScale.Location = new System.Drawing.Point(21, 323);
+            this.labelScale.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelScale.Location = new System.Drawing.Point(32, 317);
             this.labelScale.Name = "labelScale";
-            this.labelScale.Size = new System.Drawing.Size(134, 27);
+            this.labelScale.Size = new System.Drawing.Size(116, 31);
             this.labelScale.TabIndex = 10;
             this.labelScale.Text = "缩放比例:";
             // 
@@ -209,10 +209,10 @@
             // labelColor
             // 
             this.labelColor.AutoSize = true;
-            this.labelColor.Font = new System.Drawing.Font("宋体", 10F);
-            this.labelColor.Location = new System.Drawing.Point(21, 271);
+            this.labelColor.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.labelColor.Location = new System.Drawing.Point(32, 265);
             this.labelColor.Name = "labelColor";
-            this.labelColor.Size = new System.Drawing.Size(134, 27);
+            this.labelColor.Size = new System.Drawing.Size(116, 31);
             this.labelColor.TabIndex = 12;
             this.labelColor.Text = "边框颜色:";
             // 
@@ -228,7 +228,7 @@
             // buttonOK
             // 
             this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(89)))), ((int)(((byte)(239)))));
-            this.buttonOK.Font = new System.Drawing.Font("宋体", 12F);
+            this.buttonOK.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.buttonOK.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.buttonOK.Location = new System.Drawing.Point(26, 372);
             this.buttonOK.Name = "buttonOK";

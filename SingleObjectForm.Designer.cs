@@ -39,10 +39,10 @@
             // radiusLabel
             // 
             this.radiusLabel.AutoSize = true;
-            this.radiusLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
-            this.radiusLabel.Location = new System.Drawing.Point(44, 45);
+            this.radiusLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.radiusLabel.Location = new System.Drawing.Point(44, 35);
             this.radiusLabel.Name = "radiusLabel";
-            this.radiusLabel.Size = new System.Drawing.Size(139, 27);
+            this.radiusLabel.Size = new System.Drawing.Size(131, 36);
             this.radiusLabel.TabIndex = 0;
             this.radiusLabel.Text = "环形半径:";
             // 
@@ -102,10 +102,10 @@
             // sizeIncrementLabel
             // 
             this.sizeIncrementLabel.AutoSize = true;
-            this.sizeIncrementLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
-            this.sizeIncrementLabel.Location = new System.Drawing.Point(44, 185);
+            this.sizeIncrementLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sizeIncrementLabel.Location = new System.Drawing.Point(44, 175);
             this.sizeIncrementLabel.Name = "sizeIncrementLabel";
-            this.sizeIncrementLabel.Size = new System.Drawing.Size(139, 27);
+            this.sizeIncrementLabel.Size = new System.Drawing.Size(131, 36);
             this.sizeIncrementLabel.TabIndex = 6;
             this.sizeIncrementLabel.Text = "螺旋递进:";
             // 
@@ -122,10 +122,10 @@
             // copyCountLabel
             // 
             this.copyCountLabel.AutoSize = true;
-            this.copyCountLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
-            this.copyCountLabel.Location = new System.Drawing.Point(44, 112);
+            this.copyCountLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.copyCountLabel.Location = new System.Drawing.Point(44, 102);
             this.copyCountLabel.Name = "copyCountLabel";
-            this.copyCountLabel.Size = new System.Drawing.Size(139, 27);
+            this.copyCountLabel.Size = new System.Drawing.Size(131, 36);
             this.copyCountLabel.TabIndex = 8;
             this.copyCountLabel.Text = "复制数量:";
             // 
@@ -144,7 +144,7 @@
             this.resetButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(45)))), ((int)(((byte)(228)))));
             this.resetButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(91)))), ((int)(((byte)(238)))));
             this.resetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.resetButton.Font = new System.Drawing.Font("宋体", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.resetButton.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.resetButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.resetButton.Location = new System.Drawing.Point(49, 322);
             this.resetButton.Name = "resetButton";
@@ -156,10 +156,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(45, 255);
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(45, 245);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(139, 27);
+            this.label1.Size = new System.Drawing.Size(131, 36);
             this.label1.TabIndex = 11;
             this.label1.Text = "角度递进:";
             // 

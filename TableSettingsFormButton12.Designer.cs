@@ -24,10 +24,10 @@
             // labelWidth
             // 
             this.labelWidth.AutoSize = true;
-            this.labelWidth.Font = new System.Drawing.Font("宋体", 11F);
+            this.labelWidth.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.labelWidth.Location = new System.Drawing.Point(38, 40);
             this.labelWidth.Name = "labelWidth";
-            this.labelWidth.Size = new System.Drawing.Size(148, 30);
+            this.labelWidth.Size = new System.Drawing.Size(140, 38);
             this.labelWidth.TabIndex = 0;
             this.labelWidth.Text = "边框宽度:";
             // 
@@ -53,10 +53,10 @@
             // labelColor
             // 
             this.labelColor.AutoSize = true;
-            this.labelColor.Font = new System.Drawing.Font("宋体", 11F);
+            this.labelColor.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.labelColor.Location = new System.Drawing.Point(38, 90);
             this.labelColor.Name = "labelColor";
-            this.labelColor.Size = new System.Drawing.Size(148, 30);
+            this.labelColor.Size = new System.Drawing.Size(140, 38);
             this.labelColor.TabIndex = 2;
             this.labelColor.Text = "边框颜色:";
             // 
@@ -73,7 +73,7 @@
             // buttonOK
             // 
             this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(89)))), ((int)(((byte)(239)))));
-            this.buttonOK.Font = new System.Drawing.Font("宋体", 11F);
+            this.buttonOK.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.buttonOK.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.buttonOK.Location = new System.Drawing.Point(116, 155);
             this.buttonOK.Name = "buttonOK";
@@ -86,7 +86,7 @@
             // buttonApply
             // 
             this.buttonApply.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(89)))), ((int)(((byte)(239)))));
-            this.buttonApply.Font = new System.Drawing.Font("宋体", 11F);
+            this.buttonApply.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.buttonApply.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.buttonApply.Location = new System.Drawing.Point(241, 155);
             this.buttonApply.Name = "buttonApply";

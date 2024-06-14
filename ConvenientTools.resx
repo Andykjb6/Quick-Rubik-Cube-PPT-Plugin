@@ -200,7 +200,7 @@
     <value>微软雅黑, 8pt</value>
   </data>
   <data name="字源字形.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 71</value>
+    <value>32, 41</value>
   </data>
   <data name="字源字形.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -219,7 +219,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;字源字形.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="文字标注.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -294,7 +294,7 @@
     <value>微软雅黑, 8pt</value>
   </data>
   <data name="文字标注.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 145</value>
+    <value>32, 115</value>
   </data>
   <data name="文字标注.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -312,7 +312,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;文字标注.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="笔画拆分.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -396,7 +396,7 @@
     <value>微软雅黑, 8pt</value>
   </data>
   <data name="笔画拆分.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 293</value>
+    <value>32, 263</value>
   </data>
   <data name="笔画拆分.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -414,7 +414,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;笔画拆分.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="书写动画.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -500,7 +500,7 @@
     <value>微软雅黑, 8pt</value>
   </data>
   <data name="书写动画.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 367</value>
+    <value>32, 337</value>
   </data>
   <data name="书写动画.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -518,7 +518,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;书写动画.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="汉字字典.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -596,7 +596,7 @@
     <value>微软雅黑, 8pt</value>
   </data>
   <data name="汉字字典.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 219</value>
+    <value>32, 189</value>
   </data>
   <data name="汉字字典.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -614,7 +614,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;汉字字典.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="分解笔顺.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -716,7 +716,7 @@
     <value>NoControl</value>
   </data>
   <data name="分解笔顺.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 441</value>
+    <value>32, 411</value>
   </data>
   <data name="分解笔顺.Size" type="System.Drawing.Size, System.Drawing">
     <value>194, 56</value>
@@ -734,6 +734,98 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;分解笔顺.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="挖词填空.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        b9flBQAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="挖词填空.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
+    <value>Stretch</value>
+  </data>
+  <data name="挖词填空.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
+    <value>Flat</value>
+  </data>
+  <data name="挖词填空.Font" type="System.Drawing.Font, System.Drawing">
+    <value>微软雅黑, 8pt</value>
+  </data>
+  <data name="挖词填空.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="挖词填空.Location" type="System.Drawing.Point, System.Drawing">
+    <value>32, 485</value>
+  </data>
+  <data name="挖词填空.Size" type="System.Drawing.Size, System.Drawing">
+    <value>194, 56</value>
+  </data>
+  <data name="挖词填空.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;挖词填空.Name" xml:space="preserve">
+    <value>挖词填空</value>
+  </data>
+  <data name="&gt;&gt;挖词填空.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;挖词填空.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;挖词填空.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">

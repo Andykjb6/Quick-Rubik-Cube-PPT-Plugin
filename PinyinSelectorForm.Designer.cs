@@ -32,6 +32,7 @@
             this.refreshButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(81)))), ((int)(((byte)(225)))));
             this.refreshButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(126)))), ((int)(((byte)(236)))));
             this.refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.refreshButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold);
             this.refreshButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.refreshButton.Location = new System.Drawing.Point(58, 95);
             this.refreshButton.Name = "refreshButton";
@@ -47,6 +48,7 @@
             this.replaceButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(81)))), ((int)(((byte)(225)))));
             this.replaceButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(126)))), ((int)(((byte)(236)))));
             this.replaceButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.replaceButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold);
             this.replaceButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.replaceButton.Location = new System.Drawing.Point(184, 95);
             this.replaceButton.Name = "replaceButton";
@@ -62,6 +64,7 @@
             this.closeButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(81)))), ((int)(((byte)(225)))));
             this.closeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(126)))), ((int)(((byte)(236)))));
             this.closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.closeButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold);
             this.closeButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.closeButton.Location = new System.Drawing.Point(304, 95);
             this.closeButton.Name = "closeButton";

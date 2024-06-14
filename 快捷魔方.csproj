@@ -466,6 +466,12 @@
     <Compile Include="SingleObjectForm.Designer.cs">
       <DependentUpon>SingleObjectForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Smartscaling.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Smartscaling.Designer.cs">
+      <DependentUpon>Smartscaling.cs</DependentUpon>
+    </Compile>
     <Compile Include="SpecifyalignmentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -529,6 +535,9 @@
     <EmbeddedResource Include="InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="InputTextForm.resx">
+      <DependentUpon>InputTextForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MatrixDistributionForm.resx">
       <DependentUpon>MatrixDistributionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -588,6 +597,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SingleObjectForm.resx">
       <DependentUpon>SingleObjectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Smartscaling.resx">
+      <DependentUpon>Smartscaling.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpecifyalignmentForm.resx">
       <DependentUpon>SpecifyalignmentForm.cs</DependentUpon>

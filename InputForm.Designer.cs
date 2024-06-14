@@ -27,6 +27,7 @@
             this.okButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(100)))), ((int)(((byte)(247)))));
             this.okButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.okButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.okButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.okButton.Location = new System.Drawing.Point(0, 101);
             this.okButton.Name = "okButton";

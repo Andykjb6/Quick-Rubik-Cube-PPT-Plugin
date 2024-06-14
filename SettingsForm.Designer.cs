@@ -48,10 +48,10 @@
             // 
             this.timeFontLabel.AutoSize = true;
             this.timeFontLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.timeFontLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
+            this.timeFontLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.timeFontLabel.Location = new System.Drawing.Point(23, 33);
             this.timeFontLabel.Name = "timeFontLabel";
-            this.timeFontLabel.Size = new System.Drawing.Size(152, 27);
+            this.timeFontLabel.Size = new System.Drawing.Size(150, 36);
             this.timeFontLabel.TabIndex = 0;
             this.timeFontLabel.Text = "时钟字体：";
             // 
@@ -68,10 +68,10 @@
             // 
             this.timeTextColorLabel.AutoSize = true;
             this.timeTextColorLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.timeTextColorLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
+            this.timeTextColorLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.timeTextColorLabel.Location = new System.Drawing.Point(23, 93);
             this.timeTextColorLabel.Name = "timeTextColorLabel";
-            this.timeTextColorLabel.Size = new System.Drawing.Size(152, 27);
+            this.timeTextColorLabel.Size = new System.Drawing.Size(150, 36);
             this.timeTextColorLabel.TabIndex = 2;
             this.timeTextColorLabel.Text = "时钟颜色：";
             // 
@@ -97,10 +97,10 @@
             // 
             this.countdownLabel.AutoSize = true;
             this.countdownLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.countdownLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
+            this.countdownLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.countdownLabel.Location = new System.Drawing.Point(23, 143);
             this.countdownLabel.Name = "countdownLabel";
-            this.countdownLabel.Size = new System.Drawing.Size(152, 27);
+            this.countdownLabel.Size = new System.Drawing.Size(150, 36);
             this.countdownLabel.TabIndex = 5;
             this.countdownLabel.Text = "计时模式：";
             // 
@@ -126,10 +126,10 @@
             // 
             this.backgroundColorLabel.AutoSize = true;
             this.backgroundColorLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.backgroundColorLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
+            this.backgroundColorLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.backgroundColorLabel.Location = new System.Drawing.Point(23, 193);
             this.backgroundColorLabel.Name = "backgroundColorLabel";
-            this.backgroundColorLabel.Size = new System.Drawing.Size(152, 27);
+            this.backgroundColorLabel.Size = new System.Drawing.Size(150, 36);
             this.backgroundColorLabel.TabIndex = 8;
             this.backgroundColorLabel.Text = "背景颜色：";
             // 
@@ -155,10 +155,10 @@
             // 
             this.darkModeButtonColorLabel.AutoSize = true;
             this.darkModeButtonColorLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.darkModeButtonColorLabel.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold);
+            this.darkModeButtonColorLabel.Font = new System.Drawing.Font("微软雅黑", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.darkModeButtonColorLabel.Location = new System.Drawing.Point(23, 243);
             this.darkModeButtonColorLabel.Name = "darkModeButtonColorLabel";
-            this.darkModeButtonColorLabel.Size = new System.Drawing.Size(167, 27);
+            this.darkModeButtonColorLabel.Size = new System.Drawing.Size(163, 36);
             this.darkModeButtonColorLabel.TabIndex = 11;
             this.darkModeButtonColorLabel.Text = "暗/浅模式：";
             // 
@@ -185,7 +185,7 @@
             this.okButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(57)))), ((int)(((byte)(240)))));
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.okButton.Font = new System.Drawing.Font("宋体", 11F, System.Drawing.FontStyle.Bold);
+            this.okButton.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.okButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.okButton.Location = new System.Drawing.Point(137, 308);
             this.okButton.Name = "okButton";
@@ -199,7 +199,7 @@
             this.cancelButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(57)))), ((int)(((byte)(240)))));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cancelButton.Font = new System.Drawing.Font("宋体", 11F, System.Drawing.FontStyle.Bold);
+            this.cancelButton.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.cancelButton.Location = new System.Drawing.Point(268, 308);
             this.cancelButton.Name = "cancelButton";

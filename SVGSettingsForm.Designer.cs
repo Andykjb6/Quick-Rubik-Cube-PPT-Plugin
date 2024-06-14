@@ -29,7 +29,7 @@
             this.selectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(91)))), ((int)(((byte)(240)))));
             this.selectButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.selectButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.selectButton.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.selectButton.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.selectButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.selectButton.Location = new System.Drawing.Point(0, 306);
             this.selectButton.Name = "selectButton";

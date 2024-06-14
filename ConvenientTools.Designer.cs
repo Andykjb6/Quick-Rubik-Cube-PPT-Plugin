@@ -35,6 +35,7 @@
             this.书写动画 = new System.Windows.Forms.Button();
             this.汉字字典 = new System.Windows.Forms.Button();
             this.分解笔顺 = new System.Windows.Forms.Button();
+            this.挖词填空 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // 字源字形
@@ -108,11 +109,23 @@
             this.分解笔顺.UseVisualStyleBackColor = false;
             this.分解笔顺.Click += new System.EventHandler(this.分解笔顺_Click);
             // 
+            // 挖词填空
+            // 
+            this.挖词填空.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            resources.ApplyResources(this.挖词填空, "挖词填空");
+            this.挖词填空.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(220)))), ((int)(((byte)(253)))));
+            this.挖词填空.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(239)))), ((int)(((byte)(254)))));
+            this.挖词填空.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(7)))), ((int)(((byte)(80)))), ((int)(((byte)(233)))));
+            this.挖词填空.Name = "挖词填空";
+            this.挖词填空.UseVisualStyleBackColor = false;
+            this.挖词填空.Click += new System.EventHandler(this.挖词填空_Click);
+            // 
             // DesignTools
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.Controls.Add(this.挖词填空);
             this.Controls.Add(this.分解笔顺);
             this.Controls.Add(this.汉字字典);
             this.Controls.Add(this.书写动画);
@@ -133,5 +146,6 @@
         private System.Windows.Forms.Button 书写动画;
         private System.Windows.Forms.Button 汉字字典;
         private System.Windows.Forms.Button 分解笔顺;
+        private System.Windows.Forms.Button 挖词填空;
     }
 }

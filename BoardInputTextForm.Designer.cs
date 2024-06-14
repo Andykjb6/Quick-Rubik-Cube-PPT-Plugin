@@ -30,7 +30,7 @@ namespace 课件帮PPT助手
             this.textBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(43)))), ((int)(((byte)(222)))));
             this.textBox.Location = new System.Drawing.Point(24, 22);
-            this.textBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.textBox.Margin = new System.Windows.Forms.Padding(6);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(716, 274);
@@ -44,12 +44,12 @@ namespace 课件帮PPT助手
             this.okButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(53)))), ((int)(((byte)(232)))));
             this.okButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(114)))), ((int)(((byte)(240)))));
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.okButton.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.okButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.okButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.okButton.Location = new System.Drawing.Point(432, 310);
-            this.okButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.okButton.Margin = new System.Windows.Forms.Padding(6);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(146, 42);
+            this.okButton.Size = new System.Drawing.Size(146, 46);
             this.okButton.TabIndex = 1;
             this.okButton.Text = "确定";
             this.okButton.UseVisualStyleBackColor = false;
@@ -62,12 +62,12 @@ namespace 课件帮PPT助手
             this.cancelButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(53)))), ((int)(((byte)(232)))));
             this.cancelButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(114)))), ((int)(((byte)(240)))));
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cancelButton.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cancelButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
             this.cancelButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.cancelButton.Location = new System.Drawing.Point(594, 310);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(6);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(146, 42);
+            this.cancelButton.Size = new System.Drawing.Size(146, 46);
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "取消";
             this.cancelButton.UseVisualStyleBackColor = false;
@@ -84,12 +84,13 @@ namespace 课件帮PPT助手
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.textBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "BoardInputTextForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "请输入分行文本";
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.BoardInputTextForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
