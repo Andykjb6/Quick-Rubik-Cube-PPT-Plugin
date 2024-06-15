@@ -26,6 +26,11 @@ using System.Numerics;
 using Application = Microsoft.Office.Interop.PowerPoint.Application;
 using System.Reflection;
 using Microsoft.Office.Tools;
+using System.Drawing.Text;
+using NStandard;
+using System.Web.UI.WebControls;
+using Microsoft.Win32;
+using System.Globalization;
 
 
 namespace 课件帮PPT助手
@@ -1830,8 +1835,7 @@ namespace 课件帮PPT助手
                 int counter = 1;
                 foreach (Shape shape in selection.ShapeRange)
                 {
-                    shape.Name = $"{prefix}-{counter}";
-                    counter++;
+                    RenameShape(shape, prefix, ref counter);
                 }
 
                 // 刷新视图
@@ -1840,6 +1844,24 @@ namespace 课件帮PPT助手
             else
             {
                 MessageBox.Show("请选择一个或多个对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void RenameShape(Shape shape, string prefix, ref int counter)
+        {
+            if (shape.Type == MsoShapeType.msoGroup)
+            {
+                // 如果形状是组合，则递归处理组合内的每个子形状
+                foreach (Shape childShape in shape.GroupItems)
+                {
+                    RenameShape(childShape, prefix, ref counter);
+                }
+            }
+            else
+            {
+                // 如果形状不是组合，直接重命名
+                shape.Name = $"{prefix}-{counter}";
+                counter++;
             }
         }
 
@@ -3373,11 +3395,157 @@ End Sub
                 System.Windows.Forms.MessageBox.Show("请选择一个或多个对象进行复制。", "提示", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             }
         }
+
+
+       
+        private void 打包文档_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                // 获取当前演示文稿
+                Microsoft.Office.Interop.PowerPoint.Application app = Globals.ThisAddIn.Application;
+                Presentation presentation = app.ActivePresentation;
+
+                // 获取演示文稿名称
+                string presentationName = Path.GetFileNameWithoutExtension(presentation.FullName);
+
+                // 创建文件夹路径
+                string folderPath = Path.Combine("C:\\", presentationName);
+
+                // 创建文件夹
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                // 保存演示文稿
+                string presentationPath = Path.Combine(folderPath, presentationName + ".pptx");
+                presentation.SaveCopyAs(presentationPath);
+
+                // 创建“文档所用字体”子文件夹
+                string fontsFolderPath = Path.Combine(folderPath, "文档所用字体");
+                if (!Directory.Exists(fontsFolderPath))
+                {
+                    Directory.CreateDirectory(fontsFolderPath);
+                }
+
+                // 获取演示文稿所用的所有字体
+                for (int i = 1; i <= presentation.Fonts.Count; i++)
+                {
+                    Microsoft.Office.Interop.PowerPoint.Font font = presentation.Fonts[i];
+                    string fontFilePath = GetFontFilePath(font.Name);
+
+                    if (!string.IsNullOrEmpty(fontFilePath))
+                    {
+                        try
+                        {
+                            // 复制字体文件到“文档所用字体”子文件夹
+                            string destFontPath = Path.Combine(fontsFolderPath, Path.GetFileName(fontFilePath));
+                            File.Copy(fontFilePath, destFontPath, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"字体 {font.Name} 复制失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show($"未找到字体文件: {font.Name}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+
+                MessageBox.Show("打包完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("打包过程中出错: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string GetFontFilePath(string fontName)
+        {
+            // 在注册表中查找字体文件路径
+            string fontFilePath = FindFontFilePathInRegistry(fontName, Registry.LocalMachine);
+            if (!string.IsNullOrEmpty(fontFilePath))
+            {
+                return fontFilePath;
+            }
+
+            // 在用户注册表中查找字体文件路径
+            fontFilePath = FindFontFilePathInRegistry(fontName, Registry.CurrentUser);
+            if (!string.IsNullOrEmpty(fontFilePath))
+            {
+                return fontFilePath;
+            }
+
+            // 在系统字体文件夹中查找
+            fontFilePath = FindFontFilePathInDirectory(fontName, Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
+            if (!string.IsNullOrEmpty(fontFilePath))
+            {
+                return fontFilePath;
+            }
+
+            // 在用户字体文件夹中查找（如果有）
+            string userFontDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft\\Windows\\Fonts");
+            fontFilePath = FindFontFilePathInDirectory(fontName, userFontDir);
+            if (!string.IsNullOrEmpty(fontFilePath))
+            {
+                return fontFilePath;
+            }
+
+            return null;
+        }
+
+        private string FindFontFilePathInRegistry(string fontName, RegistryKey registryKey)
+        {
+            string fontFilePath = null;
+            string fontsRegistryPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts";
+
+            using (RegistryKey key = registryKey.OpenSubKey(fontsRegistryPath, false))
+            {
+                if (key != null)
+                {
+                    foreach (string fontRegName in key.GetValueNames())
+                    {
+                        if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(fontRegName, fontName, CompareOptions.IgnoreCase) >= 0)
+                        {
+                            fontFilePath = key.GetValue(fontRegName) as string;
+                            if (!string.IsNullOrEmpty(fontFilePath))
+                            {
+                                if (!Path.IsPathRooted(fontFilePath))
+                                {
+                                    fontFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), fontFilePath);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return fontFilePath;
+        }
+
+        private string FindFontFilePathInDirectory(string fontName, string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                var fontFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
+                                         .Where(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                                                     f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
+
+                foreach (string fontFile in fontFiles)
+                {
+                    if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(Path.GetFileNameWithoutExtension(fontFile), fontName, CompareOptions.IgnoreCase) >= 0)
+                    {
+                        return fontFile;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
-
-
-
 
 
 

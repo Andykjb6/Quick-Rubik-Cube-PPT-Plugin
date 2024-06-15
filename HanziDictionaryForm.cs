@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 using Office = Microsoft.Office.Core;
@@ -39,7 +40,7 @@ namespace 课件帮PPT助手
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             hanziDictionary = new Dictionary<string, HanziInfo>();
-            string filePath = @"C:\Users\Andy\source\repos\课件帮PPT助手\汉字字典\汉字字典.xlsx";
+            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
 
             if (!File.Exists(filePath))
             {
@@ -79,6 +80,24 @@ namespace 课件帮PPT助手
                     };
                 }
             }
+        }
+
+        private string ExtractEmbeddedResource(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceStream = assembly.GetManifestResourceStream(resourceName);
+
+            if (resourceStream == null)
+                throw new Exception($"Embedded resource {resourceName} not found.");
+
+            string tempFilePath = Path.Combine(Path.GetTempPath(), resourceName);
+
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create))
+            {
+                resourceStream.CopyTo(fileStream);
+            }
+
+            return tempFilePath;
         }
 
         private void SearchButton_Click(object sender, EventArgs e)

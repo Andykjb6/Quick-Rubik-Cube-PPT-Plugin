@@ -246,12 +246,12 @@ namespace 课件帮PPT助手
             this.Controls.Add(this.totalCountTrackBar);
             this.Controls.Add(this.horizontalCountLabel);
             this.Controls.Add(this.totalCountLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MatrixDistributionForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "矩阵分布";
-            this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.totalCountTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalCountNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.horizontalCountTrackBar)).EndInit();
