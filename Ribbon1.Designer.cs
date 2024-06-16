@@ -111,6 +111,7 @@ namespace 课件帮PPT助手
             this.统一 = this.Factory.CreateRibbonSplitButton();
             this.统一大小 = this.Factory.CreateRibbonButton();
             this.统一格式 = this.Factory.CreateRibbonButton();
+            this.生成样机 = this.Factory.CreateRibbonButton();
             this.LCopy = this.Factory.CreateRibbonButton();
             this.button20 = this.Factory.CreateRibbonButton();
             this.group6 = this.Factory.CreateRibbonGroup();
@@ -718,6 +719,7 @@ namespace 课件帮PPT助手
             this.更多便捷.Items.Add(this.音频);
             this.更多便捷.Items.Add(this.交换);
             this.更多便捷.Items.Add(this.统一);
+            this.更多便捷.Items.Add(this.生成样机);
             this.更多便捷.Items.Add(this.LCopy);
             this.更多便捷.Items.Add(this.button20);
             this.更多便捷.Label = "便捷";
@@ -832,6 +834,13 @@ namespace 课件帮PPT助手
             this.统一格式.Name = "统一格式";
             this.统一格式.ShowImage = true;
             this.统一格式.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.统一格式_Click);
+            // 
+            // 生成样机
+            // 
+            this.生成样机.Image = ((System.Drawing.Image)(resources.GetObject("生成样机.Image")));
+            this.生成样机.Label = "生成样机";
+            this.生成样机.Name = "生成样机";
+            this.生成样机.ShowImage = true;
             // 
             // LCopy
             // 
@@ -1093,6 +1102,7 @@ namespace 课件帮PPT助手
         internal RibbonSplitButton 矢量;
         internal RibbonButton LCopy;
         internal RibbonButton 打包文档;
+        internal RibbonButton 生成样机;
     }
 
     partial class ThisRibbonCollection
