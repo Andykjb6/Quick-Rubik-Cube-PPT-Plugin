@@ -463,6 +463,12 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SampleGenerationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SampleGenerationForm.Designer.cs">
+      <DependentUpon>SampleGenerationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -558,14 +564,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -594,6 +594,10 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\样机样式3.pptx" />
+    <None Include="Resources\样机样式4.pptx" />
+    <None Include="Resources\样机样式5.pptx" />
+    <None Include="Resources\样机样式6.pptx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
@@ -601,6 +605,9 @@
       <DependentUpon>ThisAddIn.Designer.xml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="SampleGenerationForm.resx">
+      <DependentUpon>SampleGenerationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -632,8 +639,6 @@
       <DependentUpon>TransparencyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="汉字字典\汉字字典.xlsx" />
-    <None Include="样机展示\样机样式1.pptx" />
-    <None Include="样机展示\样机样式2.pptx" />
     <None Include="课件帮PPT助手_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -694,6 +699,7 @@
     <Content Include="icon\选择结束.png" />
     <Content Include="icon\选择记录中.png" />
     <Content Include="icon\顶部对齐.png" />
+    <None Include="Resources\PPT样机.bmp" />
     <EmbeddedResource Include="Ribbon.xml" />
     <EmbeddedResource Include="icon\田字格.png" />
   </ItemGroup>

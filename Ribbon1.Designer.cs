@@ -841,6 +841,7 @@ namespace 课件帮PPT助手
             this.生成样机.Label = "生成样机";
             this.生成样机.Name = "生成样机";
             this.生成样机.ShowImage = true;
+            this.生成样机.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.生成样机_Click);
             // 
             // LCopy
             // 

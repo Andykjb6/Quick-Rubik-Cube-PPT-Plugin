@@ -3546,9 +3546,164 @@ End Sub
             }
             return null;
         }
+
+        private void 生成样机_Click(object sender, RibbonControlEventArgs e)
+        {
+            using (var form = new SampleGenerationForm())
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    var exportSelectedSlides = form.ExportSelectedSlides;
+                    var exportAllSlides = form.ExportAllSlides;
+                    var selectedSampleStyle = form.SelectedSampleStyle;
+
+                    var pptApp = Globals.ThisAddIn.Application;
+                    var presentation = pptApp.ActivePresentation;
+
+                    var tempFolder = Path.Combine(Path.GetTempPath(), "PPTImages");
+                    if (!Directory.Exists(tempFolder))
+                    {
+                        Directory.CreateDirectory(tempFolder);
+                    }
+
+                    try
+                    {
+                        SlideRange selectedSlides = null;
+                        if (exportSelectedSlides)
+                        {
+                            selectedSlides = pptApp.ActiveWindow.Selection.SlideRange;
+                        }
+
+                        if (exportAllSlides || (selectedSlides != null && selectedSlides.Count > 0))
+                        {
+                            int slideIndex = 1;
+                            if (exportAllSlides)
+                            {
+                                foreach (Slide slide in presentation.Slides)
+                                {
+                                    string imagePath = Path.Combine(tempFolder, $"Slide{slideIndex}.png");
+                                    slide.Export(imagePath, "PNG");
+                                    slideIndex++;
+                                }
+                            }
+                            else if (selectedSlides != null)
+                            {
+                                foreach (Slide slide in selectedSlides)
+                                {
+                                    string imagePath = Path.Combine(tempFolder, $"Slide{slideIndex}.png");
+                                    slide.Export(imagePath, "PNG");
+                                    slideIndex++;
+                                }
+                            }
+
+                            string samplePath = GetSamplePath(selectedSampleStyle, tempFolder);
+                            var samplePresentation = pptApp.Presentations.Open(samplePath);
+
+                            int fillIndex = 1;
+                            foreach (Slide slide in samplePresentation.Slides)
+                            {
+                                foreach (Shape shape in slide.Shapes)
+                                {
+                                    if (shape.Type == MsoShapeType.msoGroup)
+                                    {
+                                        FillGroupShapes(shape.GroupItems, ref fillIndex, tempFolder);
+                                    }
+                                    else if (shape.Name.StartsWith("样机填充-"))
+                                    {
+                                        string imagePath = Path.Combine(tempFolder, $"Slide{fillIndex}.png");
+                                        if (File.Exists(imagePath))
+                                        {
+                                            shape.Fill.UserPicture(imagePath);
+                                            fillIndex++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "生成的样机展示.pptx");
+                            samplePresentation.SaveAs(savePath);
+                            samplePresentation.Close();
+
+                            MessageBox.Show($"样机展示已生成并保存在：{savePath}", "生成成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // 打开生成的样机展示文档
+                            pptApp.Presentations.Open(savePath);
+                        }
+                        else
+                        {
+                            MessageBox.Show("没有选择任何幻灯片", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"生成样机展示时发生错误：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        if (Directory.Exists(tempFolder))
+                        {
+                            Directory.Delete(tempFolder, true);
+                        }
+                    }
+                }
+            }
+        }
+
+        private string GetSamplePath(int selectedSampleStyle, string tempFolder)
+        {
+            string samplePath = string.Empty;
+            switch (selectedSampleStyle)
+            {
+                case 1:
+                    samplePath = Path.Combine(tempFolder, "样机样式1.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式1);
+                    break;
+                case 2:
+                    samplePath = Path.Combine(tempFolder, "样机样式2.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式2);
+                    break;
+                case 3:
+                    samplePath = Path.Combine(tempFolder, "样机样式3.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式3);
+                    break;
+                case 4:
+                    samplePath = Path.Combine(tempFolder, "样机样式4.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式4);
+                    break;
+                case 5:
+                    samplePath = Path.Combine(tempFolder, "样机样式5.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式5);
+                    break;
+                case 6:
+                    samplePath = Path.Combine(tempFolder, "样机样式6.pptx");
+                    File.WriteAllBytes(samplePath, Properties.Resources.样机样式6);
+                    break;
+            }
+
+            return samplePath;
+        }
+
+        private void FillGroupShapes(PowerPoint.GroupShapes groupShapes, ref int fillIndex, string tempFolder)
+        {
+            foreach (Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    FillGroupShapes(shape.GroupItems, ref fillIndex, tempFolder);
+                }
+                else if (shape.Name.StartsWith("样机填充-"))
+                {
+                    string imagePath = Path.Combine(tempFolder, $"Slide{fillIndex}.png");
+                    if (File.Exists(imagePath))
+                    {
+                        shape.Fill.UserPicture(imagePath);
+                        fillIndex++;
+                    }
+                }
+            }
+        }
     }
 }
-
 
 
 
