@@ -463,6 +463,11 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SampleGenerationForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -565,6 +570,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Ribbon1.resx">
       <DependentUpon>Ribbon1.cs</DependentUpon>
@@ -594,6 +600,8 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\样机样式1.pptx" />
+    <None Include="Resources\样机样式2.pptx" />
     <None Include="Resources\样机样式3.pptx" />
     <None Include="Resources\样机样式4.pptx" />
     <None Include="Resources\样机样式5.pptx" />
@@ -699,6 +707,18 @@
     <Content Include="icon\选择结束.png" />
     <Content Include="icon\选择记录中.png" />
     <Content Include="icon\顶部对齐.png" />
+    <None Include="Resources\原始样机6.png" />
+    <None Include="Resources\原始样机5.png" />
+    <None Include="Resources\原始样机4.png" />
+    <None Include="Resources\原始样机3.png" />
+    <None Include="Resources\原始样机2.png" />
+    <None Include="Resources\原始样机1.png" />
+    <None Include="Resources\样机1.png" />
+    <None Include="Resources\样机2.png" />
+    <None Include="Resources\样机3.png" />
+    <None Include="Resources\样机4.png" />
+    <None Include="Resources\样机5.png" />
+    <None Include="Resources\样机6.png" />
     <None Include="Resources\PPT样机.bmp" />
     <EmbeddedResource Include="Ribbon.xml" />
     <EmbeddedResource Include="icon\田字格.png" />

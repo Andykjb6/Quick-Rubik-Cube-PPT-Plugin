@@ -118,11 +118,47 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="原始样机1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="原始样机2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="原始样机3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="原始样机4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="原始样机5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="原始样机6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\原始样机6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="样机6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\样机6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="样机样式1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\样机展示\样机样式1.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\样机样式1.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="样机样式2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\样机展示\样机样式2.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\样机样式2.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="样机样式3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\样机样式3.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

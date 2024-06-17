@@ -3457,6 +3457,9 @@ End Sub
                 }
 
                 MessageBox.Show("打包完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // 打开主文件夹
+                System.Diagnostics.Process.Start("explorer.exe", folderPath);
             }
             catch (Exception ex)
             {
@@ -3556,6 +3559,7 @@ End Sub
                     var exportSelectedSlides = form.ExportSelectedSlides;
                     var exportAllSlides = form.ExportAllSlides;
                     var selectedSampleStyle = form.SelectedSampleStyle;
+                    var selectedResolution = form.SelectedResolution;
 
                     var pptApp = Globals.ThisAddIn.Application;
                     var presentation = pptApp.ActivePresentation;
@@ -3577,12 +3581,13 @@ End Sub
                         if (exportAllSlides || (selectedSlides != null && selectedSlides.Count > 0))
                         {
                             int slideIndex = 1;
+                            var resolution = GetResolution(selectedResolution);
                             if (exportAllSlides)
                             {
                                 foreach (Slide slide in presentation.Slides)
                                 {
-                                    string imagePath = Path.Combine(tempFolder, $"Slide{slideIndex}.png");
-                                    slide.Export(imagePath, "PNG");
+                                    string imagePath = Path.Combine(tempFolder, $"样机填充-{slideIndex}.png");
+                                    slide.Export(imagePath, "PNG", resolution.Width, resolution.Height);
                                     slideIndex++;
                                 }
                             }
@@ -3590,8 +3595,8 @@ End Sub
                             {
                                 foreach (Slide slide in selectedSlides)
                                 {
-                                    string imagePath = Path.Combine(tempFolder, $"Slide{slideIndex}.png");
-                                    slide.Export(imagePath, "PNG");
+                                    string imagePath = Path.Combine(tempFolder, $"样机填充-{slideIndex}.png");
+                                    slide.Export(imagePath, "PNG", resolution.Width, resolution.Height);
                                     slideIndex++;
                                 }
                             }
@@ -3599,22 +3604,21 @@ End Sub
                             string samplePath = GetSamplePath(selectedSampleStyle, tempFolder);
                             var samplePresentation = pptApp.Presentations.Open(samplePath);
 
-                            int fillIndex = 1;
                             foreach (Slide slide in samplePresentation.Slides)
                             {
                                 foreach (Shape shape in slide.Shapes)
                                 {
                                     if (shape.Type == MsoShapeType.msoGroup)
                                     {
-                                        FillGroupShapes(shape.GroupItems, ref fillIndex, tempFolder);
+                                        FillGroupShapes(shape.GroupItems, tempFolder);
                                     }
                                     else if (shape.Name.StartsWith("样机填充-"))
                                     {
-                                        string imagePath = Path.Combine(tempFolder, $"Slide{fillIndex}.png");
+                                        string shapeIndex = shape.Name.Substring(5); // 获取形状的索引
+                                        string imagePath = Path.Combine(tempFolder, $"样机填充-{shapeIndex}.png");
                                         if (File.Exists(imagePath))
                                         {
                                             shape.Fill.UserPicture(imagePath);
-                                            fillIndex++;
                                         }
                                     }
                                 }
@@ -3649,33 +3653,56 @@ End Sub
             }
         }
 
+        private (int Width, int Height) GetResolution(string selectedResolution)
+        {
+            switch (selectedResolution)
+            {
+                case "720x480 (标清)":
+                    return (720, 480);
+                case "1280x720 (高清)":
+                    return (1280, 720);
+                case "1920x1080 (全高清)":
+                    return (1920, 1080);
+                case "2048x1080 (2K)":
+                    return (2048, 1080);
+                case "3840x2160 (超高清)":
+                    return (3840, 2160);
+                case "4096x2160 (4K)":
+                    return (4096, 2160);
+                case "7680x4320 (8K)":
+                    return (7680, 4320);
+                default:
+                    return (1920, 1080); // 默认分辨率
+            }
+        }
+
         private string GetSamplePath(int selectedSampleStyle, string tempFolder)
         {
             string samplePath = string.Empty;
             switch (selectedSampleStyle)
             {
                 case 1:
-                    samplePath = Path.Combine(tempFolder, "样机样式1.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机1.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式1);
                     break;
                 case 2:
-                    samplePath = Path.Combine(tempFolder, "样机样式2.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机2.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式2);
                     break;
                 case 3:
-                    samplePath = Path.Combine(tempFolder, "样机样式3.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机3.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式3);
                     break;
                 case 4:
-                    samplePath = Path.Combine(tempFolder, "样机样式4.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机4.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式4);
                     break;
                 case 5:
-                    samplePath = Path.Combine(tempFolder, "样机样式5.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机5.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式5);
                     break;
                 case 6:
-                    samplePath = Path.Combine(tempFolder, "样机样式6.pptx");
+                    samplePath = Path.Combine(tempFolder, "样机6.pptx");
                     File.WriteAllBytes(samplePath, Properties.Resources.样机样式6);
                     break;
             }
@@ -3683,27 +3710,28 @@ End Sub
             return samplePath;
         }
 
-        private void FillGroupShapes(PowerPoint.GroupShapes groupShapes, ref int fillIndex, string tempFolder)
+        private void FillGroupShapes(Microsoft.Office.Interop.PowerPoint.GroupShapes groupShapes, string tempFolder)
         {
             foreach (Shape shape in groupShapes)
             {
                 if (shape.Type == MsoShapeType.msoGroup)
                 {
-                    FillGroupShapes(shape.GroupItems, ref fillIndex, tempFolder);
+                    FillGroupShapes(shape.GroupItems, tempFolder);
                 }
                 else if (shape.Name.StartsWith("样机填充-"))
                 {
-                    string imagePath = Path.Combine(tempFolder, $"Slide{fillIndex}.png");
+                    string shapeIndex = shape.Name.Substring(5); // 获取形状的索引
+                    string imagePath = Path.Combine(tempFolder, $"样机填充-{shapeIndex}.png");
                     if (File.Exists(imagePath))
                     {
                         shape.Fill.UserPicture(imagePath);
-                        fillIndex++;
                     }
                 }
             }
         }
     }
 }
+
 
 
 
