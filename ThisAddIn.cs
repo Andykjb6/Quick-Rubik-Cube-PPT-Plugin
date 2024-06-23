@@ -24,25 +24,26 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void Application_NewPresentation(PowerPoint.Presentation Pres)
+        private void Application_NewPresentation(PowerPoint.Presentation pres)
         {
             // 在新建文档时创建新的 CustomTaskPane
-            AddCustomTaskPane(Pres);
+            AddCustomTaskPane(pres);
         }
 
-        private void Application_PresentationOpen(PowerPoint.Presentation Pres)
+        private void Application_PresentationOpen(PowerPoint.Presentation pres)
         {
             // 在打开文档时创建新的 CustomTaskPane
-            AddCustomTaskPane(Pres);
+            AddCustomTaskPane(pres);
         }
 
-        private void Application_PresentationClose(PowerPoint.Presentation Pres)
+        private void Application_PresentationClose(PowerPoint.Presentation pres)
         {
-            // 在关闭文档时隐藏 CustomTaskPane 而不是移除
-            if (customTaskPanes.ContainsKey(Pres))
+            // 在关闭文档时移除 CustomTaskPane，并释放资源
+            if (customTaskPanes.ContainsKey(pres))
             {
-                CustomTaskPane taskPane = customTaskPanes[Pres];
-                taskPane.Visible = false;  // 隐藏 CustomTaskPane
+                CustomTaskPane taskPane = customTaskPanes[pres];
+                customTaskPanes.Remove(pres);
+                taskPane.Dispose();
             }
         }
 
@@ -63,16 +64,23 @@ namespace 课件帮PPT助手
 
         private void ThisAddIn_Shutdown(object sender, EventArgs e)
         {
-            // 可在此处添加任何必要的清理代码
+            // 移除所有事件处理程序
             ((PowerPoint.EApplication_Event)this.Application).NewPresentation -= new PowerPoint.EApplication_NewPresentationEventHandler(Application_NewPresentation);
             ((PowerPoint.EApplication_Event)this.Application).PresentationOpen -= new PowerPoint.EApplication_PresentationOpenEventHandler(Application_PresentationOpen);
             ((PowerPoint.EApplication_Event)this.Application).PresentationClose -= new PowerPoint.EApplication_PresentationCloseEventHandler(Application_PresentationClose);
+
+            // 清理所有 CustomTaskPane
+            foreach (var taskPane in customTaskPanes.Values)
+            {
+                taskPane.Dispose();
+            }
+            customTaskPanes.Clear();
         }
 
         public void ToggleTaskPaneVisibility()
         {
             PowerPoint.Presentation pres = this.Application.ActivePresentation;
-            if (customTaskPanes.ContainsKey(pres))
+            if (pres != null && customTaskPanes.ContainsKey(pres))
             {
                 CustomTaskPane taskPane = customTaskPanes[pres];
                 taskPane.Visible = !taskPane.Visible;

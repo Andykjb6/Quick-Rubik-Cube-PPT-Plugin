@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
+using Office = Microsoft.Office.Core;
 
 namespace 课件帮PPT助手
 {
     public partial class SmartScalingForm : Form
     {
-        private Dictionary<int, (float Width, float Height, float Left, float Top, float LineWeight, float FontSize, float BevelTopWidth, float BevelTopHeight, float BevelBottomWidth, float BevelBottomHeight, float Depth, float ContourWidth, float ShadowBlur, float GlowRadius, float TextOutlineWeight, float TextBevelTopWidth, float TextBevelTopHeight, float TextBevelBottomWidth, float TextBevelBottomHeight, float TextDepth, float TextContourWidth)> originalSizes;
+        private Dictionary<int, (float Width, float Height, float Left, float Top, float LineWeight, float FontSize, float BevelTopWidth, float BevelTopHeight, float BevelBottomWidth, float BevelBottomHeight, float Depth, float ContourWidth, float ShadowBlur, float ShadowOffsetX, float ShadowOffsetY, float GlowRadius, float TextOutlineWeight, float TextBevelTopWidth, float TextBevelTopHeight, float TextBevelBottomWidth, float TextBevelBottomHeight, float TextDepth, float TextContourWidth, float TableBorderWidth)> originalSizes;
         private PowerPoint.Selection selection;
         private PointF scaleCenter; // 用于存储当前缩放中心
         private bool isHandlingCheckBoxEvent = false; // 防止递归调用
@@ -25,7 +26,7 @@ namespace 课件帮PPT助手
         {
             PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
             selection = pptApp.ActiveWindow.Selection;
-            originalSizes = new Dictionary<int, (float Width, float Height, float Left, float Top, float LineWeight, float FontSize, float BevelTopWidth, float BevelTopHeight, float BevelBottomWidth, float BevelBottomHeight, float Depth, float ContourWidth, float ShadowBlur, float GlowRadius, float TextOutlineWeight, float TextBevelTopWidth, float TextBevelTopHeight, float TextBevelBottomWidth, float TextBevelBottomHeight, float TextDepth, float TextContourWidth)>();
+            originalSizes = new Dictionary<int, (float Width, float Height, float Left, float Top, float LineWeight, float FontSize, float BevelTopWidth, float BevelTopHeight, float BevelBottomWidth, float BevelBottomHeight, float Depth, float ContourWidth, float ShadowBlur, float ShadowOffsetX, float ShadowOffsetY, float GlowRadius, float TextOutlineWeight, float TextBevelTopWidth, float TextBevelTopHeight, float TextBevelBottomWidth, float TextBevelBottomHeight, float TextDepth, float TextContourWidth, float TableBorderWidth)>();
 
             if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
             {
@@ -38,7 +39,7 @@ namespace 课件帮PPT助手
 
         private void SaveShapeOriginalSize(PowerPoint.Shape shape)
         {
-            if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
+            if (shape.Type == Office.MsoShapeType.msoGroup)
             {
                 foreach (PowerPoint.Shape subShape in shape.GroupItems)
                 {
@@ -47,6 +48,18 @@ namespace 课件帮PPT助手
             }
             else
             {
+                float lineWeight = 0;
+                float fontSize = 0;
+                float bevelTopWidth = 0;
+                float bevelTopHeight = 0;
+                float bevelBottomWidth = 0;
+                float bevelBottomHeight = 0;
+                float depth = 0;
+                float contourWidth = 0;
+                float shadowBlur = 0;
+                float shadowOffsetX = 0;
+                float shadowOffsetY = 0;
+                float glowRadius = 0;
                 float textOutlineWeight = 0;
                 float textBevelTopWidth = 0;
                 float textBevelTopHeight = 0;
@@ -54,17 +67,65 @@ namespace 课件帮PPT助手
                 float textBevelBottomHeight = 0;
                 float textDepth = 0;
                 float textContourWidth = 0;
+                float tableBorderWidth = 0;
 
-                if (shape.TextFrame.HasText == Microsoft.Office.Core.MsoTriState.msoTrue)
+                if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
                 {
-                    var textRange = shape.TextFrame.TextRange;
-                    textOutlineWeight = shape.Line.Weight > 0 ? shape.Line.Weight : 0; // 检查 shape.Line.Weight 是否有效
-                    textBevelTopWidth = shape.ThreeD.BevelTopInset;
-                    textBevelTopHeight = shape.ThreeD.BevelTopDepth;
-                    textBevelBottomWidth = shape.ThreeD.BevelBottomInset;
-                    textBevelBottomHeight = shape.ThreeD.BevelBottomDepth;
-                    textDepth = shape.ThreeD.Depth;
-                    textContourWidth = shape.ThreeD.ContourWidth;
+                    var textRange = shape.TextFrame2.TextRange;
+                    fontSize = textRange.Font.Size;
+                    if (textRange.Font.Line.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        textOutlineWeight = textRange.Font.Line.Weight;
+                    }
+                    var threeDFormat = shape.TextFrame2.ThreeD;
+                    textBevelTopWidth = threeDFormat.BevelTopInset;
+                    textBevelTopHeight = threeDFormat.BevelTopDepth;
+                    textBevelBottomWidth = threeDFormat.BevelBottomInset;
+                    textBevelBottomHeight = threeDFormat.BevelBottomDepth;
+                    textDepth = threeDFormat.Depth;
+                    textContourWidth = threeDFormat.ContourWidth;
+
+                    if (textRange.Font.Shadow.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        shadowOffsetX = textRange.Font.Shadow.OffsetX;
+                        shadowOffsetY = textRange.Font.Shadow.OffsetY;
+                    }
+                }
+
+                if (shape.HasTable == Office.MsoTriState.msoTrue)
+                {
+                    // 获取表格边框宽度
+                    PowerPoint.Table table = shape.Table;
+                    tableBorderWidth = table.Cell(1, 1).Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight;
+                }
+                else
+                {
+                    if (shape.Line != null && shape.Line.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        lineWeight = shape.Line.Weight;
+                    }
+
+                    if (shape.ThreeD != null && shape.ThreeD.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        bevelTopWidth = shape.ThreeD.BevelTopInset;
+                        bevelTopHeight = shape.ThreeD.BevelTopDepth;
+                        bevelBottomWidth = shape.ThreeD.BevelBottomInset;
+                        bevelBottomHeight = shape.ThreeD.BevelBottomDepth;
+                        depth = shape.ThreeD.Depth;
+                        contourWidth = shape.ThreeD.ContourWidth;
+                    }
+
+                    if (shape.Shadow != null && shape.Shadow.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        shadowBlur = shape.Shadow.Blur;
+                        shadowOffsetX = shape.Shadow.OffsetX;
+                        shadowOffsetY = shape.Shadow.OffsetY;
+                    }
+
+                    if (shape.Glow != null && shape.Glow.Radius > 0)
+                    {
+                        glowRadius = shape.Glow.Radius;
+                    }
                 }
 
                 originalSizes[shape.Id] = (
@@ -72,23 +133,26 @@ namespace 课件帮PPT助手
                     shape.Height,
                     shape.Left,
                     shape.Top,
-                    shape.Line.Weight,
-                    shape.TextFrame.HasText == Microsoft.Office.Core.MsoTriState.msoTrue ? shape.TextFrame.TextRange.Font.Size : 0,
-                    shape.ThreeD.BevelTopInset,
-                    shape.ThreeD.BevelTopDepth,
-                    shape.ThreeD.BevelBottomInset,
-                    shape.ThreeD.BevelBottomDepth,
-                    shape.ThreeD.Depth,
-                    shape.ThreeD.ContourWidth,
-                    shape.Shadow.Visible == Microsoft.Office.Core.MsoTriState.msoTrue ? shape.Shadow.Blur : 0,
-                    shape.Glow.Radius,
+                    lineWeight,
+                    fontSize,
+                    bevelTopWidth,
+                    bevelTopHeight,
+                    bevelBottomWidth,
+                    bevelBottomHeight,
+                    depth,
+                    contourWidth,
+                    shadowBlur,
+                    shadowOffsetX,
+                    shadowOffsetY,
+                    glowRadius,
                     textOutlineWeight,
                     textBevelTopWidth,
                     textBevelTopHeight,
                     textBevelBottomWidth,
                     textBevelBottomHeight,
                     textDepth,
-                    textContourWidth
+                    textContourWidth,
+                    tableBorderWidth
                 );
             }
         }
@@ -137,7 +201,7 @@ namespace 课件帮PPT助手
         private void ScaleShape(PowerPoint.Shape shape, float scaleFactor, float centerX, float centerY)
         {
             // 递归处理组合中的每个子对象
-            if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoGroup)
+            if (shape.Type == Office.MsoShapeType.msoGroup)
             {
                 foreach (PowerPoint.Shape subShape in shape.GroupItems)
                 {
@@ -171,58 +235,89 @@ namespace 课件帮PPT助手
                     return;
                 }
 
-                // 缩放线条属性
-                if (shape.Line.Weight > 0)
+                if (shape.HasTable == Office.MsoTriState.msoTrue)
                 {
-                    shape.Line.Weight = originalSize.LineWeight * scaleFactor;
-                }
-
-                // 缩放字体大小及其相关属性
-                if (shape.TextFrame.HasText == Microsoft.Office.Core.MsoTriState.msoTrue && checkBoxText.Checked)
-                {
-                    var textRange = shape.TextFrame.TextRange;
-                    textRange.Font.Size = originalSize.FontSize * scaleFactor;
-
-                    // 缩放文本轮廓
-                    if (originalSize.TextOutlineWeight > 0)
+                    // 缩放表格边框宽度
+                    PowerPoint.Table table = shape.Table;
+                    float newBorderWidth = originalSize.TableBorderWidth * scaleFactor;
+                    for (int i = 1; i <= table.Rows.Count; i++)
                     {
-                        shape.Line.Weight = originalSize.TextOutlineWeight * scaleFactor; // 检查 TextOutlineWeight 是否有效
-                    }
-
-                    // 缩放文本三维效果
-                    shape.ThreeD.BevelTopInset = originalSize.TextBevelTopWidth * scaleFactor;
-                    shape.ThreeD.BevelTopDepth = originalSize.TextBevelTopHeight * scaleFactor;
-                    shape.ThreeD.BevelBottomInset = originalSize.TextBevelBottomWidth * scaleFactor;
-                    shape.ThreeD.BevelBottomDepth = originalSize.TextBevelBottomHeight * scaleFactor;
-                    shape.ThreeD.Depth = originalSize.TextDepth * scaleFactor;
-                    shape.ThreeD.ContourWidth = originalSize.TextContourWidth * scaleFactor;
-                }
-
-                // 缩放形状阴影模糊度
-                if (checkBoxShadow.Checked && shape.Shadow.Visible == Microsoft.Office.Core.MsoTriState.msoTrue)
-                {
-                    float newBlur = originalSize.ShadowBlur * scaleFactor;
-                    if (newBlur >= 0 && newBlur <= 100) // 设置合理范围
-                    {
-                        shape.Shadow.Blur = newBlur;
+                        for (int j = 1; j <= table.Columns.Count; j++)
+                        {
+                            table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight = Math.Max(0.25f, Math.Min(6.0f, newBorderWidth));
+                            table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderLeft].Weight = Math.Max(0.25f, Math.Min(6.0f, newBorderWidth));
+                            table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderRight].Weight = Math.Max(0.25f, Math.Min(6.0f, newBorderWidth));
+                            table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderTop].Weight = Math.Max(0.25f, Math.Min(6.0f, newBorderWidth));
+                        }
                     }
                 }
-
-                // 缩放形状发光效果
-                if (checkBoxGlow.Checked)
+                else
                 {
-                    shape.Glow.Radius = originalSize.GlowRadius * scaleFactor;
-                }
+                    // 缩放线条属性
+                    if (shape.Line != null && shape.Line.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        shape.Line.Weight = originalSize.LineWeight * scaleFactor;
+                    }
 
-                // 缩放形状三维效果
-                if (checkBox3D.Checked && shape.ThreeD.Visible == Microsoft.Office.Core.MsoTriState.msoTrue)
-                {
-                    shape.ThreeD.BevelTopInset = originalSize.BevelTopWidth * scaleFactor;
-                    shape.ThreeD.BevelTopDepth = originalSize.BevelTopHeight * scaleFactor;
-                    shape.ThreeD.BevelBottomInset = originalSize.BevelBottomWidth * scaleFactor;
-                    shape.ThreeD.BevelBottomDepth = originalSize.BevelBottomHeight * scaleFactor;
-                    shape.ThreeD.Depth = originalSize.Depth * scaleFactor;
-                    shape.ThreeD.ContourWidth = originalSize.ContourWidth * scaleFactor;
+                    // 缩放字体大小及其相关属性
+                    if (shape.TextFrame.HasText == Office.MsoTriState.msoTrue && checkBoxText.Checked)
+                    {
+                        var textRange = shape.TextFrame2.TextRange;
+                        textRange.Font.Size = originalSize.FontSize * scaleFactor;
+
+                        // 缩放文本轮廓
+                        if (originalSize.TextOutlineWeight > 0 && textRange.Font.Line.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            textRange.Font.Line.Weight = originalSize.TextOutlineWeight * scaleFactor;
+                        }
+
+                        // 缩放文本三维效果
+                        var threeDFormat = shape.TextFrame2.ThreeD;
+                        threeDFormat.BevelTopInset = originalSize.TextBevelTopWidth * scaleFactor;
+                        threeDFormat.BevelTopDepth = originalSize.TextBevelTopHeight * scaleFactor;
+                        threeDFormat.BevelBottomInset = originalSize.TextBevelBottomWidth * scaleFactor;
+                        threeDFormat.BevelBottomDepth = originalSize.TextBevelBottomHeight * scaleFactor;
+                        threeDFormat.Depth = originalSize.TextDepth * scaleFactor;
+                        threeDFormat.ContourWidth = originalSize.TextContourWidth * scaleFactor;
+
+                        // 缩放文本阴影距离
+                        if (textRange.Font.Shadow.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            textRange.Font.Shadow.OffsetX = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetX * scaleFactor));
+                            textRange.Font.Shadow.OffsetY = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetY * scaleFactor));
+                        }
+                    }
+
+                    // 缩放形状阴影模糊度
+                    if (checkBoxShadow.Checked && shape.Shadow != null && shape.Shadow.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        float newBlur = originalSize.ShadowBlur * scaleFactor;
+                        if (newBlur >= 0 && newBlur <= 100) // 设置合理范围
+                        {
+                            shape.Shadow.Blur = newBlur;
+                        }
+
+                        // 缩放形状阴影距离
+                        shape.Shadow.OffsetX = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetX * scaleFactor));
+                        shape.Shadow.OffsetY = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetY * scaleFactor));
+                    }
+
+                    // 缩放形状发光效果
+                    if (checkBoxGlow.Checked && shape.Glow != null && shape.Glow.Radius > 0)
+                    {
+                        shape.Glow.Radius = originalSize.GlowRadius * scaleFactor;
+                    }
+
+                    // 缩放形状三维效果
+                    if (checkBox3D.Checked && shape.ThreeD != null && shape.ThreeD.Visible == Office.MsoTriState.msoTrue)
+                    {
+                        shape.ThreeD.BevelTopInset = originalSize.BevelTopWidth * scaleFactor;
+                        shape.ThreeD.BevelTopDepth = originalSize.BevelTopHeight * scaleFactor;
+                        shape.ThreeD.BevelBottomInset = originalSize.BevelBottomWidth * scaleFactor;
+                        shape.ThreeD.BevelBottomDepth = originalSize.BevelBottomHeight * scaleFactor;
+                        shape.ThreeD.Depth = originalSize.Depth * scaleFactor;
+                        shape.ThreeD.ContourWidth = originalSize.ContourWidth * scaleFactor;
+                    }
                 }
             }
         }
@@ -236,7 +331,98 @@ namespace 课件帮PPT助手
         {
             trackBar.Value = 100;
             numericUpDown.Value = 100;
-            ApplyScaling(1.0f); // 恢复到原始大小
+            RestoreOriginalSizes();
+        }
+
+        private void RestoreOriginalSizes()
+        {
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                {
+                    if (!originalSizes.ContainsKey(shape.Id))
+                    {
+                        continue;
+                    }
+
+                    var originalSize = originalSizes[shape.Id];
+
+                    shape.Width = originalSize.Width;
+                    shape.Height = originalSize.Height;
+                    shape.Left = originalSize.Left;
+                    shape.Top = originalSize.Top;
+
+                    if (shape.HasTable == Office.MsoTriState.msoTrue)
+                    {
+                        // 恢复表格边框宽度
+                        PowerPoint.Table table = shape.Table;
+                        for (int i = 1; i <= table.Rows.Count; i++)
+                        {
+                            for (int j = 1; j <= table.Columns.Count; j++)
+                            {
+                                table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight = originalSize.TableBorderWidth;
+                                table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderLeft].Weight = originalSize.TableBorderWidth;
+                                table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderRight].Weight = originalSize.TableBorderWidth;
+                                table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderTop].Weight = originalSize.TableBorderWidth;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (shape.Line != null && shape.Line.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            shape.Line.Weight = originalSize.LineWeight;
+                        }
+
+                        if (shape.ThreeD != null && shape.ThreeD.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            shape.ThreeD.BevelTopInset = originalSize.BevelTopWidth;
+                            shape.ThreeD.BevelTopDepth = originalSize.BevelTopHeight;
+                            shape.ThreeD.BevelBottomInset = originalSize.BevelBottomWidth;
+                            shape.ThreeD.BevelBottomDepth = originalSize.BevelBottomHeight;
+                            shape.ThreeD.Depth = originalSize.Depth;
+                            shape.ThreeD.ContourWidth = originalSize.ContourWidth;
+                        }
+
+                        if (shape.Shadow != null && shape.Shadow.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            shape.Shadow.Blur = originalSize.ShadowBlur;
+                            shape.Shadow.OffsetX = originalSize.ShadowOffsetX;
+                            shape.Shadow.OffsetY = originalSize.ShadowOffsetY;
+                        }
+
+                        if (shape.Glow != null && shape.Glow.Radius > 0)
+                        {
+                            shape.Glow.Radius = originalSize.GlowRadius;
+                        }
+                    }
+
+                    if (shape.TextFrame.HasText == Office.MsoTriState.msoTrue)
+                    {
+                        var textRange = shape.TextFrame2.TextRange;
+                        textRange.Font.Size = originalSize.FontSize;
+
+                        if (originalSize.TextOutlineWeight > 0 && textRange.Font.Line.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            textRange.Font.Line.Weight = originalSize.TextOutlineWeight;
+                        }
+
+                        var threeDFormat = shape.TextFrame2.ThreeD;
+                        threeDFormat.BevelTopInset = originalSize.TextBevelTopWidth;
+                        threeDFormat.BevelTopDepth = originalSize.TextBevelTopHeight;
+                        threeDFormat.BevelBottomInset = originalSize.TextBevelBottomWidth;
+                        threeDFormat.BevelBottomDepth = originalSize.TextBevelBottomHeight;
+                        threeDFormat.Depth = originalSize.TextDepth;
+                        threeDFormat.ContourWidth = originalSize.TextContourWidth;
+
+                        if (textRange.Font.Shadow.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            textRange.Font.Shadow.OffsetX = originalSize.ShadowOffsetX;
+                            textRange.Font.Shadow.OffsetY = originalSize.ShadowOffsetY;
+                        }
+                    }
+                }
+            }
         }
 
         private void checkBoxPropertySettings_CheckedChanged(object sender, EventArgs e)
@@ -252,7 +438,7 @@ namespace 课件帮PPT助手
 
             if (isChecked)
             {
-                this.ClientSize = new System.Drawing.Size(482, 600); // 展开
+                this.ClientSize = new System.Drawing.Size(482, 670); // 展开
             }
             else
             {
@@ -333,11 +519,6 @@ namespace 课件帮PPT助手
             checkBoxTopRight.Checked = false;
             checkBoxBottomLeft.Checked = false;
             checkBoxBottomRight.Checked = false;
-        }
-
-        private void groupBoxTextAttributes_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

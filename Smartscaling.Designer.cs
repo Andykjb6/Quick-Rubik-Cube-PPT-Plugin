@@ -13,6 +13,7 @@
         private System.Windows.Forms.CheckBox checkBoxReflection;
         private System.Windows.Forms.CheckBox checkBoxGlow;
         private System.Windows.Forms.CheckBox checkBox3D;
+        private System.Windows.Forms.CheckBox checkBoxTable; // 新增复选框
         private System.Windows.Forms.GroupBox groupBoxTextAttributes;
         private System.Windows.Forms.CheckBox checkBoxText;
         private System.Windows.Forms.CheckBox checkBoxTextShadow;
@@ -37,13 +38,13 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SmartScalingForm));
             this.trackBar = new System.Windows.Forms.TrackBar();
             this.numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.applyButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.checkBoxPropertySettings = new System.Windows.Forms.CheckBox();
             this.groupBoxShapeAttributes = new System.Windows.Forms.GroupBox();
+            this.checkBoxTable = new System.Windows.Forms.CheckBox();
             this.checkBox3D = new System.Windows.Forms.CheckBox();
             this.checkBoxGlow = new System.Windows.Forms.CheckBox();
             this.checkBoxReflection = new System.Windows.Forms.CheckBox();
@@ -151,6 +152,7 @@
             // 
             // groupBoxShapeAttributes
             // 
+            this.groupBoxShapeAttributes.Controls.Add(this.checkBoxTable);
             this.groupBoxShapeAttributes.Controls.Add(this.checkBox3D);
             this.groupBoxShapeAttributes.Controls.Add(this.checkBoxGlow);
             this.groupBoxShapeAttributes.Controls.Add(this.checkBoxReflection);
@@ -158,10 +160,23 @@
             this.groupBoxShapeAttributes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBoxShapeAttributes.Location = new System.Drawing.Point(18, 134);
             this.groupBoxShapeAttributes.Name = "groupBoxShapeAttributes";
-            this.groupBoxShapeAttributes.Size = new System.Drawing.Size(440, 105);
+            this.groupBoxShapeAttributes.Size = new System.Drawing.Size(440, 150);
             this.groupBoxShapeAttributes.TabIndex = 5;
             this.groupBoxShapeAttributes.TabStop = false;
             this.groupBoxShapeAttributes.Text = "形状属性";
+            // 
+            // checkBoxTable
+            // 
+            this.checkBoxTable.AutoSize = true;
+            this.checkBoxTable.Checked = true;
+            this.checkBoxTable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxTable.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.checkBoxTable.Location = new System.Drawing.Point(13, 87);
+            this.checkBoxTable.Name = "checkBoxTable";
+            this.checkBoxTable.Size = new System.Drawing.Size(94, 35);
+            this.checkBoxTable.TabIndex = 4;
+            this.checkBoxTable.Text = "表格";
+            this.checkBoxTable.UseVisualStyleBackColor = true;
             // 
             // checkBox3D
             // 
@@ -223,13 +238,13 @@
             this.groupBoxTextAttributes.Controls.Add(this.checkBoxTextGlow);
             this.groupBoxTextAttributes.Controls.Add(this.checkBoxText3D);
             this.groupBoxTextAttributes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBoxTextAttributes.Location = new System.Drawing.Point(18, 256);
+            this.groupBoxTextAttributes.Location = new System.Drawing.Point(18, 310);
             this.groupBoxTextAttributes.Name = "groupBoxTextAttributes";
             this.groupBoxTextAttributes.Size = new System.Drawing.Size(440, 140);
             this.groupBoxTextAttributes.TabIndex = 6;
             this.groupBoxTextAttributes.TabStop = false;
             this.groupBoxTextAttributes.Text = "文字属性";
-            this.groupBoxTextAttributes.Enter += new System.EventHandler(this.groupBoxTextAttributes_Enter);
+            
             // 
             // checkBoxText
             // 
@@ -305,7 +320,7 @@
             this.groupBoxCenterSelection.Controls.Add(this.checkBoxBottomRight);
             this.groupBoxCenterSelection.Controls.Add(this.button1);
             this.groupBoxCenterSelection.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBoxCenterSelection.Location = new System.Drawing.Point(18, 402);
+            this.groupBoxCenterSelection.Location = new System.Drawing.Point(18, 462);
             this.groupBoxCenterSelection.Name = "groupBoxCenterSelection";
             this.groupBoxCenterSelection.Size = new System.Drawing.Size(440, 172);
             this.groupBoxCenterSelection.TabIndex = 7;
@@ -419,7 +434,7 @@
             // 
             // SmartScalingForm
             // 
-            this.ClientSize = new System.Drawing.Size(482, 600);
+            this.ClientSize = new System.Drawing.Size(482, 650);
             this.Controls.Add(this.groupBoxCenterSelection);
             this.Controls.Add(this.groupBoxTextAttributes);
             this.Controls.Add(this.groupBoxShapeAttributes);
@@ -429,7 +444,6 @@
             this.Controls.Add(this.numericUpDown);
             this.Controls.Add(this.trackBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SmartScalingForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

@@ -14,6 +14,7 @@ namespace 课件帮PPT助手
         public TableSettingsFormButton12()
         {
             InitializeComponent();
+            checkBoxTable.Checked = true; // 默认勾选表格
         }
 
         private void ButtonChooseColor_Click(object sender, EventArgs e)
@@ -29,13 +30,13 @@ namespace 课件帮PPT助手
 
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
-            {
-                AddGridUnderShape();
-            }
-            else
+            if (checkBoxTable.Checked)
             {
                 GenerateTable();
+            }
+            else if (checkBoxShape.Checked)
+            {
+                GenerateShape();
             }
         }
 
@@ -99,7 +100,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void AddGridUnderShape()
+        private void GenerateShape()
         {
             float borderWidth = (float)numericUpDownBorderWidth.Value;
             PowerPoint.Application app = Globals.ThisAddIn.Application;
@@ -109,23 +110,63 @@ namespace 课件帮PPT助手
             {
                 PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
 
+                float initialLeft = selectedShapes[1].Left;
+                float initialTop = selectedShapes[1].Top;
+                float currentLeft = initialLeft;
+                float currentTop = initialTop;
+                float maxHeightInRow = 0;
+                float rowStartTop = initialTop; // 记录当前行起始位置
+                float rowSpacing = 10; // 行与行之间的间距
+
                 foreach (PowerPoint.Shape selectedShape in selectedShapes)
                 {
                     float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + 18;
+                    maxHeightInRow = Math.Max(maxHeightInRow, selectedSize);
 
-                    // 计算田字格的左上角位置，使其中心与选中对象中心重合
-                    float left = selectedShape.Left + (selectedShape.Width / 2) - (selectedSize / 2);
-                    float top = selectedShape.Top + (selectedShape.Height / 2) - (selectedSize / 2);
+                    // 如果当前对象的 top 位置与 rowStartTop 的差值大于一个阈值（例如20），说明是新的一行
+                    if (Math.Abs(selectedShape.Top - rowStartTop) > 20)
+                    {
+                        currentLeft = initialLeft; // 重置为行起始位置
+                        rowStartTop = selectedShape.Top; // 更新当前行的起始位置
+                        currentTop += maxHeightInRow + rowSpacing; // 更新到下一行的顶部位置，并加上行间距
+                        maxHeightInRow = selectedSize; // 更新当前行的最大高度
+                    }
 
-                    PowerPoint.Shape tableShape = activeSlide.Shapes.AddTable(2, 2, left, top, selectedSize, selectedSize);
-                    tableShape.LockAspectRatio = Office.MsoTriState.msoTrue; // 锁定纵横比
+                    float left = currentLeft;
+                    float top = currentTop + (maxHeightInRow - selectedSize) / 2;
 
-                    PowerPoint.Table table = tableShape.Table;
+                    // 创建正方形
+                    PowerPoint.Shape squareShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, top, selectedSize, selectedSize);
+                    squareShape.Line.Weight = borderWidth;
+                    squareShape.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    squareShape.Fill.Transparency = 1;
 
-                    SetTableProperties(table, borderWidth, borderColor);
+                    // 创建两条虚线
+                    float halfSize = selectedSize / 2;
+                    PowerPoint.Shape verticalLine = activeSlide.Shapes.AddLine(left + halfSize, top, left + halfSize, top + selectedSize);
+                    PowerPoint.Shape horizontalLine = activeSlide.Shapes.AddLine(left, top + halfSize, left + selectedSize, top + halfSize);
 
-                    // 将表格置于底层
-                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+                    verticalLine.Line.Weight = borderWidth;
+                    verticalLine.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    verticalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
+
+                    horizontalLine.Line.Weight = borderWidth;
+                    horizontalLine.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    horizontalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
+
+                    // 编组形状
+                    PowerPoint.ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
+                    PowerPoint.Shape groupShape = shapeRange.Group();
+
+                    // 将形状置于底层
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+
+                    // 调整选中对象的位置以居中
+                    selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
+                    selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
+
+                    // 更新当前 left 位置以紧挨着放置下一个田字格
+                    currentLeft += selectedSize;
                 }
             }
         }
@@ -146,6 +187,17 @@ namespace 课件帮PPT助手
                     {
                         PowerPoint.Table table = selectedShape.Table;
                         SetTableProperties(table, borderWidth, borderColor);
+                    }
+                    else if (selectedShape.Type == Office.MsoShapeType.msoGroup)
+                    {
+                        foreach (PowerPoint.Shape shape in selectedShape.GroupItems)
+                        {
+                            if (shape.Type == Office.MsoShapeType.msoAutoShape || shape.Type == Office.MsoShapeType.msoLine)
+                            {
+                                shape.Line.Weight = borderWidth;
+                                shape.Line.ForeColor.RGB = ConvertColor(borderColor);
+                            }
+                        }
                     }
                 }
             }
@@ -187,6 +239,22 @@ namespace 课件帮PPT助手
         private int ConvertColor(Color color)
         {
             return (color.B << 16) | (color.G << 8) | color.R;
+        }
+
+        private void CheckBoxTable_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxTable.Checked)
+            {
+                checkBoxShape.Checked = false;
+            }
+        }
+
+        private void CheckBoxShape_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxShape.Checked)
+            {
+                checkBoxTable.Checked = false;
+            }
         }
     }
 }

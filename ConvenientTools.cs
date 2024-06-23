@@ -498,18 +498,36 @@ namespace 课件帮PPT助手
 
         private void 分解笔顺_Click(object sender, EventArgs e)
         {
+            // 调用笔画拆分的点击事件
+            笔画拆分_Click(sender, e);
+
             PowerPoint.Application app = Globals.ThisAddIn.Application;
             PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
-            PowerPoint.Selection selection = app.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            // 收集所有前缀名为“Freeform”且填充颜色为“0,112,192”的形状
+            List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in slide.Shapes)
             {
-                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
-
-                // Check if the selected shape is a group
-                if (shapeRange.Count == 1 && shapeRange[1].Type == Office.MsoShapeType.msoGroup)
+                if (shape.Name.StartsWith("Freeform") && shape.Fill.ForeColor.RGB == System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(0, 112, 192)))
                 {
-                    PowerPoint.Shape groupShape = shapeRange[1];
+                    shapesToGroup.Add(shape);
+                }
+            }
+
+            // 对这些形状进行组合
+            if (shapesToGroup.Count > 0)
+            {
+                PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(shapesToGroup.Select(s => s.Name).ToArray());
+                PowerPoint.Shape groupShape = shapeRange.Group();
+
+                // 手动缩放编组后的形状
+                float scaleFactor = 0.26f;
+                groupShape.Width *= scaleFactor;
+                groupShape.Height *= scaleFactor;
+
+                // 继续执行分解笔顺的逻辑
+                if (groupShape.Type == Office.MsoShapeType.msoGroup)
+                {
                     PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
                     int itemCount = groupItems.Count;
 
@@ -561,6 +579,20 @@ namespace 课件帮PPT助手
                             newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
                         }
                     }
+
+                    // 删除原来的组合形状
+                    groupShape.Delete();
+
+                    // 将所有新组合再次进行组合
+                    PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
+                    PowerPoint.Shape newGroupShape = newShapeRange.Group();
+
+                    // 对新组合执行水平居中对齐
+                    float slideCenter = slide.Master.Width / 2;
+                    newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
+
+                    // 取消组合
+                    newGroupShape.Ungroup();
                 }
             }
         }
@@ -584,51 +616,62 @@ namespace 课件帮PPT助手
                     // 获取原文本框的属性
                     var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
                     var originalShape = selection.ShapeRange[1];
-                    float fontSize = textRange.Font.Size;
-                    string fontName = textRange.Font.Name;
-                    MsoTriState fontBold = textRange.Font.Bold;
-                    MsoTriState fontItalic = textRange.Font.Italic;
-                    MsoTriState fontUnderline = textRange.Font.Underline;
-                    int fontColor = textRange.Font.Color.RGB;
 
                     // 获取选中文字的位置和大小
                     float originalLeft = textRange.BoundLeft;
                     float originalTop = textRange.BoundTop;
 
                     // 测量选中文本的宽度
-                    float textWidth = MeasureTextWidth(selectedText, fontSize, fontName);
+                    float textWidth = MeasureTextWidth(selectedText, textRange.Font.Size, textRange.Font.Name);
 
                     // 创建一个新的文本框，并设置其内容为选中的文本
                     var newTextBox = slide.Shapes.AddTextbox(
                         Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
                         originalLeft, originalTop, textWidth, originalShape.Height);
 
-                    var newTextFrame = newTextBox.TextFrame2;
                     var newTextRange = newTextBox.TextFrame.TextRange;
                     newTextRange.Text = selectedText;
 
-                    // 应用字体属性
-                    newTextRange.Font.Name = fontName;
-                    newTextRange.Font.Size = fontSize;
-                    newTextRange.Font.Bold = MsoTriState.msoTrue; // 确保加粗
-                    newTextRange.Font.Italic = fontItalic;
-                    newTextRange.Font.Underline = fontUnderline;
+                    // 使用格式刷复制字体属性
+                    try
+                    {
+                        originalShape.PickUp();
+                        newTextBox.Apply();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("使用格式刷复制字体属性时出错：" + ex.Message);
+                    }
+
+                    // 设置新文本框的字体颜色为红色并加粗
                     newTextRange.Font.Color.RGB = ColorTranslator.ToOle(Color.Red);
+                    newTextRange.Font.Bold = MsoTriState.msoTrue;
 
-                    // 设置文本框不自动换行
-                    newTextFrame.WordWrap = Microsoft.Office.Core.MsoTriState.msoFalse;
+                    // 设置新文本框不自动换行
+                    newTextBox.TextFrame.WordWrap = Microsoft.Office.Core.MsoTriState.msoFalse;
 
-                    // 检查是否按住Ctrl键
+                    // 检查是否按住Ctrl键或Shift键
                     if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
                     {
                         // 动态计算需要的空格字符数量
-                        float spaceWidth = MeasureTextWidth(" ", fontSize, fontName);
+                        float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
                         int numSpaces = (int)Math.Ceiling((textWidth * 1.1) / spaceWidth); // 1.1倍宽度以确保足够长
                         string underlineText = new string(' ', numSpaces);
 
                         // 确保下划线长度适中
                         textRange.Text = underlineText;
                         textRange.Font.Underline = MsoTriState.msoTrue;
+                    }
+                    else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    {
+                        // 动态计算需要的空格字符数量
+                        float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
+                        int numSpaces = (int)Math.Ceiling(textWidth / spaceWidth);
+                        string spaces = new string(' ', numSpaces);
+
+                        // 使用括号和空格替换选中的文本
+                        textRange.Text = $"({spaces})";
+                        textRange.Font.Underline = MsoTriState.msoFalse; // 取消下划线
                     }
                     else
                     {
@@ -639,7 +682,7 @@ namespace 课件帮PPT助手
 
                     // 设置新文本框的位置与被选中的文本相同
                     newTextBox.Left = originalLeft;
-                    newTextBox.Top = originalTop - (originalShape.Height - fontSize) / 2; // 调整文本框位置
+                    newTextBox.Top = originalTop - (originalShape.Height - textRange.Font.Size) / 2; // 调整文本框位置
                 }
                 else
                 {

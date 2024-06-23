@@ -73,7 +73,7 @@
             this.checkBoxAllSlides.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(214)))), ((int)(((byte)(255)))));
             this.checkBoxAllSlides.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxAllSlides.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.checkBoxAllSlides.Location = new System.Drawing.Point(245, 84);
+            this.checkBoxAllSlides.Location = new System.Drawing.Point(222, 84);
             this.checkBoxAllSlides.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.checkBoxAllSlides.Name = "checkBoxAllSlides";
             this.checkBoxAllSlides.Size = new System.Drawing.Size(137, 35);
@@ -261,16 +261,16 @@
             "3840x2160 (超高清)",
             "4096x2160 (4K)",
             "7680x4320 (8K)"});
-            this.comboBoxResolution.Location = new System.Drawing.Point(518, 87);
+            this.comboBoxResolution.Location = new System.Drawing.Point(489, 87);
             this.comboBoxResolution.Name = "comboBoxResolution";
-            this.comboBoxResolution.Size = new System.Drawing.Size(238, 32);
+            this.comboBoxResolution.Size = new System.Drawing.Size(267, 32);
             this.comboBoxResolution.TabIndex = 17;
             // 
             // labelResolution
             // 
             this.labelResolution.AutoSize = true;
             this.labelResolution.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.labelResolution.Location = new System.Drawing.Point(426, 86);
+            this.labelResolution.Location = new System.Drawing.Point(403, 86);
             this.labelResolution.Name = "labelResolution";
             this.labelResolution.Size = new System.Drawing.Size(86, 31);
             this.labelResolution.TabIndex = 18;
@@ -292,10 +292,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(802, 624);
+            this.Controls.Add(this.comboBoxResolution);
             this.Controls.Add(this.labelSelectedSlidesCount);
             this.Controls.Add(this.buttonGenerate);
             this.Controls.Add(this.labelResolution);
-            this.Controls.Add(this.comboBoxResolution);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBoxStyle2);
