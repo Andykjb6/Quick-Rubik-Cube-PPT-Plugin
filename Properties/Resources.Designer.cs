@@ -241,6 +241,16 @@ namespace 课件帮PPT助手.Properties {
         }
         
         /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] 生字教学 {
+            get {
+                object obj = ResourceManager.GetObject("生字教学", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
         internal static System.Drawing.Bitmap 选择结束 {

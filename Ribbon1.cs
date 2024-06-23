@@ -4928,5 +4928,293 @@ End Sub
             }
             return null;
         }
+
+        private void 生字教学_Click(object sender, RibbonControlEventArgs e)
+        {
+            string pptPath = null;
+            PowerPoint.Presentation sourcePresentation = null;
+            try
+            {
+                // 提取并打开嵌入的PPT资源
+                pptPath = ExtractResourceFile("课件帮PPT助手.Resources.生字教学.pptx");
+                if (string.IsNullOrEmpty(pptPath))
+                {
+                    MessageBox.Show("无法提取PPT资源。");
+                    return;
+                }
+
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                sourcePresentation = app.Presentations.Open(pptPath, WithWindow: Office.MsoTriState.msoFalse);
+
+                // 获取第一个幻灯片
+                PowerPoint.Slide sourceSlide = sourcePresentation.Slides[1];
+
+                // 获取选中文字并获取拼音
+                string character = GetSelectedCharacter(app);
+                if (string.IsNullOrEmpty(character))
+                {
+                    MessageBox.Show("未找到选中的汉字。");
+                    return;
+                }
+                string filePath = ExtractResourceFile("课件帮PPT助手.汉字字典.汉字字典.xlsx");
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    MessageBox.Show("无法提取汉字字典资源。");
+                    return;
+                }
+                string pinyin = GetPinyinResult(filePath, character);
+                if (string.IsNullOrEmpty(pinyin))
+                {
+                    MessageBox.Show("未找到拼音信息。");
+                    return;
+                }
+
+                // 获取拼音返回文本框并替换内容
+                PowerPoint.Shape pinyinTextBox = FindShapeByName(sourceSlide, "拼音返回文本框");
+                if (pinyinTextBox != null)
+                {
+                    pinyinTextBox.TextFrame.TextRange.Text = pinyin;
+                }
+                else
+                {
+                    MessageBox.Show("未找到名为‘拼音返回文本框’的形状。");
+                    return;
+                }
+
+                // 获取DesignTools实例并调用PerformStrokeSplit方法
+                var designTools = new DesignTools();
+                designTools.PerformStrokeSplit();
+
+                // 获取并处理笔画拆分结果
+                PowerPoint.Shape strokeSplitShape = FindShapeByName(sourceSlide, "[笔画拆分]替换");
+                if (strokeSplitShape != null)
+                {
+                    float left = strokeSplitShape.Left;
+                    float top = strokeSplitShape.Top;
+
+                    // 获取所有与笔画拆分相关的形状并组合成一个整体
+                    PowerPoint.ShapeRange strokeSplitShapes = GetStrokeSplitShapes(sourceSlide);
+                    if (strokeSplitShapes != null)
+                    {
+                        PowerPoint.Shape groupedShape = strokeSplitShapes.Group();
+                        groupedShape.Left = left;
+                        groupedShape.Top = top;
+
+                        // 缩放组合形状
+                        groupedShape.LockAspectRatio = Office.MsoTriState.msoTrue;
+                        groupedShape.ScaleWidth(0.8f, Office.MsoTriState.msoTrue, Office.MsoScaleFrom.msoScaleFromTopLeft);
+                    }
+
+                    // 删除原始替换形状
+                    strokeSplitShape.Delete();
+                }
+                else
+                {
+                    MessageBox.Show("未找到名为‘[笔画拆分]替换’的形状。");
+                    return;
+                }
+
+                // 获取汉字信息
+                var characterInfo = GetCharacterInfo(filePath, character);
+                if (characterInfo == null)
+                {
+                    MessageBox.Show("未找到相关汉字信息。");
+                    return;
+                }
+
+                // 更新部首、结构、笔画信息到表格
+                PowerPoint.Shape tableShape = FindShapeByName(sourceSlide, "表格（部首-结构-笔画）");
+                if (tableShape != null)
+                {
+                    var table = tableShape.Table;
+                    if (table.Columns.Count >= 2 && table.Rows.Count >= 3)
+                    {
+                        table.Cell(1, 2).Shape.TextFrame.TextRange.Text = characterInfo.Radical;
+                        table.Cell(2, 2).Shape.TextFrame.TextRange.Text = characterInfo.Structure;
+                        table.Cell(3, 2).Shape.TextFrame.TextRange.Text = characterInfo.Strokes.ToString();
+                    }
+                    else
+                    {
+                        MessageBox.Show("表格的行数或列数不足。");
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("未找到名为‘表格（部首-结构-笔画）’的形状。");
+                    return;
+                }
+
+                // 更新相关组词信息到指定形状
+                for (int i = 0; i < 8; i++)
+                {
+                    PowerPoint.Shape groupWordShape = FindShapeByName(sourceSlide, $"相关组词-{i + 1}");
+                    if (groupWordShape != null)
+                    {
+                        groupWordShape.TextFrame.TextRange.Text = characterInfo.RelatedWords.ElementAtOrDefault(i) ?? "";
+                    }
+                    else
+                    {
+                        MessageBox.Show($"未找到名为‘相关组词-{i + 1}’的形状。");
+                    }
+                }
+
+                // 获取当前演示文稿和当前幻灯片
+                PowerPoint.Presentation currentPresentation = app.ActivePresentation;
+                PowerPoint.Slide currentSlide = app.ActiveWindow.View.Slide;
+
+                // 复制修改后的源幻灯片到当前演示文稿的下一页
+                sourceSlide.Copy();
+                currentPresentation.Slides.Paste(currentSlide.SlideIndex + 1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发生错误：{ex.Message}");
+            }
+            finally
+            {
+                // 释放资源并删除临时文件
+                if (sourcePresentation != null)
+                {
+                    sourcePresentation.Close();
+                }
+                if (pptPath != null && File.Exists(pptPath))
+                {
+                    try
+                    {
+                        File.Delete(pptPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"无法删除临时文件：{ex.Message}");
+                    }
+                }
+            }
+        }
+
+        private string GetPinyinResult(string filePath, string character)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage(new FileInfo(filePath)))
+            {
+                if (package.Workbook.Worksheets.Count == 0)
+                {
+                    throw new Exception("没有查到相关信息。");
+                }
+
+                var worksheet = package.Workbook.Worksheets[0];
+
+                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                {
+                    if (worksheet.Cells[row, 1].Text == character)
+                    {
+                        return worksheet.Cells[row, 2].Text;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private PowerPoint.ShapeRange GetStrokeSplitShapes(PowerPoint.Slide slide)
+        {
+            var shapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in slide.Shapes)
+            {
+                if (shape.Name.StartsWith("笔画拆分"))
+                {
+                    shapes.Add(shape);
+                }
+            }
+            if (shapes.Count > 0)
+            {
+                return slide.Shapes.Range(shapes.Select(s => s.Name).ToArray());
+            }
+            return null;
+        }
+
+        private string GetSelectedCharacter(PowerPoint.Application app)
+        {
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
+            {
+                return selection.TextRange.Text.Trim();
+            }
+            MessageBox.Show("请选中文字进行操作。");
+            return null;
+        }
+
+        private HanziInfo GetCharacterInfo(string filePath, string character)
+        {
+            var info = new HanziInfo();
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage(new FileInfo(filePath)))
+            {
+                if (package.Workbook.Worksheets.Count == 0)
+                {
+                    throw new Exception("没有查到相关信息。");
+                }
+
+                var worksheet = package.Workbook.Worksheets[0];
+
+                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                {
+                    if (worksheet.Cells[row, 1].Text == character)
+                    {
+                        info.Radical = worksheet.Cells[row, 3].Text;
+                        info.Structure = worksheet.Cells[row, 4].Text;
+                        info.Strokes = int.Parse(worksheet.Cells[row, 5].Text);
+                        info.RelatedWords = worksheet.Cells[row, 6].Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .Select(word => word.Trim())
+                                                    .Where(word => !string.IsNullOrEmpty(word))
+                                                    .ToArray();
+                        break;
+                    }
+                }
+            }
+
+            return info;
+        }
+
+        private string ExtractResourceFile(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (Stream resourceStream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                    throw new Exception($"Embedded resource {resourceName} not found.");
+
+                string tempFilePath = Path.Combine(Path.GetTempPath(), resourceName);
+
+                using (var fileStream = new FileStream(tempFilePath, FileMode.Create))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+
+                return tempFilePath;
+            }
+        }
+
+        private PowerPoint.Shape FindShapeByName(PowerPoint.Slide slide, string shapeName)
+        {
+            foreach (PowerPoint.Shape shape in slide.Shapes)
+            {
+                if (shape.Name == shapeName)
+                {
+                    return shape;
+                }
+            }
+            return null;
+        }
+
+        public class HanziInfo
+        {
+            public string Radical { get; set; }
+            public string Structure { get; set; }
+            public int Strokes { get; set; }
+            public string[] RelatedWords { get; set; }
+        }
     }
 }

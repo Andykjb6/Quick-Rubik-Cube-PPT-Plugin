@@ -223,161 +223,8 @@ namespace 课件帮PPT助手
         }
 
 
-        private void 笔画拆分_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                PowerPoint.Application app = Globals.ThisAddIn.Application;
-                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+       
 
-                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText || sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-                {
-                    PowerPoint.TextRange textRange = null;
-
-                    if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
-                    {
-                        textRange = sel.TextRange;
-                    }
-                    else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-                    {
-                        if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
-                        {
-                            textRange = sel.ShapeRange[1].TextFrame.TextRange;
-                        }
-                    }
-
-                    if (textRange != null)
-                    {
-                        string selectedText = textRange.Text.Trim();
-
-                        if (selectedText.Length == 1)
-                        {
-                            string svgContent = GetSVGContent(selectedText);
-
-                            if (!string.IsNullOrEmpty(svgContent))
-                            {
-                                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
-                                PowerPoint.Shape svgShape = InsertSVGIntoSlide(svgContent, slide);
-                                SelectShape(app, svgShape);
-                                AddAndRunVBA(app);
-                            }
-                            else
-                            {
-                                MessageBox.Show("未找到对应的SVG文件。");
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("请选择包含一个汉字的文本框。");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("请选择包含一个汉字的文本框。");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("请选择一个文本框。");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"发生错误：{ex.Message}");
-            }
-        }
-
-        private string GetSVGContent(string character)
-        {
-            string resourceName = $"课件帮PPT助手.汉字笔画.{character}.svg";
-            Assembly assembly = Assembly.GetExecutingAssembly();
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream != null)
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
-            }
-            return null;
-        }
-
-        private PowerPoint.Shape InsertSVGIntoSlide(string svgContent, PowerPoint.Slide slide)
-        {
-            string tempSvgPath = Path.Combine(Path.GetTempPath(), "temp.svg");
-            File.WriteAllText(tempSvgPath, svgContent);
-
-            float left = 100;  // 可以根据需求调整
-            float top = 100;   // 可以根据需求调整
-
-            PowerPoint.Shape svgShape = slide.Shapes.AddPicture(tempSvgPath, MsoTriState.msoFalse, MsoTriState.msoCTrue, left, top);
-
-            // 放大SVG
-            svgShape.Width *= 2;
-            svgShape.Height *= 2;
-
-            File.Delete(tempSvgPath);
-
-            return svgShape;
-        }
-
-        private void SelectShape(PowerPoint.Application app, PowerPoint.Shape shape)
-        {
-            shape.Select();
-        }
-
-        private void AddAndRunVBA(PowerPoint.Application app)
-        {
-            string vbaCode = @"
-    Sub ConvertSVGToShape()
-        ' Ensure a shape is selected
-        If ActiveWindow.Selection.Type <> ppSelectionShapes Then
-            MsgBox ""Please select an SVG shape to convert."", vbExclamation
-            Exit Sub
-        End If
-        
-        Dim shp As Shape
-        Set shp = ActiveWindow.Selection.ShapeRange(1)
-        
-        ' Convert the SVG to a shape by copying and pasting it as an EMF
-        shp.Copy
-        
-        Dim slide As slide
-        Set slide = ActiveWindow.View.slide
-        Dim newShape As Shape
-        Set newShape = slide.Shapes.PasteSpecial(DataType:=ppPasteEnhancedMetafile)(1)
-        
-        ' Delete the original SVG shape
-        shp.Delete
-        
-        ' Ungroup the new shape multiple times to fully convert it to individual shapes
-        On Error Resume Next
-        Dim i As Integer
-        For i = 1 To 5
-            newShape.Ungroup
-            Set newShape = slide.Shapes(slide.Shapes.Count) ' Re-select the shape after ungrouping
-        Next i
-        
-        ' Loop through shapes to find and delete the shape with name containing ""AutoShape""
-        Dim shapeItem As Shape
-        For Each shapeItem In slide.Shapes
-            If InStr(shapeItem.Name, ""AutoShape"") > 0 Then
-                shapeItem.Delete
-            End If
-        Next shapeItem
-    End Sub";
-
-            VBIDE.VBProject vbProject = app.ActivePresentation.VBProject;
-            VBIDE.VBComponent vbModule = vbProject.VBComponents.Add(VBIDE.vbext_ComponentType.vbext_ct_StdModule);
-            vbModule.CodeModule.AddFromString(vbaCode);
-
-            app.Run("ConvertSVGToShape");
-
-            vbProject.VBComponents.Remove(vbModule);
-        }
 
 
         private void 书写动画_Click(object sender, EventArgs ev)
@@ -706,6 +553,167 @@ namespace 课件帮PPT助手
                     return size.Width;
                 }
             }
+        }
+
+        public void 笔画拆分_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+
+                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText || sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                {
+                    PowerPoint.TextRange textRange = null;
+
+                    if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
+                    {
+                        textRange = sel.TextRange;
+                    }
+                    else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                    {
+                        if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
+                        {
+                            textRange = sel.ShapeRange[1].TextFrame.TextRange;
+                        }
+                    }
+
+                    if (textRange != null)
+                    {
+                        string selectedText = textRange.Text.Trim();
+
+                        if (selectedText.Length == 1)
+                        {
+                            string svgContent = GetSVGContent(selectedText);
+
+                            if (!string.IsNullOrEmpty(svgContent))
+                            {
+                                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+                                PowerPoint.Shape svgShape = InsertSVGIntoSlide(svgContent, slide);
+                                SelectShape(app, svgShape);
+                                AddAndRunVBA(app);
+                            }
+                            else
+                            {
+                                MessageBox.Show("未找到对应的SVG文件。");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("请选择包含一个汉字的文本框。");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选择包含一个汉字的文本框。");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请选择一个文本框。");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发生错误：{ex.Message}");
+            }
+        }
+
+        private string GetSVGContent(string character)
+        {
+            string resourceName = $"课件帮PPT助手.汉字笔画.{character}.svg";
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+            return null;
+        }
+
+        private PowerPoint.Shape InsertSVGIntoSlide(string svgContent, PowerPoint.Slide slide)
+        {
+            string tempSvgPath = Path.Combine(Path.GetTempPath(), "temp.svg");
+            File.WriteAllText(tempSvgPath, svgContent);
+
+            float left = 100;  // 可以根据需求调整
+            float top = 100;   // 可以根据需求调整
+
+            PowerPoint.Shape svgShape = slide.Shapes.AddPicture(tempSvgPath, MsoTriState.msoFalse, MsoTriState.msoCTrue, left, top);
+
+            // 放大SVG
+            svgShape.Width *= 2;
+            svgShape.Height *= 2;
+
+            File.Delete(tempSvgPath);
+
+            return svgShape;
+        }
+
+        private void SelectShape(PowerPoint.Application app, PowerPoint.Shape shape)
+        {
+            shape.Select();
+        }
+
+        private void AddAndRunVBA(PowerPoint.Application app)
+        {
+            string vbaCode = @"
+Sub ConvertSVGToShape()
+    ' Ensure a shape is selected
+    If ActiveWindow.Selection.Type <> ppSelectionShapes Then
+        MsgBox ""Please select an SVG shape to convert."", vbExclamation
+        Exit Sub
+    End If
+    
+    Dim shp As Shape
+    Set shp = ActiveWindow.Selection.ShapeRange(1)
+    
+    ' Convert the SVG to a shape by copying and pasting it as an EMF
+    shp.Copy
+    
+    Dim slide As slide
+    Set slide = ActiveWindow.View.slide
+    Dim newShape As Shape
+    Set newShape = slide.Shapes.PasteSpecial(DataType:=ppPasteEnhancedMetafile)(1)
+    
+    ' Delete the original SVG shape
+    shp.Delete
+    
+    ' Ungroup the new shape multiple times to fully convert it to individual shapes
+    On Error Resume Next
+    Dim i As Integer
+    For i = 1 To 5
+        newShape.Ungroup
+        Set newShape = slide.Shapes(slide.Shapes.Count) ' Re-select the shape after ungrouping
+    Next i
+    
+    ' Loop through shapes to find and delete the shape with name containing ""AutoShape""
+    Dim shapeItem As Shape
+    For Each shapeItem In slide.Shapes
+        If InStr(shapeItem.Name, ""AutoShape"") > 0 Then
+            shapeItem.Delete
+        End If
+    Next shapeItem
+End Sub";
+
+            VBIDE.VBProject vbProject = app.ActivePresentation.VBProject;
+            VBIDE.VBComponent vbModule = vbProject.VBComponents.Add(VBIDE.vbext_ComponentType.vbext_ct_StdModule);
+            vbModule.CodeModule.AddFromString(vbaCode);
+
+            app.Run("ConvertSVGToShape");
+
+            vbProject.VBComponents.Remove(vbModule);
+        }
+
+        public void PerformStrokeSplit()
+        {
+            笔画拆分_Click(this, EventArgs.Empty);
         }
     }
 }
