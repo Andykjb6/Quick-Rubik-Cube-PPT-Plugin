@@ -4700,234 +4700,8 @@ End Sub
             }
         }
 
-        private void 检测字体_Click(object sender, RibbonControlEventArgs e)
-        {
-            try
-            {
-                // 获取当前演示文稿
-                PowerPoint.Application app = Globals.ThisAddIn.Application;
-                PowerPoint.Presentation presentation = app.ActivePresentation;
 
-                // 获取演示文稿中所有已使用的字体
-                List<string> usedFonts = new List<string>();
-                List<string> unusedFonts = new List<string>();
-
-                foreach (PowerPoint.Slide slide in presentation.Slides)
-                {
-                    foreach (PowerPoint.Shape shape in slide.Shapes)
-                    {
-                        CollectFontsFromShape(shape, usedFonts, unusedFonts);
-                    }
-                }
-                usedFonts = usedFonts.Distinct().ToList();
-                unusedFonts = unusedFonts.Distinct().Except(usedFonts).ToList();
-
-                FontDetectionForm form = new FontDetectionForm(usedFonts, unusedFonts, presentation);
-                form.Show();
-            }
-            catch (Exception ex)
-            {
-                System.Windows.Forms.MessageBox.Show("检测过程中出错: " + ex.Message, "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-            }
-        }
-
-        private void CollectFontsFromShape(PowerPoint.Shape shape, List<string> usedFonts, List<string> unusedFonts)
-        {
-            if (shape.HasTextFrame == MsoTriState.msoTrue)
-            {
-                PowerPoint.TextRange textRange = shape.TextFrame.TextRange;
-                if (shape.TextFrame.HasText == MsoTriState.msoTrue)
-                {
-                    foreach (PowerPoint.TextRange run in textRange.Runs(1, textRange.Text.Length))
-                    {
-                        string fontName = run.Font.Name;
-                        if (!usedFonts.Contains(fontName))
-                        {
-                            usedFonts.Add(fontName);
-                        }
-                    }
-                }
-                else
-                {
-                    string fontName = textRange.Font.Name;
-                    if (!unusedFonts.Contains(fontName) && !usedFonts.Contains(fontName))
-                    {
-                        unusedFonts.Add(fontName);
-                    }
-                }
-            }
-
-            if (shape.Type == MsoShapeType.msoGroup)
-            {
-                foreach (PowerPoint.Shape groupedShape in shape.GroupItems)
-                {
-                    CollectFontsFromShape(groupedShape, usedFonts, unusedFonts);
-                }
-            }
-        }
-
-        private void 打包文档_Click(object sender, RibbonControlEventArgs e)
-        {
-            try
-            {
-                // 获取当前演示文稿
-                Microsoft.Office.Interop.PowerPoint.Application app = Globals.ThisAddIn.Application;
-                Presentation presentation = app.ActivePresentation;
-
-                // 获取演示文稿名称
-                string presentationName = Path.GetFileNameWithoutExtension(presentation.FullName);
-
-                // 创建文件夹路径
-                string folderPath = Path.Combine("C:\\", presentationName);
-
-                // 创建文件夹
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-
-                // 保存演示文稿
-                string presentationPath = Path.Combine(folderPath, presentationName + ".pptx");
-                presentation.SaveCopyAs(presentationPath);
-
-                // 创建“文档所用字体”子文件夹
-                string fontsFolderPath = Path.Combine(folderPath, "文档所用字体");
-                if (!Directory.Exists(fontsFolderPath))
-                {
-                    Directory.CreateDirectory(fontsFolderPath);
-                }
-
-                // 获取演示文稿所用的所有字体
-                for (int i = 1; i <= presentation.Fonts.Count; i++)
-                {
-                    Microsoft.Office.Interop.PowerPoint.Font font = presentation.Fonts[i];
-                    string fontFilePath = GetFontFilePath(font.Name);
-
-                    if (!string.IsNullOrEmpty(fontFilePath))
-                    {
-                        try
-                        {
-                            // 复制字体文件到“文档所用字体”子文件夹
-                            string destFontPath = Path.Combine(fontsFolderPath, Path.GetFileName(fontFilePath));
-                            File.Copy(fontFilePath, destFontPath, true);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"字体 {font.Name} 复制失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show($"未找到字体文件: {font.Name}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-                MessageBox.Show("打包完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // 打开主文件夹
-                System.Diagnostics.Process.Start("explorer.exe", folderPath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("打包过程中出错: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private string GetFontFilePath(string fontName)
-        {
-            // 处理常见字体名称
-            switch (fontName)
-            {
-                case "楷体":
-                    fontName = "KaiTi";
-                    break;
-                case "微软雅黑":
-                    fontName = "Microsoft YaHei";
-                    break;
-                    // 添加其他常见字体的特殊处理
-            }
-
-            // 在注册表中查找字体文件路径
-            string fontFilePath = FindFontFilePathInRegistry(fontName, Registry.LocalMachine);
-            if (!string.IsNullOrEmpty(fontFilePath))
-            {
-                return fontFilePath;
-            }
-
-            // 在用户注册表中查找字体文件路径
-            fontFilePath = FindFontFilePathInRegistry(fontName, Registry.CurrentUser);
-            if (!string.IsNullOrEmpty(fontFilePath))
-            {
-                return fontFilePath;
-            }
-
-            // 在系统字体文件夹中查找
-            fontFilePath = FindFontFilePathInDirectory(fontName, Environment.GetFolderPath(Environment.SpecialFolder.Fonts));
-            if (!string.IsNullOrEmpty(fontFilePath))
-            {
-                return fontFilePath;
-            }
-
-            // 在用户字体文件夹中查找（如果有）
-            string userFontDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft\\Windows\\Fonts");
-            fontFilePath = FindFontFilePathInDirectory(fontName, userFontDir);
-            if (!string.IsNullOrEmpty(fontFilePath))
-            {
-                return fontFilePath;
-            }
-
-            return null;
-        }
-
-        private string FindFontFilePathInRegistry(string fontName, RegistryKey registryKey)
-        {
-            string fontFilePath = null;
-            string fontsRegistryPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts";
-
-            using (RegistryKey key = registryKey.OpenSubKey(fontsRegistryPath, false))
-            {
-                if (key != null)
-                {
-                    foreach (string fontRegName in key.GetValueNames())
-                    {
-                        if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(fontRegName, fontName, CompareOptions.IgnoreCase) >= 0)
-                        {
-                            fontFilePath = key.GetValue(fontRegName) as string;
-                            if (!string.IsNullOrEmpty(fontFilePath))
-                            {
-                                if (!Path.IsPathRooted(fontFilePath))
-                                {
-                                    fontFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), fontFilePath);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return fontFilePath;
-        }
-
-        private string FindFontFilePathInDirectory(string fontName, string directoryPath)
-        {
-            if (Directory.Exists(directoryPath))
-            {
-                var fontFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                                         .Where(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
-                                                     f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase) ||
-                                                     f.EndsWith(".ttc", StringComparison.OrdinalIgnoreCase));
-
-                foreach (string fontFile in fontFiles)
-                {
-                    if (CultureInfo.CurrentCulture.CompareInfo.IndexOf(Path.GetFileNameWithoutExtension(fontFile), fontName, CompareOptions.IgnoreCase) >= 0)
-                    {
-                        return fontFile;
-                    }
-                }
-            }
-            return null;
-        }
+      
 
         private void 生字教学_Click(object sender, RibbonControlEventArgs e)
         {
@@ -4944,7 +4718,7 @@ End Sub
                 }
 
                 PowerPoint.Application app = Globals.ThisAddIn.Application;
-                sourcePresentation = app.Presentations.Open(pptPath, WithWindow: Office.MsoTriState.msoFalse);
+                sourcePresentation = app.Presentations.Open(pptPath, WithWindow: Microsoft.Office.Core.MsoTriState.msoFalse);
 
                 // 获取第一个幻灯片
                 PowerPoint.Slide sourceSlide = sourcePresentation.Slides[1];
@@ -4981,32 +4755,11 @@ End Sub
                     return;
                 }
 
-                // 获取DesignTools实例并调用PerformStrokeSplit方法
-                var designTools = new DesignTools();
-                designTools.PerformStrokeSplit();
-
-                // 获取并处理笔画拆分结果
-                PowerPoint.Shape strokeSplitShape = FindShapeByName(sourceSlide, "[笔画拆分]替换");
-                if (strokeSplitShape != null)
+                // 替换 [笔画拆分] 替换文本框内的文本
+                PowerPoint.Shape strokeReplaceTextBox = FindShapeByName(sourceSlide, "[笔画拆分]替换");
+                if (strokeReplaceTextBox != null)
                 {
-                    float left = strokeSplitShape.Left;
-                    float top = strokeSplitShape.Top;
-
-                    // 获取所有与笔画拆分相关的形状并组合成一个整体
-                    PowerPoint.ShapeRange strokeSplitShapes = GetStrokeSplitShapes(sourceSlide);
-                    if (strokeSplitShapes != null)
-                    {
-                        PowerPoint.Shape groupedShape = strokeSplitShapes.Group();
-                        groupedShape.Left = left;
-                        groupedShape.Top = top;
-
-                        // 缩放组合形状
-                        groupedShape.LockAspectRatio = Office.MsoTriState.msoTrue;
-                        groupedShape.ScaleWidth(0.8f, Office.MsoTriState.msoTrue, Office.MsoScaleFrom.msoScaleFromTopLeft);
-                    }
-
-                    // 删除原始替换形状
-                    strokeSplitShape.Delete();
+                    strokeReplaceTextBox.TextFrame.TextRange.Text = character; // 这里替换为用户选中的文本
                 }
                 else
                 {
@@ -5094,7 +4847,7 @@ End Sub
 
         private string GetPinyinResult(string filePath, string character)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
                 if (package.Workbook.Worksheets.Count == 0)
@@ -5116,19 +4869,14 @@ End Sub
             return null;
         }
 
-        private PowerPoint.ShapeRange GetStrokeSplitShapes(PowerPoint.Slide slide)
+        private PowerPoint.Shape FindStrokeSplitShape(PowerPoint.Slide slide, string shapeName)
         {
-            var shapes = new List<PowerPoint.Shape>();
             foreach (PowerPoint.Shape shape in slide.Shapes)
             {
-                if (shape.Name.StartsWith("笔画拆分"))
+                if (shape.Name == shapeName)
                 {
-                    shapes.Add(shape);
+                    return shape;
                 }
-            }
-            if (shapes.Count > 0)
-            {
-                return slide.Shapes.Range(shapes.Select(s => s.Name).ToArray());
             }
             return null;
         }
@@ -5148,7 +4896,7 @@ End Sub
         {
             var info = new HanziInfo();
 
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
@@ -5184,7 +4932,7 @@ End Sub
             using (Stream resourceStream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
-                    throw new Exception($"Embedded resource {resourceName} not found.");
+                    throw new Exception($"未找到嵌入资源 {resourceName}.");
 
                 string tempFilePath = Path.Combine(Path.GetTempPath(), resourceName);
 
@@ -5215,6 +4963,85 @@ End Sub
             public string Structure { get; set; }
             public int Strokes { get; set; }
             public string[] RelatedWords { get; set; }
+        }
+
+        private void 检测字体_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                // 获取当前演示文稿
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                PowerPoint.Presentation presentation = app.ActivePresentation;
+
+                // 获取演示文稿中所有已使用的字体
+                List<string> usedFonts = new List<string>();
+                List<string> unusedFonts = new List<string>();
+
+                foreach (PowerPoint.Slide slide in presentation.Slides)
+                {
+                    foreach (PowerPoint.Shape shape in slide.Shapes)
+                    {
+                        CollectFontsFromShape(shape, usedFonts, unusedFonts);
+                    }
+                }
+                usedFonts = usedFonts.Distinct().ToList();
+                unusedFonts = unusedFonts.Distinct().Except(usedFonts).ToList();
+
+                FontDetectionForm form = new FontDetectionForm(usedFonts, unusedFonts, presentation);
+                form.Show();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("检测过程中出错: " + ex.Message, "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
+
+        private void CollectFontsFromShape(PowerPoint.Shape shape, List<string> usedFonts, List<string> unusedFonts)
+        {
+            if (shape.HasTextFrame == MsoTriState.msoTrue)
+            {
+                PowerPoint.TextRange textRange = shape.TextFrame.TextRange;
+                foreach (PowerPoint.TextRange run in textRange.Runs(1, textRange.Text.Length))
+                {
+                    string fontName = run.Font.Name;
+                    if (!usedFonts.Contains(fontName))
+                    {
+                        usedFonts.Add(fontName);
+                    }
+                }
+            }
+
+            // 检查没有文本但有字体设置的形状
+            if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoFalse)
+            {
+                var fonts = shape.TextFrame.TextRange.Font;
+                string fontName = fonts.Name;
+                if (!usedFonts.Contains(fontName))
+                {
+                    unusedFonts.Add(fontName);
+                }
+            }
+
+            if (shape.Type == MsoShapeType.msoGroup)
+            {
+                foreach (PowerPoint.Shape groupedShape in shape.GroupItems)
+                {
+                    CollectFontsFromShape(groupedShape, usedFonts, unusedFonts);
+                }
+            }
+        }
+
+        private List<string> GetUnusedFonts(PowerPoint.Presentation presentation, List<string> usedFonts)
+        {
+            List<string> unusedFonts = new List<string>();
+            foreach (PowerPoint.Font font in presentation.Fonts)
+            {
+                if (!usedFonts.Contains(font.Name))
+                {
+                    unusedFonts.Add(font.Name);
+                }
+            }
+            return unusedFonts;
         }
     }
 }

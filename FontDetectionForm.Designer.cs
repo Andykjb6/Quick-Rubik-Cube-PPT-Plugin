@@ -34,32 +34,32 @@
             // 
             this.listBoxUsed.FormattingEnabled = true;
             this.listBoxUsed.ItemHeight = 24;
-            this.listBoxUsed.Location = new System.Drawing.Point(12, 57);
+            this.listBoxUsed.Location = new System.Drawing.Point(17, 61);
             this.listBoxUsed.Name = "listBoxUsed";
-            this.listBoxUsed.Size = new System.Drawing.Size(209, 268);
+            this.listBoxUsed.Size = new System.Drawing.Size(219, 268);
             this.listBoxUsed.TabIndex = 0;
             // 
             // listBoxUnused
             // 
             this.listBoxUnused.FormattingEnabled = true;
             this.listBoxUnused.ItemHeight = 24;
-            this.listBoxUnused.Location = new System.Drawing.Point(240, 57);
+            this.listBoxUnused.Location = new System.Drawing.Point(251, 61);
             this.listBoxUnused.Name = "listBoxUnused";
-            this.listBoxUnused.Size = new System.Drawing.Size(209, 268);
+            this.listBoxUnused.Size = new System.Drawing.Size(219, 268);
             this.listBoxUnused.TabIndex = 1;
             // 
             // clearButton
             // 
-            this.clearButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.clearButton.BackColor = System.Drawing.Color.White;
             this.clearButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(56)))), ((int)(((byte)(238)))));
-            this.clearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(215)))), ((int)(((byte)(250)))));
+            this.clearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(195)))), ((int)(((byte)(195)))), ((int)(((byte)(241)))));
             this.clearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(247)))), ((int)(((byte)(255)))));
             this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.clearButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.clearButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(56)))), ((int)(((byte)(238)))));
-            this.clearButton.Location = new System.Drawing.Point(240, 336);
+            this.clearButton.Location = new System.Drawing.Point(251, 339);
             this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(209, 46);
+            this.clearButton.Size = new System.Drawing.Size(219, 46);
             this.clearButton.TabIndex = 2;
             this.clearButton.Text = "清除未用字体";
             this.clearButton.UseVisualStyleBackColor = false;
@@ -67,16 +67,16 @@
             // 
             // exportFontsButton
             // 
-            this.exportFontsButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.exportFontsButton.BackColor = System.Drawing.Color.White;
             this.exportFontsButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(56)))), ((int)(((byte)(238)))));
-            this.exportFontsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(215)))), ((int)(((byte)(250)))));
+            this.exportFontsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(195)))), ((int)(((byte)(195)))), ((int)(((byte)(241)))));
             this.exportFontsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(247)))), ((int)(((byte)(255)))));
             this.exportFontsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exportFontsButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.exportFontsButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(56)))), ((int)(((byte)(238)))));
-            this.exportFontsButton.Location = new System.Drawing.Point(12, 336);
+            this.exportFontsButton.Location = new System.Drawing.Point(17, 339);
             this.exportFontsButton.Name = "exportFontsButton";
-            this.exportFontsButton.Size = new System.Drawing.Size(209, 46);
+            this.exportFontsButton.Size = new System.Drawing.Size(219, 46);
             this.exportFontsButton.TabIndex = 3;
             this.exportFontsButton.Text = "导出已用字体";
             this.exportFontsButton.UseVisualStyleBackColor = false;
@@ -91,9 +91,9 @@
             this.packageDocumentButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.packageDocumentButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.packageDocumentButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.packageDocumentButton.Location = new System.Drawing.Point(12, 394);
+            this.packageDocumentButton.Location = new System.Drawing.Point(17, 397);
             this.packageDocumentButton.Name = "packageDocumentButton";
-            this.packageDocumentButton.Size = new System.Drawing.Size(437, 48);
+            this.packageDocumentButton.Size = new System.Drawing.Size(453, 48);
             this.packageDocumentButton.TabIndex = 4;
             this.packageDocumentButton.Text = "打包文档";
             this.packageDocumentButton.UseVisualStyleBackColor = false;
@@ -103,7 +103,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(13, 22);
+            this.label1.Location = new System.Drawing.Point(18, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(160, 24);
             this.label1.TabIndex = 5;
@@ -113,7 +113,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(236, 22);
+            this.label2.Location = new System.Drawing.Point(258, 22);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(160, 24);
             this.label2.TabIndex = 6;
@@ -123,7 +123,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(463, 472);
+            this.ClientSize = new System.Drawing.Size(487, 468);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.packageDocumentButton);
@@ -136,8 +136,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "检测结果";
-            this.TopMost = true;
-            this.Load += new System.EventHandler(this.FontDetectionForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

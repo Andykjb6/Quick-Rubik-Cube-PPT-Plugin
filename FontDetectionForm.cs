@@ -91,14 +91,13 @@ namespace 课件帮PPT助手
         private void ExportFontsButton_Click(object sender, EventArgs e)
         {
             string folderPath;
-            string presentationName = presentation.Name;
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 using (FolderBrowserDialog dialog = new FolderBrowserDialog())
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        folderPath = Path.Combine(dialog.SelectedPath, presentationName + "（所需字体）");
+                        folderPath = dialog.SelectedPath;
                     }
                     else
                     {
@@ -108,12 +107,13 @@ namespace 课件帮PPT助手
             }
             else
             {
+                string presentationName = presentation.Name;
                 folderPath = Path.Combine("C:\\", presentationName + "（所需字体）");
-            }
 
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
             }
 
             foreach (string fontName in usedFonts)
@@ -145,14 +145,13 @@ namespace 课件帮PPT助手
         private void PackageDocumentButton_Click(object sender, EventArgs e)
         {
             string folderPath;
-            string presentationName = Path.GetFileNameWithoutExtension(presentation.FullName);
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 using (FolderBrowserDialog dialog = new FolderBrowserDialog())
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        folderPath = Path.Combine(dialog.SelectedPath, presentationName);
+                        folderPath = dialog.SelectedPath;
                     }
                     else
                     {
@@ -162,15 +161,17 @@ namespace 课件帮PPT助手
             }
             else
             {
+                string presentationName = Path.GetFileNameWithoutExtension(presentation.FullName);
                 folderPath = Path.Combine("C:\\", presentationName);
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
             }
 
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            string presentationPath = Path.Combine(folderPath, presentationName + ".pptx");
+            string presentationNameForPath = Path.GetFileNameWithoutExtension(presentation.FullName);
+            string presentationPath = Path.Combine(folderPath, presentationNameForPath + ".pptx");
             presentation.SaveCopyAs(presentationPath);
 
             string fontsFolderPath = Path.Combine(folderPath, "文档所用字体");
@@ -251,7 +252,7 @@ namespace 课件帮PPT助手
                     fontName = "STFANGSO";
                     break;
                 case "行楷":
-                    fontName = " STXINGKA";
+                    fontName = "STXINGKA";
                     break;
                 case "华文新魏":
                     fontName = "STXinwei";
@@ -314,31 +315,6 @@ namespace 课件帮PPT助手
                 return fontFilePath;
             }
 
-            // 增加额外的检查路径，例如常见的字体文件夹
-            string[] additionalPaths = new string[]
-            {
-                @"C:\Windows\Fonts\",
-                @"C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE14\Fonts\",
-                @"C:\Program Files\Common Files\Microsoft Shared\OFFICE14\Fonts\",
-                @"C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE15\Fonts\",
-                @"C:\Program Files\Common Files\Microsoft Shared\OFFICE15\Fonts\",
-                @"C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE16\Fonts\",
-                @"C:\Program Files\Common Files\Microsoft Shared\OFFICE16\Fonts\",
-                @"C:\Program Files\Common Files\Adobe\Fonts",
-                @"C:\Program Files (x86)\Common Files\Adobe\Fonts",
-                @"C:\Windows\System32\Fonts",
-                @"C:\Windows\SysWOW64\Fonts"
-            };
-
-            foreach (var path in additionalPaths)
-            {
-                fontFilePath = FindFontFilePathInDirectory(fontName, path);
-                if (!string.IsNullOrEmpty(fontFilePath))
-                {
-                    return fontFilePath;
-                }
-            }
-
             return null;
         }
 
@@ -377,10 +353,8 @@ namespace 课件帮PPT助手
             if (Directory.Exists(directoryPath))
             {
                 var fontFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                           .Where(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
-                                       f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase) ||
-                                       f.EndsWith(".ttc", StringComparison.OrdinalIgnoreCase));
-
+                                          .Where(f => f.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                                                      f.EndsWith(".otf", StringComparison.OrdinalIgnoreCase));
 
                 foreach (string fontFile in fontFiles)
                 {
@@ -391,11 +365,6 @@ namespace 课件帮PPT助手
                 }
             }
             return null;
-        }
-
-        private void FontDetectionForm_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
