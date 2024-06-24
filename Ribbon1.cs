@@ -3487,455 +3487,7 @@ End Sub
             return selectedShapes;
         }
 
-        //按类型筛选
-        private void Type_Click(object sender, RibbonControlEventArgs e)
-        {
-            var application = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = application.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                var selectedShape = GetFirstShapeFromSelection(selection);
-                var selectedShapeType = (Office.MsoShapeType)selectedShape.Type; // 获取选中形状的类型
-                var slide = application.ActiveWindow.View.Slide;
-                List<PowerPoint.Shape> sameTypeShapes = new List<PowerPoint.Shape>();
-
-                // 遍历当前幻灯片中的所有形状
-                foreach (PowerPoint.Shape shape in GetAllShapes(slide.Shapes))
-                {
-                    if ((Office.MsoShapeType)shape.Type == selectedShapeType)
-                    {
-                        sameTypeShapes.Add(shape);
-                    }
-                }
-
-                // 使用形状名称创建一个数组
-                if (sameTypeShapes.Count > 0)
-                {
-                    var shapeNamesArray = sameTypeShapes.Select(shape => shape.Name).ToArray();
-                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
-                    // 选中所有相同类型的形状
-                    shapeRange.Select();
-                }
-            }
-            else
-            {
-                System.Windows.Forms.MessageBox.Show("请选择一个对象。");
-            }
-        }
-
-        private PowerPoint.Shape GetFirstShapeFromSelection(PowerPoint.Selection selection)
-        {
-            if (selection.HasChildShapeRange)
-            {
-                return selection.ChildShapeRange[1];
-            }
-            return selection.ShapeRange[1];
-        }
-
-        private List<PowerPoint.Shape> GetAllShapes(PowerPoint.Shapes shapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.Add(shape);
-                    allShapes.AddRange(GetAllShapes(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private List<PowerPoint.Shape> GetAllShapes(PowerPoint.GroupShapes groupShapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in groupShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.Add(shape);
-                    allShapes.AddRange(GetAllShapes(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private void Selectsize_Click(object sender, RibbonControlEventArgs e)
-        {
-            var application = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = application.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                var selectedShape = GetFirstShapeFromSelectionForSize(selection);
-                var selectedShapeWidth = selectedShape.Width; // 获取选中形状的宽度
-                var selectedShapeHeight = selectedShape.Height; // 获取选中形状的高度
-                var slide = application.ActiveWindow.View.Slide;
-                List<PowerPoint.Shape> sameSizeShapes = new List<PowerPoint.Shape>();
-
-                // 遍历当前幻灯片中的所有形状
-                foreach (PowerPoint.Shape shape in GetAllShapesForSize(slide.Shapes))
-                {
-                    if (shape.Width == selectedShapeWidth && shape.Height == selectedShapeHeight)
-                    {
-                        sameSizeShapes.Add(shape);
-                    }
-                }
-
-                // 使用形状名称创建一个数组
-                if (sameSizeShapes.Count > 0)
-                {
-                    var shapeNamesArray = sameSizeShapes.Select(shape => shape.Name).ToArray();
-                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
-                    // 选中所有相同尺寸的形状
-                    shapeRange.Select();
-                }
-            }
-            else
-            {
-                System.Windows.Forms.MessageBox.Show("请选择一个对象。");
-            }
-        }
-
-        private PowerPoint.Shape GetFirstShapeFromSelectionForSize(PowerPoint.Selection selection)
-        {
-            if (selection.HasChildShapeRange)
-            {
-                return selection.ChildShapeRange[1];
-            }
-            return selection.ShapeRange[1];
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesForSize(PowerPoint.Shapes shapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.Add(shape);
-                    allShapes.AddRange(GetAllShapesFromGroupForSize(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesFromGroupForSize(PowerPoint.GroupShapes groupShapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in groupShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.Add(shape);
-                    allShapes.AddRange(GetAllShapesFromGroupForSize(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-
-        private void SelectedColor_Click(object sender, RibbonControlEventArgs e)
-        {
-            var application = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = application.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                var selectedShape = GetFirstShapeFromSelectionForColor(selection);
-                var selectedShapeFillColor = selectedShape.Fill.ForeColor.RGB; // 获取选中形状的填充颜色
-                var slide = application.ActiveWindow.View.Slide;
-                List<PowerPoint.Shape> sameColorShapes = new List<PowerPoint.Shape>();
-
-                // 遍历当前幻灯片中的所有形状
-                foreach (PowerPoint.Shape shape in GetAllShapesForColor(slide.Shapes))
-                {
-                    if (shape.Fill.ForeColor.RGB == selectedShapeFillColor)
-                    {
-                        sameColorShapes.Add(shape);
-                    }
-                }
-
-                // 使用形状名称创建一个数组
-                if (sameColorShapes.Count > 0)
-                {
-                    var shapeNamesArray = sameColorShapes.Select(shape => shape.Name).ToArray();
-                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
-                    // 选中所有相同颜色的形状
-                    shapeRange.Select();
-                }
-            }
-            else
-            {
-                System.Windows.Forms.MessageBox.Show("请选择一个对象。");
-            }
-        }
-
-        private PowerPoint.Shape GetFirstShapeFromSelectionForColor(PowerPoint.Selection selection)
-        {
-            if (selection.HasChildShapeRange)
-            {
-                return selection.ChildShapeRange[1];
-            }
-            return selection.ShapeRange[1];
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesForColor(PowerPoint.Shapes shapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForColor(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesFromGroupForColor(PowerPoint.GroupShapes groupShapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in groupShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForColor(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private void Selectedline_Click(object sender, RibbonControlEventArgs e)
-        {
-            var application = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = application.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                var selectedShape = GetFirstShapeFromSelectionForLine(selection);
-                var slide = application.ActiveWindow.View.Slide;
-                List<PowerPoint.Shape> sameLineShapes = new List<PowerPoint.Shape>();
-
-                if ((Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control)
-                {
-                    // 获取选中形状的轮廓颜色
-                    var selectedLineColor = selectedShape.Line.ForeColor.RGB;
-
-                    // 遍历当前幻灯片中的所有形状
-                    foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
-                    {
-                        if (shape.Line.ForeColor.RGB == selectedLineColor)
-                        {
-                            sameLineShapes.Add(shape);
-                        }
-                    }
-                }
-                else if ((Control.ModifierKeys & System.Windows.Forms.Keys.Shift) == System.Windows.Forms.Keys.Shift)
-                {
-                    // 获取选中形状的轮廓线条类型
-                    var selectedLineDashStyle = selectedShape.Line.DashStyle;
-
-                    // 遍历当前幻灯片中的所有形状
-                    foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
-                    {
-                        if ((Office.MsoLineDashStyle)shape.Line.DashStyle == selectedLineDashStyle)
-                        {
-                            sameLineShapes.Add(shape);
-                        }
-                    }
-                }
-                else
-                {
-                    // 获取选中形状的轮廓宽度
-                    var selectedLineWidth = selectedShape.Line.Weight;
-
-                    // 遍历当前幻灯片中的所有形状
-                    foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
-                    {
-                        if (shape.Line.Weight == selectedLineWidth)
-                        {
-                            sameLineShapes.Add(shape);
-                        }
-                    }
-                }
-
-                // 使用形状名称创建一个数组
-                if (sameLineShapes.Count > 0)
-                {
-                    var shapeNamesArray = sameLineShapes.Select(shape => shape.Name).ToArray();
-                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
-                    // 选中所有相同轮廓属性的形状
-                    shapeRange.Select();
-                }
-            }
-            else
-            {
-                System.Windows.Forms.MessageBox.Show("请选择一个对象。");
-            }
-        }
-
-        private PowerPoint.Shape GetFirstShapeFromSelectionForLine(PowerPoint.Selection selection)
-        {
-            if (selection.HasChildShapeRange)
-            {
-                return selection.ChildShapeRange[1];
-            }
-            return selection.ShapeRange[1];
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesForLine(PowerPoint.Shapes shapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForLine(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesFromGroupForLine(PowerPoint.GroupShapes groupShapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in groupShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForLine(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private void Selectfontsize_Click(object sender, RibbonControlEventArgs e)
-        {
-            var application = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = application.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                var selectedShape = GetFirstShapeFromSelectionForFontSize(selection);
-                var slide = application.ActiveWindow.View.Slide;
-                List<PowerPoint.Shape> sameFontSizeShapes = new List<PowerPoint.Shape>();
-
-                // 获取选中形状的字体大小
-                float selectedFontSize = 0;
-                if (selectedShape.TextFrame.HasText == Office.MsoTriState.msoTrue)
-                {
-                    selectedFontSize = selectedShape.TextFrame.TextRange.Font.Size;
-                }
-
-                // 如果选中形状没有字体大小，则不进行后续操作
-                if (selectedFontSize == 0)
-                {
-                    System.Windows.Forms.MessageBox.Show("请选择一个包含文本的对象。");
-                    return;
-                }
-
-                // 遍历当前幻灯片中的所有形状
-                foreach (PowerPoint.Shape shape in GetAllShapesForFontSize(slide.Shapes))
-                {
-                    if ((Office.MsoTriState)shape.TextFrame.HasText == Office.MsoTriState.msoTrue &&
-                        shape.TextFrame.TextRange.Font.Size == selectedFontSize)
-                    {
-                        sameFontSizeShapes.Add(shape);
-                    }
-                }
-
-                // 使用形状名称创建一个数组
-                if (sameFontSizeShapes.Count > 0)
-                {
-                    var shapeNamesArray = sameFontSizeShapes.Select(shape => shape.Name).ToArray();
-                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
-                    // 选中所有相同字体大小的形状
-                    shapeRange.Select();
-                }
-            }
-            else
-            {
-                System.Windows.Forms.MessageBox.Show("请选择一个对象。");
-            }
-        }
-
-        private PowerPoint.Shape GetFirstShapeFromSelectionForFontSize(PowerPoint.Selection selection)
-        {
-            if (selection.HasChildShapeRange)
-            {
-                return selection.ChildShapeRange[1];
-            }
-            return selection.ShapeRange[1];
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesForFontSize(PowerPoint.Shapes shapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in shapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForFontSize(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
-        private List<PowerPoint.Shape> GetAllShapesFromGroupForFontSize(PowerPoint.GroupShapes groupShapes)
-        {
-            var allShapes = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in groupShapes)
-            {
-                if (shape.Type == MsoShapeType.msoGroup)
-                {
-                    allShapes.AddRange(GetAllShapesFromGroupForFontSize(shape.GroupItems));
-                }
-                else
-                {
-                    allShapes.Add(shape);
-                }
-            }
-            return allShapes;
-        }
-
+       
         private void 交换格式_Click(object sender, RibbonControlEventArgs e)
         {
             try
@@ -5042,6 +4594,645 @@ End Sub
                 }
             }
             return unusedFonts;
+        }
+
+       
+
+        private void Selectsize_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShape = GetFirstShapeFromSelectionForSize(selection);
+                var selectedShapeWidth = selectedShape.Width; // 获取选中形状的宽度
+                var selectedShapeHeight = selectedShape.Height; // 获取选中形状的高度
+                List<PowerPoint.Shape> sameSizeShapes = new List<PowerPoint.Shape>();
+
+                if (IsShapeInGroupForSize(selectedShape))
+                {
+                    var parentGroup = GetParentGroupForSize(selectedShape);
+                    foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForSize(parentGroup.GroupItems))
+                    {
+                        if (shape.Width == selectedShapeWidth && shape.Height == selectedShapeHeight)
+                        {
+                            sameSizeShapes.Add(shape);
+                        }
+                    }
+                }
+                else
+                {
+                    var slide = application.ActiveWindow.View.Slide;
+                    foreach (PowerPoint.Shape shape in GetAllShapesForSize(slide.Shapes))
+                    {
+                        if (shape.Width == selectedShapeWidth && shape.Height == selectedShapeHeight && !IsShapeInGroupForSize(shape))
+                        {
+                            sameSizeShapes.Add(shape);
+                        }
+                    }
+                }
+
+                if (sameSizeShapes.Count > 0)
+                {
+                    var shapeNamesArray = sameSizeShapes.Select(shape => shape.Name).ToArray();
+                    var shapeRange = application.ActiveWindow.View.Slide.Shapes.Range(shapeNamesArray);
+                    shapeRange.Select();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个对象。");
+            }
+        }
+
+        private PowerPoint.Shape GetFirstShapeFromSelectionForSize(PowerPoint.Selection selection)
+        {
+            if (selection.HasChildShapeRange)
+            {
+                return selection.ChildShapeRange[1];
+            }
+            return selection.ShapeRange[1];
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesForSize(PowerPoint.Shapes shapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForSize(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesFromGroupForSize(PowerPoint.GroupShapes groupShapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForSize(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private bool IsShapeInGroupForSize(PowerPoint.Shape shape)
+        {
+            try
+            {
+                var parent = shape.ParentGroup;
+                return parent != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private PowerPoint.Shape GetParentGroupForSize(PowerPoint.Shape shape)
+        {
+            return shape.ParentGroup;
+        }
+
+        private void SelectedColor_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShape = GetFirstShapeFromSelectionForColor(selection);
+                var selectedShapeFillColor = selectedShape.Fill.ForeColor.RGB; // 获取选中形状的填充颜色
+                List<PowerPoint.Shape> sameColorShapes = new List<PowerPoint.Shape>();
+
+                if (IsShapeInGroupForColor(selectedShape))
+                {
+                    var parentGroup = GetParentGroupForColor(selectedShape);
+                    foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForColor(parentGroup.GroupItems))
+                    {
+                        if (shape.Fill.ForeColor.RGB == selectedShapeFillColor)
+                        {
+                            sameColorShapes.Add(shape);
+                        }
+                    }
+                }
+                else
+                {
+                    var slide = application.ActiveWindow.View.Slide;
+                    foreach (PowerPoint.Shape shape in GetAllShapesForColor(slide.Shapes))
+                    {
+                        if (shape.Fill.ForeColor.RGB == selectedShapeFillColor && !IsShapeInGroupForColor(shape))
+                        {
+                            sameColorShapes.Add(shape);
+                        }
+                    }
+                }
+
+                if (sameColorShapes.Count > 0)
+                {
+                    var shapeNamesArray = sameColorShapes.Select(shape => shape.Name).ToArray();
+                    var shapeRange = application.ActiveWindow.View.Slide.Shapes.Range(shapeNamesArray);
+                    shapeRange.Select();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个对象。");
+            }
+        }
+
+        private PowerPoint.Shape GetFirstShapeFromSelectionForColor(PowerPoint.Selection selection)
+        {
+            if (selection.HasChildShapeRange)
+            {
+                return selection.ChildShapeRange[1];
+            }
+            return selection.ShapeRange[1];
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesForColor(PowerPoint.Shapes shapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForColor(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesFromGroupForColor(PowerPoint.GroupShapes groupShapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForColor(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private bool IsShapeInGroupForColor(PowerPoint.Shape shape)
+        {
+            try
+            {
+                var parent = shape.ParentGroup;
+                return parent != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private PowerPoint.Shape GetParentGroupForColor(PowerPoint.Shape shape)
+        {
+            return shape.ParentGroup;
+        }
+
+        private void Selectedline_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShape = GetFirstShapeFromSelectionForLine(selection);
+                var slide = application.ActiveWindow.View.Slide;
+                List<PowerPoint.Shape> sameLineShapes = new List<PowerPoint.Shape>();
+
+                if (IsShapeInGroupForLine(selectedShape))
+                {
+                    var parentGroup = GetParentGroupForLine(selectedShape);
+
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        // 获取选中形状的轮廓颜色
+                        var selectedLineColor = selectedShape.Line.ForeColor.RGB;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForLine(parentGroup.GroupItems))
+                        {
+                            if (shape.Line.ForeColor.RGB == selectedLineColor)
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                    else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    {
+                        // 获取选中形状的轮廓线条类型
+                        var selectedLineDashStyle = selectedShape.Line.DashStyle;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForLine(parentGroup.GroupItems))
+                        {
+                            if ((MsoLineDashStyle)shape.Line.DashStyle == selectedLineDashStyle)
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 获取选中形状的轮廓宽度
+                        var selectedLineWidth = selectedShape.Line.Weight;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForLine(parentGroup.GroupItems))
+                        {
+                            if (shape.Line.Weight == selectedLineWidth)
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    {
+                        // 获取选中形状的轮廓颜色
+                        var selectedLineColor = selectedShape.Line.ForeColor.RGB;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
+                        {
+                            if (shape.Line.ForeColor.RGB == selectedLineColor && !IsShapeInGroupForLine(shape))
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                    else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    {
+                        // 获取选中形状的轮廓线条类型
+                        var selectedLineDashStyle = selectedShape.Line.DashStyle;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
+                        {
+                            if ((MsoLineDashStyle)shape.Line.DashStyle == selectedLineDashStyle && !IsShapeInGroupForLine(shape))
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 获取选中形状的轮廓宽度
+                        var selectedLineWidth = selectedShape.Line.Weight;
+
+                        foreach (PowerPoint.Shape shape in GetAllShapesForLine(slide.Shapes))
+                        {
+                            if (shape.Line.Weight == selectedLineWidth && !IsShapeInGroupForLine(shape))
+                            {
+                                sameLineShapes.Add(shape);
+                            }
+                        }
+                    }
+                }
+
+                if (sameLineShapes.Count > 0)
+                {
+                    var shapeNamesArray = sameLineShapes.Select(shape => shape.Name).ToArray();
+                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
+                    shapeRange.Select();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个对象。");
+            }
+        }
+
+        private PowerPoint.Shape GetFirstShapeFromSelectionForLine(PowerPoint.Selection selection)
+        {
+            if (selection.HasChildShapeRange)
+            {
+                return selection.ChildShapeRange[1];
+            }
+            return selection.ShapeRange[1];
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesForLine(PowerPoint.Shapes shapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForLine(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesFromGroupForLine(PowerPoint.GroupShapes groupShapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForLine(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private bool IsShapeInGroupForLine(PowerPoint.Shape shape)
+        {
+            try
+            {
+                var parent = shape.ParentGroup;
+                return parent != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private PowerPoint.Shape GetParentGroupForLine(PowerPoint.Shape shape)
+        {
+            return shape.ParentGroup;
+        }
+
+        private void Selectfontsize_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShape = GetFirstShapeFromSelectionForFontSize(selection);
+                var slide = application.ActiveWindow.View.Slide;
+                List<PowerPoint.Shape> sameFontSizeShapes = new List<PowerPoint.Shape>();
+
+                // 获取选中形状的字体大小
+                float selectedFontSize = 0;
+                if (selectedShape.TextFrame.HasText == MsoTriState.msoTrue)
+                {
+                    selectedFontSize = selectedShape.TextFrame.TextRange.Font.Size;
+                }
+
+                // 如果选中形状没有字体大小，则不进行后续操作
+                if (selectedFontSize == 0)
+                {
+                    MessageBox.Show("请选择一个包含文本的对象。");
+                    return;
+                }
+
+                if (IsShapeInGroupForFontSize(selectedShape))
+                {
+                    var parentGroup = GetParentGroupForFontSize(selectedShape);
+
+                    foreach (PowerPoint.Shape shape in GetAllShapesFromGroupForFontSize(parentGroup.GroupItems))
+                    {
+                        if (shape.TextFrame.HasText == MsoTriState.msoTrue &&
+                            shape.TextFrame.TextRange.Font.Size == selectedFontSize)
+                        {
+                            sameFontSizeShapes.Add(shape);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (PowerPoint.Shape shape in GetAllShapesForFontSize(slide.Shapes))
+                    {
+                        if (shape.TextFrame.HasText == MsoTriState.msoTrue &&
+                            shape.TextFrame.TextRange.Font.Size == selectedFontSize && !IsShapeInGroupForFontSize(shape))
+                        {
+                            sameFontSizeShapes.Add(shape);
+                        }
+                    }
+                }
+
+                if (sameFontSizeShapes.Count > 0)
+                {
+                    var shapeNamesArray = sameFontSizeShapes.Select(shape => shape.Name).ToArray();
+                    var shapeRange = slide.Shapes.Range(shapeNamesArray);
+                    shapeRange.Select();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个对象。");
+            }
+        }
+
+        private PowerPoint.Shape GetFirstShapeFromSelectionForFontSize(PowerPoint.Selection selection)
+        {
+            if (selection.HasChildShapeRange)
+            {
+                return selection.ChildShapeRange[1];
+            }
+            return selection.ShapeRange[1];
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesForFontSize(PowerPoint.Shapes shapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForFontSize(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private List<PowerPoint.Shape> GetAllShapesFromGroupForFontSize(PowerPoint.GroupShapes groupShapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.AddRange(GetAllShapesFromGroupForFontSize(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private bool IsShapeInGroupForFontSize(PowerPoint.Shape shape)
+        {
+            try
+            {
+                var parent = shape.ParentGroup;
+                return parent != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private PowerPoint.Shape GetParentGroupForFontSize(PowerPoint.Shape shape)
+        {
+            return shape.ParentGroup;
+        }
+
+        private void Type_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = application.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShape = GetFirstShapeFromSelection(selection);
+                var selectedShapeType = (MsoShapeType)selectedShape.Type;
+                List<PowerPoint.Shape> sameTypeShapes = new List<PowerPoint.Shape>();
+
+                if (selectedShapeType == MsoShapeType.msoGroup)
+                {
+                    // 如果选中的是组合对象，对当前页幻灯片的所有组合对象进行筛选
+                    var slide = application.ActiveWindow.View.Slide;
+                    foreach (PowerPoint.Shape shape in GetAllShapes(slide.Shapes))
+                    {
+                        if (shape.Type == MsoShapeType.msoGroup)
+                        {
+                            sameTypeShapes.Add(shape);
+                        }
+                    }
+                }
+                else if (IsShapeInGroup(selectedShape))
+                {
+                    // 如果选中的是组合内部的子对象，只在该组合内部进行筛选
+                    var parentGroup = GetParentGroup(selectedShape);
+                    foreach (PowerPoint.Shape shape in GetAllShapes(parentGroup.GroupItems))
+                    {
+                        if (shape.Type == selectedShapeType)
+                        {
+                            sameTypeShapes.Add(shape);
+                        }
+                    }
+                }
+                else
+                {
+                    // 如果选中的是独立对象，只筛选当前页幻灯片中的所有独立对象
+                    var slide = application.ActiveWindow.View.Slide;
+                    foreach (PowerPoint.Shape shape in GetAllShapes(slide.Shapes))
+                    {
+                        if (shape.Type == selectedShapeType && !IsShapeInGroup(shape))
+                        {
+                            sameTypeShapes.Add(shape);
+                        }
+                    }
+                }
+
+                if (sameTypeShapes.Count > 0)
+                {
+                    var shapeNamesArray = sameTypeShapes.Select(shape => shape.Name).ToArray();
+                    var shapeRange = application.ActiveWindow.View.Slide.Shapes.Range(shapeNamesArray);
+                    shapeRange.Select();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个对象。");
+            }
+        }
+
+        private PowerPoint.Shape GetFirstShapeFromSelection(PowerPoint.Selection selection)
+        {
+            if (selection.HasChildShapeRange)
+            {
+                return selection.ChildShapeRange[1];
+            }
+            return selection.ShapeRange[1];
+        }
+
+        private List<PowerPoint.Shape> GetAllShapes(PowerPoint.Shapes shapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in shapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.Add(shape);
+                    allShapes.AddRange(GetAllShapes(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private List<PowerPoint.Shape> GetAllShapes(PowerPoint.GroupShapes groupShapes)
+        {
+            var allShapes = new List<PowerPoint.Shape>();
+            foreach (PowerPoint.Shape shape in groupShapes)
+            {
+                if (shape.Type == MsoShapeType.msoGroup)
+                {
+                    allShapes.Add(shape);
+                    allShapes.AddRange(GetAllShapes(shape.GroupItems));
+                }
+                else
+                {
+                    allShapes.Add(shape);
+                }
+            }
+            return allShapes;
+        }
+
+        private bool IsShapeInGroup(PowerPoint.Shape shape)
+        {
+            try
+            {
+                var parent = shape.ParentGroup;
+                return parent != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private PowerPoint.Shape GetParentGroup(PowerPoint.Shape shape)
+        {
+            return shape.ParentGroup;
         }
     }
 }

@@ -87,8 +87,8 @@ namespace 课件帮PPT助手
 
                     SetTableProperties(table, borderWidth, borderColor);
 
-                    // 将表格置于底层
-                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+                    // 将表格置于选中对象的底层
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
 
                     // 调整选中对象的位置以居中
                     selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
@@ -96,6 +96,13 @@ namespace 课件帮PPT助手
 
                     // 更新当前 left 位置以紧挨着放置下一个田字格
                     currentLeft += selectedSize;
+
+                    // 确保田字格在选中对象的后面
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 将田字格置于当前选中对象的底层
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
                 }
             }
         }
@@ -139,7 +146,7 @@ namespace 课件帮PPT助手
                     PowerPoint.Shape squareShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, top, selectedSize, selectedSize);
                     squareShape.Line.Weight = borderWidth;
                     squareShape.Line.ForeColor.RGB = ConvertColor(borderColor);
-                    squareShape.Fill.Transparency = 1;
+                    squareShape.Fill.Transparency = 1; // 确保填充透明度
 
                     // 创建两条虚线
                     float halfSize = selectedSize / 2;
@@ -158,8 +165,8 @@ namespace 课件帮PPT助手
                     PowerPoint.ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
                     PowerPoint.Shape groupShape = shapeRange.Group();
 
-                    // 将形状置于底层
-                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+                    // 将形状置于选中对象的底层
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
 
                     // 调整选中对象的位置以居中
                     selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
@@ -167,6 +174,13 @@ namespace 课件帮PPT助手
 
                     // 更新当前 left 位置以紧挨着放置下一个田字格
                     currentLeft += selectedSize;
+
+                    // 确保田字格在选中对象的后面
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 将田字格置于当前选中对象的底层
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
                 }
             }
         }
@@ -213,7 +227,7 @@ namespace 课件帮PPT助手
                 {
                     PowerPoint.Cell cell = table.Cell(i, j);
 
-                    cell.Shape.Fill.Transparency = 1;
+                    cell.Shape.Fill.Transparency = 1; // 确保填充透明度
                     cell.Shape.TextFrame.TextRange.Font.Size = 1; // 设置字号为1
 
                     SetCellBorder(cell.Borders[PowerPoint.PpBorderType.ppBorderTop], borderWidth, colorRgb);
