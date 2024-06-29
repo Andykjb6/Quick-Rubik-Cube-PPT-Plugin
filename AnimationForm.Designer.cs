@@ -70,6 +70,7 @@ namespace 课件帮PPT助手
             this.tabPage1.Size = new System.Drawing.Size(487, 416);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "第一步";
+           
             // 
             // label1
             // 

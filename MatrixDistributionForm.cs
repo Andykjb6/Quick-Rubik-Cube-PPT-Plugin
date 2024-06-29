@@ -6,6 +6,7 @@ namespace 课件帮PPT助手
 {
     public partial class MatrixDistributionForm : Form
     {
+       
         public int TotalCount { get; private set; }
         public int HorizontalCount { get; private set; }
         public int RowSpacing { get; private set; }
@@ -88,6 +89,11 @@ namespace 课件帮PPT助手
             Scale = (int)scaleNumericUpDown.Value;
 
             ParametersChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void MatrixDistributionForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

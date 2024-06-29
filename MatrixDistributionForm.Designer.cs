@@ -3,7 +3,7 @@ namespace 课件帮PPT助手
 {
     partial class MatrixDistributionForm
     {
-        private System.ComponentModel.IContainer components = null;
+        
         private System.Windows.Forms.TrackBar totalCountTrackBar;
         private System.Windows.Forms.NumericUpDown totalCountNumericUpDown;
         private System.Windows.Forms.TrackBar horizontalCountTrackBar;
@@ -206,7 +206,7 @@ namespace 课件帮PPT助手
             this.rowSpacingLabel.Name = "rowSpacingLabel";
             this.rowSpacingLabel.Size = new System.Drawing.Size(154, 37);
             this.rowSpacingLabel.TabIndex = 6;
-            this.rowSpacingLabel.Text = "水平间距：";
+            this.rowSpacingLabel.Text = "纵向间距：";
             // 
             // columnSpacingLabel
             // 
@@ -215,7 +215,7 @@ namespace 课件帮PPT助手
             this.columnSpacingLabel.Name = "columnSpacingLabel";
             this.columnSpacingLabel.Size = new System.Drawing.Size(154, 37);
             this.columnSpacingLabel.TabIndex = 9;
-            this.columnSpacingLabel.Text = "垂直间距：";
+            this.columnSpacingLabel.Text = "横向间距：";
             // 
             // scaleLabel
             // 
@@ -252,6 +252,7 @@ namespace 课件帮PPT助手
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "矩阵分布";
+            this.Load += new System.EventHandler(this.MatrixDistributionForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalCountTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalCountNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.horizontalCountTrackBar)).EndInit();

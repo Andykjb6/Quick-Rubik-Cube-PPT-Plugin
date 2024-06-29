@@ -18,5 +18,10 @@ namespace 课件帮PPT助手
         {
             TextConfirmed?.Invoke(textBox.Text);
         }
+
+        private void InputForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

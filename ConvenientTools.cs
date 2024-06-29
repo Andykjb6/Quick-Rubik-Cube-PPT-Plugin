@@ -1,36 +1,29 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using Microsoft.Office.Core;
+using Microsoft.Office.Interop.PowerPoint;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using PowerPoint = Microsoft.Office.Interop.PowerPoint;
-using Office = Microsoft.Office.Core;
-using HtmlAgilityPack;
 using System.IO;
-using System.Text.RegularExpressions;
-using TheArtOfDev.HtmlRenderer.WinForms;
-using System.Net;
-using Newtonsoft.Json;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Reflection;
-using Microsoft.Office.Core;
+using System.Windows.Forms;
+using Office = Microsoft.Office.Core;
+using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 using VBIDE = Microsoft.Vbe.Interop;
-using Microsoft.Office.Interop.PowerPoint;
 
 namespace 课件帮PPT助手
 {
     public partial class DesignTools : UserControl
     {
-       
+
 
         public DesignTools()
         {
             InitializeComponent();
-            
+
+
         }
 
 
@@ -223,7 +216,7 @@ namespace 课件帮PPT助手
         }
 
 
-       
+
 
 
 
@@ -323,7 +316,7 @@ namespace 课件帮PPT助手
                     }
                     else
                     {
-                      
+
                     }
                 }
                 else
@@ -345,102 +338,145 @@ namespace 课件帮PPT助手
 
         private void 分解笔顺_Click(object sender, EventArgs e)
         {
-            // 调用笔画拆分的点击事件
-            笔画拆分_Click(sender, e);
-
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
-
-            // 收集所有前缀名为“Freeform”且填充颜色为“0,112,192”的形状
-            List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
-            foreach (PowerPoint.Shape shape in slide.Shapes)
+            try
             {
-                if (shape.Name.StartsWith("Freeform") && shape.Fill.ForeColor.RGB == System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(0, 112, 192)))
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+
+                // 确定选中的文本
+                string selectedText = null;
+                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText || sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
                 {
-                    shapesToGroup.Add(shape);
+                    PowerPoint.TextRange textRange = null;
+                    if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
+                    {
+                        textRange = sel.TextRange;
+                    }
+                    else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                    {
+                        if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
+                        {
+                            textRange = sel.ShapeRange[1].TextFrame.TextRange;
+                        }
+                    }
+
+                    if (textRange != null)
+                    {
+                        selectedText = textRange.Text.Trim();
+                        if (selectedText.Length != 1)
+                        {
+                            MessageBox.Show("请选择包含一个汉字的文本框。");
+                            return;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(selectedText))
+                {
+                    MessageBox.Show("请选择包含一个汉字的文本框。");
+                    return;
+                }
+
+                // 调用笔画拆分的点击事件
+                笔画拆分_Click(sender, e);
+
+                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+
+                // 收集所有前缀名与所选文本相同且填充颜色为“0,112,192”的形状
+                List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
+                foreach (PowerPoint.Shape shape in slide.Shapes)
+                {
+                    if (shape.Name.StartsWith(selectedText) && shape.Fill.ForeColor.RGB == System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(0, 112, 192)))
+                    {
+                        shapesToGroup.Add(shape);
+                    }
+                }
+
+                // 对这些形状进行组合
+                if (shapesToGroup.Count > 0)
+                {
+                    PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(shapesToGroup.Select(s => s.Name).ToArray());
+                    PowerPoint.Shape groupShape = shapeRange.Group();
+
+                    // 手动缩放编组后的形状
+                    float scaleFactor = 0.26f;
+                    groupShape.Width *= scaleFactor;
+                    groupShape.Height *= scaleFactor;
+
+                    // 继续执行分解笔顺的逻辑
+                    if (groupShape.Type == Office.MsoShapeType.msoGroup)
+                    {
+                        PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
+                        int itemCount = groupItems.Count;
+
+                        // Create new groups based on the number of items in the original group
+                        List<PowerPoint.Shape> newGroups = new List<PowerPoint.Shape>();
+                        for (int i = 0; i < itemCount; i++)
+                        {
+                            // Duplicate the original group
+                            PowerPoint.Shape newGroup = groupShape.Duplicate()[1];
+                            newGroup.Left += (i + 1) * (groupShape.Width + 10); // Adjust position
+                            newGroups.Add(newGroup);
+                        }
+
+                        // Check if Ctrl key is pressed
+                        bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+                        // Set colors and remove borders based on the pattern
+                        for (int i = 0; i < newGroups.Count; i++)
+                        {
+                            PowerPoint.Shape newGroup = newGroups[i];
+                            PowerPoint.GroupShapes newGroupItems = newGroup.GroupItems;
+
+                            for (int j = 1; j <= itemCount; j++)
+                            {
+                                newGroupItems[j].Line.Visible = Office.MsoTriState.msoFalse; // Remove border
+
+                                if (j <= i + 1)
+                                {
+                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                                }
+                                if (j == i + 1)
+                                {
+                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                                }
+                                if (j > i + 1)
+                                {
+                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Gray);
+                                }
+                            }
+
+                            // Adjust positions for two-row layout if Ctrl key is pressed
+                            if (isCtrlPressed)
+                            {
+                                int columns = (int)Math.Ceiling(newGroups.Count / 2.0);
+                                int row = i / columns;
+                                int column = i % columns;
+
+                                newGroup.Left = groupShape.Left + column * (groupShape.Width + 10);
+                                newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
+                            }
+                        }
+
+                        // 删除原来的组合形状
+                        groupShape.Delete();
+
+                        // 将所有新组合再次进行组合
+                        PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
+                        PowerPoint.Shape newGroupShape = newShapeRange.Group();
+
+                        // 对新组合执行水平居中对齐
+                        float slideCenter = slide.Master.Width / 2;
+                        newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
+
+                        // 取消组合
+                        newGroupShape.Ungroup();
+                    }
                 }
             }
-
-            // 对这些形状进行组合
-            if (shapesToGroup.Count > 0)
+            catch (Exception ex)
             {
-                PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(shapesToGroup.Select(s => s.Name).ToArray());
-                PowerPoint.Shape groupShape = shapeRange.Group();
-
-                // 手动缩放编组后的形状
-                float scaleFactor = 0.26f;
-                groupShape.Width *= scaleFactor;
-                groupShape.Height *= scaleFactor;
-
-                // 继续执行分解笔顺的逻辑
-                if (groupShape.Type == Office.MsoShapeType.msoGroup)
-                {
-                    PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
-                    int itemCount = groupItems.Count;
-
-                    // Create new groups based on the number of items in the original group
-                    List<PowerPoint.Shape> newGroups = new List<PowerPoint.Shape>();
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        // Duplicate the original group
-                        PowerPoint.Shape newGroup = groupShape.Duplicate()[1];
-                        newGroup.Left += (i + 1) * (groupShape.Width + 10); // Adjust position
-                        newGroups.Add(newGroup);
-                    }
-
-                    // Check if Ctrl key is pressed
-                    bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
-
-                    // Set colors and remove borders based on the pattern
-                    for (int i = 0; i < newGroups.Count; i++)
-                    {
-                        PowerPoint.Shape newGroup = newGroups[i];
-                        PowerPoint.GroupShapes newGroupItems = newGroup.GroupItems;
-
-                        for (int j = 1; j <= itemCount; j++)
-                        {
-                            newGroupItems[j].Line.Visible = Office.MsoTriState.msoFalse; // Remove border
-
-                            if (j <= i + 1)
-                            {
-                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
-                            }
-                            if (j == i + 1)
-                            {
-                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
-                            }
-                            if (j > i + 1)
-                            {
-                                newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Gray);
-                            }
-                        }
-
-                        // Adjust positions for two-row layout if Ctrl key is pressed
-                        if (isCtrlPressed)
-                        {
-                            int columns = (int)Math.Ceiling(newGroups.Count / 2.0);
-                            int row = i / columns;
-                            int column = i % columns;
-
-                            newGroup.Left = groupShape.Left + column * (groupShape.Width + 10);
-                            newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
-                        }
-                    }
-
-                    // 删除原来的组合形状
-                    groupShape.Delete();
-
-                    // 将所有新组合再次进行组合
-                    PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
-                    PowerPoint.Shape newGroupShape = newShapeRange.Group();
-
-                    // 对新组合执行水平居中对齐
-                    float slideCenter = slide.Master.Width / 2;
-                    newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
-
-                    // 取消组合
-                    newGroupShape.Ungroup();
-                }
+                MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
 
@@ -473,7 +509,7 @@ namespace 课件帮PPT助手
 
                     // 创建一个新的文本框，并设置其内容为选中的文本
                     var newTextBox = slide.Shapes.AddTextbox(
-                        Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
+                        MsoTextOrientation.msoTextOrientationHorizontal,
                         originalLeft, originalTop, textWidth, originalShape.Height);
 
                     var newTextRange = newTextBox.TextFrame.TextRange;
@@ -490,12 +526,18 @@ namespace 课件帮PPT助手
                         MessageBox.Show("使用格式刷复制字体属性时出错：" + ex.Message);
                     }
 
+                    // 确保新文本框不带有PPT自带的下划线
+                    newTextRange.Font.Underline = MsoTriState.msoFalse;
+
                     // 设置新文本框的字体颜色为红色并加粗
                     newTextRange.Font.Color.RGB = ColorTranslator.ToOle(Color.Red);
                     newTextRange.Font.Bold = MsoTriState.msoTrue;
 
                     // 设置新文本框不自动换行
-                    newTextBox.TextFrame.WordWrap = Microsoft.Office.Core.MsoTriState.msoFalse;
+                    newTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
+
+                    float newLeft = originalLeft;
+                    float newTop = originalTop;
 
                     // 检查是否按住Ctrl键或Shift键
                     if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
@@ -508,6 +550,10 @@ namespace 课件帮PPT助手
                         // 确保下划线长度适中
                         textRange.Text = underlineText;
                         textRange.Font.Underline = MsoTriState.msoTrue;
+
+                        // Ctrl键按下的微调参数
+                        newLeft = originalLeft - 7;
+                        newTop = originalTop - 6;
                     }
                     else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
                     {
@@ -519,17 +565,25 @@ namespace 课件帮PPT助手
                         // 使用括号和空格替换选中的文本
                         textRange.Text = $"({spaces})";
                         textRange.Font.Underline = MsoTriState.msoFalse; // 取消下划线
+
+                        // Shift键按下的微调参数
+                        newLeft = originalLeft - 0;
+                        newTop = originalTop - 3;
                     }
                     else
                     {
                         // 使用“_”字符替换选中的文本
                         string underline = new string('_', (int)(selectedText.Length * 2.5)); // 动态生成下划线
                         textRange.Text = underline;
+
+                        // 无键按下的微调参数
+                        newLeft = originalLeft - 7;
+                        newTop = originalTop - 6;
                     }
 
-                    // 设置新文本框的位置与被选中的文本相同
-                    newTextBox.Left = originalLeft;
-                    newTextBox.Top = originalTop - (originalShape.Height - textRange.Font.Size) / 2; // 调整文本框位置
+                    // 设置新文本框的位置与被选中的文本相同，并应用微调参数
+                    newTextBox.Left = newLeft;
+                    newTextBox.Top = newTop;
                 }
                 else
                 {
@@ -554,6 +608,8 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
+
 
         public void 笔画拆分_Click(object sender, EventArgs e)
         {
@@ -591,7 +647,7 @@ namespace 课件帮PPT助手
                                 PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
                                 PowerPoint.Shape svgShape = InsertSVGIntoSlide(svgContent, slide);
                                 SelectShape(app, svgShape);
-                                AddAndRunVBA(app);
+                                AddAndRunVBA(app, selectedText);
                             }
                             else
                             {
@@ -661,9 +717,9 @@ namespace 课件帮PPT助手
             shape.Select();
         }
 
-        private void AddAndRunVBA(PowerPoint.Application app)
+        private void AddAndRunVBA(PowerPoint.Application app, string svgFileName)
         {
-            string vbaCode = @"
+            string vbaCode = $@"
 Sub ConvertSVGToShape()
     ' Ensure a shape is selected
     If ActiveWindow.Selection.Type <> ppSelectionShapes Then
@@ -693,11 +749,21 @@ Sub ConvertSVGToShape()
         Set newShape = slide.Shapes(slide.Shapes.Count) ' Re-select the shape after ungrouping
     Next i
     
-    ' Loop through shapes to find and delete the shape with name containing ""AutoShape""
+    ' Find and delete the shape named ""AutoShape""
     Dim shapeItem As Shape
     For Each shapeItem In slide.Shapes
         If InStr(shapeItem.Name, ""AutoShape"") > 0 Then
             shapeItem.Delete
+        End If
+    Next shapeItem
+    
+    ' Rename each shape based on the SVG file name and its layer order, excluding text boxes
+    Dim count As Integer
+    count = 1
+    For Each shapeItem In slide.Shapes
+        If Left(shapeItem.Name, 8) = ""Freeform"" Then
+            shapeItem.Name = ""{svgFileName}-"" & count
+            count = count + 1
         End If
     Next shapeItem
 End Sub";
@@ -710,6 +776,7 @@ End Sub";
 
             vbProject.VBComponents.Remove(vbModule);
         }
+
 
         public void PerformStrokeSplit()
         {

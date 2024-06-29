@@ -114,12 +114,13 @@ namespace 课件帮PPT助手
             // 
             // transparencyTrackBar
             // 
+            this.transparencyTrackBar.LargeChange = 10;
             this.transparencyTrackBar.Location = new System.Drawing.Point(0, 322);
             this.transparencyTrackBar.Maximum = 100;
             this.transparencyTrackBar.Name = "transparencyTrackBar";
             this.transparencyTrackBar.Size = new System.Drawing.Size(373, 90);
             this.transparencyTrackBar.TabIndex = 6;
-            this.transparencyTrackBar.TickFrequency = 10;
+            this.transparencyTrackBar.TickFrequency = 5;
             this.transparencyTrackBar.Scroll += new System.EventHandler(this.TrackBar_Scroll);
             // 
             // transparencyLabel

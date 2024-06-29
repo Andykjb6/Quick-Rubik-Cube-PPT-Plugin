@@ -9,8 +9,9 @@ namespace 课件帮PPT助手
 {
     public partial class CentralalignmentForm : Form
     {
+        
         private PowerPoint.Application pptApp;
-        private AlignmentOptions defaultAlignment;
+        
 
         public CentralalignmentForm(PowerPoint.Application app)
         {

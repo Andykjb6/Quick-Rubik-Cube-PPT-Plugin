@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
@@ -11,6 +12,7 @@ namespace 课件帮PPT助手
     {
         private List<PowerPoint.Shape> selectedShapes;
         private Dictionary<string, NumericUpDown> durationControls;
+        private const string ShapesFilePath = "selectedShapes.txt";
 
         public AnimationForm()
         {
@@ -26,15 +28,19 @@ namespace 课件帮PPT助手
             leftButton.Click += (s, ev) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionRight);
             rightButton.Click += (s, ev) => AdjustAnimationDirection(listBox, PowerPoint.MsoAnimDirection.msoAnimDirectionLeft);
 
-            // 添加事件监听
             Globals.ThisAddIn.Application.WindowSelectionChange += Application_WindowSelectionChange;
+
+            LoadSelectedShapes();
         }
 
         private void Application_WindowSelectionChange(PowerPoint.Selection Sel)
         {
             if (Sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
             {
-                UpdateAnimationPaneSelection(Sel.ShapeRange);
+                if (selectedShapes != null && Sel.ShapeRange.Cast<PowerPoint.Shape>().All(shape => selectedShapes.Contains(shape)))
+                {
+                    UpdateAnimationPaneSelection(Sel.ShapeRange);
+                }
             }
         }
 
@@ -75,6 +81,7 @@ namespace 课件帮PPT助手
                             counter++;
                         }
 
+                        SaveSelectedShapes();
                         activeWindow.View.GotoSlide(activeWindow.View.Slide.SlideIndex);
                     }
                     else
@@ -272,6 +279,44 @@ namespace 课件帮PPT助手
 
                     durationControl.Location = new System.Drawing.Point(270, 170);
                     adjustPanel.Controls.Add(durationControl);
+                }
+            }
+        }
+
+        private void SaveSelectedShapes()
+        {
+            using (StreamWriter writer = new StreamWriter(ShapesFilePath))
+            {
+                foreach (var shape in selectedShapes)
+                {
+                    writer.WriteLine(shape.Name);
+                }
+            }
+        }
+
+        private void LoadSelectedShapes()
+        {
+            if (File.Exists(ShapesFilePath))
+            {
+                selectedShapes = new List<PowerPoint.Shape>();
+                PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+                PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
+
+                using (StreamReader reader = new StreamReader(ShapesFilePath))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (slide.Shapes.Cast<PowerPoint.Shape>().Any(s => s.Name == line))
+                        {
+                            var shape = slide.Shapes[line];
+                            if (shape != null)
+                            {
+                                selectedShapes.Add(shape);
+                            }
+                        }
+                        // 忽略不存在的形状
+                    }
                 }
             }
         }

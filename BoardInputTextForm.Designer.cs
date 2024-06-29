@@ -1,5 +1,4 @@
-﻿
-namespace 课件帮PPT助手
+﻿namespace 课件帮PPT助手
 {
     partial class BoardInputTextForm
     {
@@ -7,6 +6,7 @@ namespace 课件帮PPT助手
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button importButton; // 新增
 
         protected override void Dispose(bool disposing)
         {
@@ -23,6 +23,7 @@ namespace 课件帮PPT助手
             this.textBox = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.importButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox
@@ -33,6 +34,7 @@ namespace 课件帮PPT助手
             this.textBox.Margin = new System.Windows.Forms.Padding(6);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
+            this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox.Size = new System.Drawing.Size(716, 274);
             this.textBox.TabIndex = 0;
             this.textBox.Text = "一行一个词语......";
@@ -73,6 +75,24 @@ namespace 课件帮PPT助手
             this.cancelButton.UseVisualStyleBackColor = false;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // importButton
+            // 
+            this.importButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(57)))), ((int)(((byte)(251)))));
+            this.importButton.FlatAppearance.BorderSize = 0;
+            this.importButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(53)))), ((int)(((byte)(232)))));
+            this.importButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(114)))), ((int)(((byte)(240)))));
+            this.importButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.importButton.Font = new System.Drawing.Font("微软雅黑", 11F, System.Drawing.FontStyle.Bold);
+            this.importButton.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.importButton.Location = new System.Drawing.Point(270, 310);
+            this.importButton.Margin = new System.Windows.Forms.Padding(6);
+            this.importButton.Name = "importButton";
+            this.importButton.Size = new System.Drawing.Size(146, 46);
+            this.importButton.TabIndex = 3;
+            this.importButton.Text = "导入";
+            this.importButton.UseVisualStyleBackColor = false;
+            this.importButton.Click += new System.EventHandler(this.importButton_Click);
+            // 
             // BoardInputTextForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
@@ -80,6 +100,7 @@ namespace 课件帮PPT助手
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(254)))));
             this.ClientSize = new System.Drawing.Size(768, 371);
+            this.Controls.Add(this.importButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.textBox);
@@ -90,7 +111,6 @@ namespace 课件帮PPT助手
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "请输入分行文本";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.BoardInputTextForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace 课件帮PPT助手
@@ -25,9 +26,16 @@ namespace 课件帮PPT助手
             this.Close();
         }
 
-        private void BoardInputTextForm_Load(object sender, EventArgs e)
+        private void importButton_Click(object sender, EventArgs e) // 新增
         {
-
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 读取文件内容并设置到文本框中
+                string fileContent = File.ReadAllText(openFileDialog.FileName);
+                textBox.Text = fileContent;
+            }
         }
     }
 }
