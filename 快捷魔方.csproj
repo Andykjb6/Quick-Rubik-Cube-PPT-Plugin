@@ -624,6 +624,7 @@
     <None Include="Resources\样机样式5.pptx" />
     <None Include="Resources\样机样式6.pptx" />
     <EmbeddedResource Include="Resources\生字教学.pptx" />
+    <None Include="Resources\生字格.pptx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
