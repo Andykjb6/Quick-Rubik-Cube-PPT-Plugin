@@ -35,6 +35,7 @@
             "同义查询",
             "反义查询",
             "生字模板",
+            "生字方格",
             "水平间距",
             "垂直间距",});
             this.comboBox1.Location = new System.Drawing.Point(29, 20);

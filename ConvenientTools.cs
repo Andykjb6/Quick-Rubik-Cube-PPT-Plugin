@@ -341,18 +341,18 @@ namespace 课件帮PPT助手
             try
             {
                 PowerPoint.Application app = Globals.ThisAddIn.Application;
-                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+                Selection sel = app.ActiveWindow.Selection;
 
                 // 确定选中的文本
                 string selectedText = null;
-                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText || sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                if (sel.Type == PpSelectionType.ppSelectionText || sel.Type == PpSelectionType.ppSelectionShapes)
                 {
-                    PowerPoint.TextRange textRange = null;
-                    if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
+                    TextRange textRange = null;
+                    if (sel.Type == PpSelectionType.ppSelectionText)
                     {
                         textRange = sel.TextRange;
                     }
-                    else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                    else if (sel.Type == PpSelectionType.ppSelectionShapes)
                     {
                         if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
                         {
@@ -380,13 +380,13 @@ namespace 课件帮PPT助手
                 // 调用笔画拆分的点击事件
                 笔画拆分_Click(sender, e);
 
-                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+                Slide slide = app.ActiveWindow.View.Slide;
 
                 // 收集所有前缀名与所选文本相同且填充颜色为“0,112,192”的形状
                 List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
                 foreach (PowerPoint.Shape shape in slide.Shapes)
                 {
-                    if (shape.Name.StartsWith(selectedText) && shape.Fill.ForeColor.RGB == System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(0, 112, 192)))
+                    if (shape.Name.StartsWith(selectedText) && shape.Fill.ForeColor.RGB == ColorTranslator.ToOle(Color.FromArgb(0, 112, 192)))
                     {
                         shapesToGroup.Add(shape);
                     }
@@ -404,7 +404,7 @@ namespace 课件帮PPT助手
                     groupShape.Height *= scaleFactor;
 
                     // 继续执行分解笔顺的逻辑
-                    if (groupShape.Type == Office.MsoShapeType.msoGroup)
+                    if (groupShape.Type == MsoShapeType.msoGroup)
                     {
                         PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
                         int itemCount = groupItems.Count;
@@ -420,7 +420,7 @@ namespace 课件帮PPT助手
                         }
 
                         // Check if Ctrl key is pressed
-                        bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+                        bool isCtrlPressed = (ModifierKeys & Keys.Control) == Keys.Control;
 
                         // Set colors and remove borders based on the pattern
                         for (int i = 0; i < newGroups.Count; i++)
@@ -430,21 +430,24 @@ namespace 课件帮PPT助手
 
                             for (int j = 1; j <= itemCount; j++)
                             {
-                                newGroupItems[j].Line.Visible = Office.MsoTriState.msoFalse; // Remove border
+                                newGroupItems[j].Line.Visible = MsoTriState.msoFalse; // Remove border
 
                                 if (j <= i + 1)
                                 {
-                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                                    newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
                                 }
                                 if (j == i + 1)
                                 {
-                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                                    newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Red);
                                 }
                                 if (j > i + 1)
                                 {
-                                    newGroupItems[j].Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Gray);
+                                    newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Gray);
                                 }
                             }
+
+                            // 命名新组合
+                            newGroup.Name = $"【{selectedText}】：分步第{i + 1}笔";
 
                             // Adjust positions for two-row layout if Ctrl key is pressed
                             if (isCtrlPressed)
@@ -616,17 +619,17 @@ namespace 课件帮PPT助手
             try
             {
                 PowerPoint.Application app = Globals.ThisAddIn.Application;
-                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+                Selection sel = app.ActiveWindow.Selection;
 
-                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText || sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                if (sel.Type == PpSelectionType.ppSelectionText || sel.Type == PpSelectionType.ppSelectionShapes)
                 {
-                    PowerPoint.TextRange textRange = null;
+                    TextRange textRange = null;
 
-                    if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
+                    if (sel.Type == PpSelectionType.ppSelectionText)
                     {
                         textRange = sel.TextRange;
                     }
-                    else if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                    else if (sel.Type == PpSelectionType.ppSelectionShapes)
                     {
                         if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
                         {
@@ -644,7 +647,7 @@ namespace 课件帮PPT助手
 
                             if (!string.IsNullOrEmpty(svgContent))
                             {
-                                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+                                Slide slide = app.ActiveWindow.View.Slide;
                                 PowerPoint.Shape svgShape = InsertSVGIntoSlide(svgContent, slide);
                                 SelectShape(app, svgShape);
                                 AddAndRunVBA(app, selectedText);
@@ -693,7 +696,7 @@ namespace 课件帮PPT助手
             return null;
         }
 
-        private PowerPoint.Shape InsertSVGIntoSlide(string svgContent, PowerPoint.Slide slide)
+        private PowerPoint.Shape InsertSVGIntoSlide(string svgContent, Slide slide)
         {
             string tempSvgPath = Path.Combine(Path.GetTempPath(), "temp.svg");
             File.WriteAllText(tempSvgPath, svgContent);
@@ -762,7 +765,7 @@ Sub ConvertSVGToShape()
     count = 1
     For Each shapeItem In slide.Shapes
         If Left(shapeItem.Name, 8) = ""Freeform"" Then
-            shapeItem.Name = ""{svgFileName}-"" & count
+            shapeItem.Name = ""{svgFileName}-笔画"" & count
             count = count + 1
         End If
     Next shapeItem

@@ -59,6 +59,12 @@ namespace 课件帮PPT助手
                     ApplyCharacterTemplate(input);
                     return;
                 }
+                if (selectedType == "生字方格")
+                {
+                    ApplyCharacterGrid(input);
+                    return;
+                }
+
                 PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
 
                 if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
@@ -84,7 +90,6 @@ namespace 课件帮PPT助手
                                 MessageBox.Show("请输入一个有效的行数。");
                             }
                             break;
-
                         case "水平间距":
                             if (float.TryParse(input, out float spacing))
                             {
@@ -116,6 +121,97 @@ namespace 课件帮PPT助手
                 }
             }
         }
+        private void ApplyCharacterGrid(string input)
+        {
+            var inputs = input.Split(',');
+            if (inputs.Length == 2 && int.TryParse(inputs[0], out int rows) && int.TryParse(inputs[1], out int columns))
+            {
+                if (rows < 1 || columns < 1)
+                {
+                    MessageBox.Show("行数和列数必须大于0。");
+                    return;
+                }
+
+                string pptPath = ExtractCharacterGridResource("课件帮PPT助手.Resources.生字格.pptx");
+                CopyCharacterGrid(pptPath, rows, columns);
+                DeleteTemporaryFile(pptPath);  // 删除临时文件
+            }
+            else
+            {
+                MessageBox.Show("请输入有效的行数和列数，用逗号分隔。");
+            }
+        }
+
+        private string ExtractCharacterGridResource(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceStream = assembly.GetManifestResourceStream(resourceName);
+            if (resourceStream == null)
+            {
+                throw new Exception("无法找到资源文件。");
+            }
+
+            var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetFileName(resourceName));
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+            {
+                resourceStream.CopyTo(fileStream);
+            }
+
+            return tempFilePath;
+        }
+
+        private void CopyCharacterGrid(string pptPath, int rows, int columns)
+        {
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Presentation presentation = pptApp.Presentations.Open(pptPath, WithWindow: Office.MsoTriState.msoFalse);
+            PowerPoint.Slide sourceSlide = presentation.Slides[1];
+            PowerPoint.Shape shapeToCopy = sourceSlide.Shapes["生字格"];
+
+            PowerPoint.Slide currentSlide = pptApp.ActiveWindow.View.Slide;
+            float startX = 100;
+            float startY = 100;
+            float spacingX = shapeToCopy.Width + 10;
+            float spacingY = shapeToCopy.Height + 10;
+
+            // 首先复制一次形状到当前幻灯片，以便后续的重复操作基于此新形状
+            shapeToCopy.Copy();
+            PowerPoint.Shape newShape = currentSlide.Shapes.Paste()[1];
+
+            // 调整原始复制形状的位置
+            newShape.Left = startX;
+            newShape.Top = startY;
+
+            // 从该新形状进行复制并调整位置
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < columns; col++)
+                {
+                    if (row == 0 && col == 0) continue; // 跳过已经复制的第一个形状
+
+                    PowerPoint.Shape duplicatedShape = newShape.Duplicate()[1];
+                    duplicatedShape.Left = startX + (col * spacingX);
+                    duplicatedShape.Top = startY + (row * spacingY);
+                }
+            }
+
+            presentation.Close();
+        }
+
+        private void DeleteTemporaryFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("删除临时文件时发生错误：" + ex.Message);
+                }
+            }
+        }
+
 
         private void AdjustVerticalSpacing(PowerPoint.Selection selection, float spacing)
         {

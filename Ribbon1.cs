@@ -4669,15 +4669,15 @@ End Sub
 
         private void 统一控点_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection selection = pptApp.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
             {
                 PowerPoint.ShapeRange shapes = selection.ShapeRange;
 
                 // 检查是否所有选中的形状都具有控点
-                if (shapes.Cast<PowerPoint.Shape>().All(shape => shape.Adjustments.Count > 0))
+                if (shapes.Cast<Shape>().All(shape => shape.Adjustments.Count > 0))
                 {
                     // 获取第一个选中的对象的控点大小作为参考
                     var referenceAdjustments = new float[shapes[1].Adjustments.Count];
@@ -4697,48 +4697,309 @@ End Sub
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("请选择多个具有控点的对象。");
+                    MessageBox.Show("请选择多个具有控点的对象。");
                 }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("请选择一个或多个对象。");
+                MessageBox.Show("请选择多个对象统一控点。");
             }
         }
 
-        private void 路径动画_Click(object sender, RibbonControlEventArgs e)
+        private void 文本矢量化_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection selection = pptApp.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count == 2)
+            if (selection.Type == PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count >= 1)
             {
-                PowerPoint.Shape shape1 = selection.ShapeRange[1];
-                PowerPoint.Shape shape2 = selection.ShapeRange[2];
+                PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
 
-                float targetLeft = shape2.Left;
-                float targetTop = shape2.Top;
+                foreach (Shape selectedShape in selectedShapes)
+                {
+                    if (selectedShape.Type == MsoShapeType.msoTextBox)
+                    {
+                        Slide slide = pptApp.ActiveWindow.View.Slide;
 
-                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
-                PowerPoint.Effect effect = slide.TimeLine.MainSequence.AddEffect(
-                    shape1,
-                    PowerPoint.MsoAnimEffect.msoAnimEffectCustom,
-                    PowerPoint.MsoAnimateByLevel.msoAnimateLevelNone,
-                    PowerPoint.MsoAnimTriggerType.msoAnimTriggerOnPageClick);
+                        // 在左上角插入一个小正方形
+                        float squareSize = 50; // 正方形边长
+                        Shape squareShape = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, 0, 0, squareSize, squareSize);
 
-                PowerPoint.AnimationBehavior behavior = effect.Behaviors.Add(PowerPoint.MsoAnimType.msoAnimTypeMotion);
-                PowerPoint.MotionEffect motionEffect = behavior.MotionEffect;
+                        // 选中正方形和文本框
+                        selectedShape.Select();
+                        squareShape.Select(MsoTriState.msoFalse);
 
-                // 确保坐标转换正确
-                motionEffect.FromX = 0;
-                motionEffect.FromY = 0;
-                motionEffect.ToX = (targetLeft - shape1.Left) / app.ActivePresentation.PageSetup.SlideWidth;
-                motionEffect.ToY = (targetTop - shape1.Top) / app.ActivePresentation.PageSetup.SlideHeight;
+                        // 创建一个 ShapeRange 包含选中的形状
+                        PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(new object[] { selectedShape.Name, squareShape.Name });
+
+                        // 执行“剪除”操作
+                        shapeRange.MergeShapes(MsoMergeCmd.msoMergeSubtract);
+                    }
+                }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Please select exactly two shapes.");
+                MessageBox.Show("请选择要转矢量的文本框。");
             }
+        }
+
+        private void 删除动画_Click(object sender, RibbonControlEventArgs e)
+        {
+           Application pptApp = Globals.ThisAddIn.Application;
+           Selection selection = pptApp.ActiveWindow.Selection;
+
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                // 删除当前页所有对象的动画
+                Slide currentSlide = pptApp.ActiveWindow.View.Slide;
+                DeleteAnimationsFromSlide(currentSlide);
+            }
+            else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            {
+                // 删除所有幻灯片中的动画
+                Presentation presentation = pptApp.ActivePresentation;
+                foreach (Slide slide in presentation.Slides)
+                {
+                    DeleteAnimationsFromSlide(slide);
+                }
+            }
+            else
+            {
+                // 删除选中对象的动画
+                if (selection.Type == PpSelectionType.ppSelectionShapes)
+                {
+                    foreach (Shape shape in selection.ShapeRange)
+                    {
+                        DeleteAnimationsFromShape(shape);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请选择要删除动画的对象。");
+                }
+            }
+        }
+
+        private void DeleteAnimationsFromShape(Shape shape)
+        {
+            shape.AnimationSettings.Animate = MsoTriState.msoFalse;
+        }
+
+        private void DeleteAnimationsFromSlide(Slide slide)
+        {
+            foreach (Shape shape in slide.Shapes)
+            {
+                DeleteAnimationsFromShape(shape);
+            }
+        }
+
+        private void 清空页外_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection selection = pptApp.ActiveWindow.Selection;
+
+            if (selection.Type == PpSelectionType.ppSelectionSlides)
+            {
+                SlideRange slideRange = selection.SlideRange;
+                int slidesProcessed = 0;
+
+                foreach (Slide slide in slideRange)
+                {
+                    if (DeleteOffPageObjects(slide))
+                    {
+                        slidesProcessed++;
+                    }
+                }
+
+                MessageBox.Show($"已成功删除 {slidesProcessed} 页的页面外部元素。");
+            }
+            else
+            {
+                MessageBox.Show("请选择要删除页面外部元素的幻灯片页面。");
+            }
+        }
+
+        private bool DeleteOffPageObjects(Slide slide)
+        {
+            float slideWidth = slide.Parent.PageSetup.SlideWidth;
+            float slideHeight = slide.Parent.PageSetup.SlideHeight;
+            bool objectsDeleted = false;
+
+            for (int i = slide.Shapes.Count; i >= 1; i--)
+            {
+                Shape shape = slide.Shapes[i];
+                if (shape.Left + shape.Width < 0 || shape.Left > slideWidth || shape.Top + shape.Height < 0 || shape.Top > slideHeight)
+                {
+                    shape.Delete();
+                    objectsDeleted = true;
+                }
+            }
+
+            return objectsDeleted;
+        }
+    
+
+        private void 清除备注_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection selection = pptApp.ActiveWindow.Selection;
+
+            if (selection.Type == PpSelectionType.ppSelectionSlides)
+            {
+                SlideRange selectedSlides = selection.SlideRange;
+                foreach (Slide slide in selectedSlides)
+                {
+                    slide.NotesPage.Shapes.Placeholders[2].TextFrame.TextRange.Text = string.Empty;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择要清楚备注的幻灯片页面。");
+            }
+        }
+
+        private void 清除超链接_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection sel = pptApp.ActiveWindow.Selection;
+            bool isSuccessful = false;
+
+            if (sel.Type == PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange range = sel.ShapeRange;
+                if (sel.HasChildShapeRange)
+                {
+                    range = sel.ChildShapeRange;
+                }
+                int count = range.Count;
+                for (int i = 1; i <= count; i++)
+                {
+                    Shape shape = range[i];
+                    if (shape.ActionSettings[PpMouseActivation.ppMouseClick].Action != PpActionType.ppActionNone)
+                    {
+                        shape.ActionSettings[PpMouseActivation.ppMouseClick].Hyperlink.Delete();
+                        isSuccessful = true;
+                    }
+                    if (shape.ActionSettings[PpMouseActivation.ppMouseOver].Action != PpActionType.ppActionNone)
+                    {
+                        shape.ActionSettings[PpMouseActivation.ppMouseOver].Hyperlink.Delete();
+                        isSuccessful = true;
+                    }
+                    if (shape.TextFrame.HasText == MsoTriState.msoTrue)
+                    {
+                        if (shape.TextFrame.TextRange.ActionSettings[PpMouseActivation.ppMouseClick].Action != PpActionType.ppActionNone)
+                        {
+                            shape.TextFrame.TextRange.ActionSettings[PpMouseActivation.ppMouseClick].Hyperlink.Delete();
+                            isSuccessful = true;
+                        }
+                        if (shape.TextFrame.TextRange.ActionSettings[PpMouseActivation.ppMouseOver].Action != PpActionType.ppActionNone)
+                        {
+                            shape.TextFrame.TextRange.ActionSettings[PpMouseActivation.ppMouseOver].Hyperlink.Delete();
+                            isSuccessful = true;
+                        }
+                    }
+                }
+                if (isSuccessful)
+                {
+                    MessageBox.Show("已成功清除所选对象的超链接。");
+                }
+                return;
+            }
+
+            if (sel.Type == PpSelectionType.ppSelectionSlides)
+            {
+                SlideRange srange = sel.SlideRange;
+                for (int j = 1; j <= srange.Count; j++)
+                {
+                    int count2 = srange[j].Hyperlinks.Count;
+                    if (count2 > 0)
+                    {
+                        for (int k = count2; k >= 1; k--)
+                        {
+                            srange[j].Hyperlinks[k].Delete();
+                            isSuccessful = true;
+                        }
+                    }
+                }
+                if (isSuccessful)
+                {
+                    MessageBox.Show("已成功清除所选页面的超链接。");
+                }
+                return;
+            }
+
+            if (sel.Type == PpSelectionType.ppSelectionText)
+            {
+                if (sel.TextRange.ActionSettings[PpMouseActivation.ppMouseClick].Action != PpActionType.ppActionNone)
+                {
+                    sel.TextRange.ActionSettings[PpMouseActivation.ppMouseClick].Hyperlink.Delete();
+                    isSuccessful = true;
+                }
+                if (sel.TextRange.ActionSettings[PpMouseActivation.ppMouseOver].Action != PpActionType.ppActionNone)
+                {
+                    sel.TextRange.ActionSettings[PpMouseActivation.ppMouseOver].Hyperlink.Delete();
+                    isSuccessful = true;
+                }
+                if (isSuccessful)
+                {
+                    MessageBox.Show("已成功清除所选对象的超链接。");
+                }
+                return;
+            }
+
+            MessageBox.Show("请先选中要删除超链接的幻灯片页面或对象。");
+        }
+    
+
+         private void 删除未用版式_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application pptApp = Globals.ThisAddIn.Application;
+            Designs designs = pptApp.ActivePresentation.Designs;
+            int deletedCount = 0;
+
+            for (int j = designs.Count; j >= 1; j--)
+            {
+                Design design = designs[j];
+                CustomLayouts customLayouts = design.SlideMaster.CustomLayouts;
+
+                for (int k = customLayouts.Count; k >= 1; k--)
+                {
+                    CustomLayout layout = customLayouts[k];
+
+                    if (!IsLayoutUsed(pptApp.ActivePresentation, layout))
+                    {
+                        try
+                        {
+                            layout.Delete();
+                            deletedCount++;
+                        }
+                        catch
+                        {
+                            // 处理删除失败的情况
+                        }
+                    }
+                }
+
+                // 如果自定义版式全部删除后，删除设计
+                if (design.SlideMaster.CustomLayouts.Count == 0)
+                {
+                    design.Delete();
+                }
+            }
+
+            MessageBox.Show("已删除 " + deletedCount + " 个未使用版式");
+        }
+
+        private bool IsLayoutUsed(Presentation presentation, CustomLayout layout)
+        {
+            foreach (Slide slide in presentation.Slides)
+            {
+                if (slide.CustomLayout == layout)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
