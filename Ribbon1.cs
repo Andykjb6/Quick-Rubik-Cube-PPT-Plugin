@@ -3067,7 +3067,7 @@ End Sub
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // 从嵌入资源中提取汉字字典Excel文件
-            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
+            string filePath = Resource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
 
             // 加载汉字拼音字典
             Dictionary<string, string> hanziPinyinDictionary = LoadHanziPinyinDictionary(filePath);
@@ -5000,6 +5000,169 @@ End Sub
                 }
             }
             return false;
+        }
+
+        private void 部首描红_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                // 获取当前PPT应用程序
+                var app = Globals.ThisAddIn.Application;
+                var slide = app.ActiveWindow.View.Slide;
+                var selection = app.ActiveWindow.Selection;
+
+                if (selection.Type != PpSelectionType.ppSelectionShapes)
+                {
+                    MessageBox.Show("请先选中一个组合。");
+                    return;
+                }
+
+                var groupShape = selection.ShapeRange[1];
+                if (groupShape.Type != MsoShapeType.msoGroup)
+                {
+                    MessageBox.Show("请先选中一个组合。");
+                    return;
+                }
+
+                // 获取组合中第一个形状的前缀名
+                var firstShapeName = groupShape.GroupItems[1].Name;
+                var prefixName = firstShapeName.Split('-')[0];
+
+                // 设置EPPlus的许可证上下文
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                // 加载嵌入资源的Excel文件
+                string filePath = Resource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
+                var fileInfo = new FileInfo(filePath);
+
+                using (var package = new ExcelPackage(fileInfo))
+                {
+                    var worksheet = package.Workbook.Worksheets[0];
+
+                    // 查找前缀名对应的结构和部首笔画数
+                    var startCell = worksheet.Cells["A:A"].FirstOrDefault(cell => cell.Value.ToString() == prefixName);
+                    if (startCell == null)
+                    {
+                        MessageBox.Show("未找到对应的汉字信息。");
+                        return;
+                    }
+
+                    var structure = worksheet.Cells[startCell.Start.Row, 4].Text;
+                    var radical = worksheet.Cells[startCell.Start.Row, 1].Text;
+                    var radicalStrokeCount = int.Parse(worksheet.Cells[startCell.Start.Row, 7].Text);
+
+                    // 处理常规情况
+                    for (int i = 1; i <= groupShape.GroupItems.Count; i++)
+                    {
+                        var shape = groupShape.GroupItems[i];
+                        if (!IsSpecialCase(structure, radical, radicalStrokeCount))
+                        {
+                            if (ShouldFillRed(structure, radicalStrokeCount, i, groupShape.GroupItems.Count))
+                            {
+                                shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Red);
+                            }
+                            else
+                            {
+                                shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
+                            }
+                        }
+                    }
+
+                    // 处理特殊情况
+                    HandleSpecialCases(groupShape, structure, radical, radicalStrokeCount);
+                }
+
+                MessageBox.Show("部首描红完成。");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发生错误: {ex.Message}");
+            }
+        }
+
+        private bool ShouldFillRed(string structure, int radicalStrokeCount, int index, int totalShapes)
+        {
+            // 默认处理逻辑
+            switch (structure)
+            {
+                case "左右":
+                case "左中右":
+                    return index <= radicalStrokeCount;
+                case "单一":
+                    return true;
+                case "上下":
+                    return index <= radicalStrokeCount;
+                case "左上包围":
+                    return index <= radicalStrokeCount;
+                case "左下包围":
+                    return index > totalShapes - radicalStrokeCount;
+                case "全包围":
+                    return index <= 2 || index == totalShapes;
+                case "上三包围":
+                    return index <= radicalStrokeCount;
+                case "下三包围":
+                    return index > totalShapes - radicalStrokeCount;
+                default:
+                    return false;
+            }
+        }
+
+        private bool IsSpecialCase(string structure, string radical, int radicalStrokeCount)
+        {
+            // 检查是否为特殊情况
+            return (structure == "左右" && radical == "刂" && radicalStrokeCount == 2) ||
+                   (structure == "上下" && radical == "大" && radicalStrokeCount == 3) ||
+                   (structure == "上下" && (radical == "灬" || radical == "心") && radicalStrokeCount == 4);
+        }
+
+        private void HandleSpecialCases(Shape groupShape, string structure, string radical, int radicalStrokeCount)
+        {
+            // 特殊情况处理
+            if (structure == "左右" && radical == "刂" && radicalStrokeCount == 2)
+            {
+                FillLastNShapes(groupShape, 2, Color.Red);
+            }
+            else if (structure == "上下" && radical == "大" && radicalStrokeCount == 3)
+            {
+                FillLastNShapes(groupShape, 3, Color.Red);
+            }
+            else if (structure == "上下" && (radical == "灬" || radical == "心") && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+            }
+        }
+
+        private void FillLastNShapes(Shape groupShape, int n, Color color)
+        {
+            for (int i = 1; i <= groupShape.GroupItems.Count; i++)
+            {
+                var shape = groupShape.GroupItems[i];
+                if (i > groupShape.GroupItems.Count - n)
+                {
+                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
+                }
+                else
+                {
+                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
+                }
+            }
+        }
+
+        private string Resource(string resourceName)
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceStream = assembly.GetManifestResourceStream(resourceName);
+
+            if (resourceStream == null)
+                throw new Exception("资源未找到");
+
+            var tempFilePath = Path.GetTempFileName();
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+            {
+                resourceStream.CopyTo(fileStream);
+            }
+
+            return tempFilePath;
         }
     }
 }
