@@ -5150,12 +5150,17 @@ End Sub
                 FillLastNShapes(groupShape, 8, Color.Red);
                 return;
             }
+            else if (structure == "上下" && radical == "贝" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
             else if (prefixName == "赣" && structure == "左右" && radical == "音、贝" && radicalStrokeCount == 13)
             {
                 FillSpecificShapes(groupShape, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 19, 20, 21 }, Color.Red);
                 return;
             }
-            else if (prefixName == "柬" && structure == "单一" && radical == "木（特殊）" && radicalStrokeCount == 4)
+            else if (prefixName == "柬" && structure == "单一" && radical == "木" && radicalStrokeCount == 4)
             {
                 FillSpecificShapes(groupShape, new int[] { 1, 7, 8, 9 }, Color.Red);
                 return;
@@ -5245,7 +5250,6 @@ End Sub
                 FillLastNShapes(groupShape, 6, Color.Red);
                 return;
             }
-
             else if (structure == "全包围" && radical == "囗" && radicalStrokeCount == 3)
             {
                 FillFirstNShapes(groupShape, 2, Color.Red);
@@ -5481,6 +5485,7 @@ End Sub
             var shape = groupShape.GroupItems[index];
             shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
         }
+
 
         private string Resource(string resourceName)
         {
