@@ -271,14 +271,17 @@ namespace 课件帮PPT助手
                             textRange.Font.Line.Weight = originalSize.TextOutlineWeight * scaleFactor;
                         }
 
-                        // 缩放文本三维效果
+                        // 缩放文本三维效果（如果存在）
                         var threeDFormat = shape.TextFrame2.ThreeD;
-                        threeDFormat.BevelTopInset = originalSize.TextBevelTopWidth * scaleFactor;
-                        threeDFormat.BevelTopDepth = originalSize.TextBevelTopHeight * scaleFactor;
-                        threeDFormat.BevelBottomInset = originalSize.TextBevelBottomWidth * scaleFactor;
-                        threeDFormat.BevelBottomDepth = originalSize.TextBevelBottomHeight * scaleFactor;
-                        threeDFormat.Depth = originalSize.TextDepth * scaleFactor;
-                        threeDFormat.ContourWidth = originalSize.TextContourWidth * scaleFactor;
+                        if (threeDFormat.Visible == Office.MsoTriState.msoTrue)
+                        {
+                            threeDFormat.BevelTopInset = originalSize.TextBevelTopWidth * scaleFactor;
+                            threeDFormat.BevelTopDepth = originalSize.TextBevelTopHeight * scaleFactor;
+                            threeDFormat.BevelBottomInset = originalSize.TextBevelBottomWidth * scaleFactor;
+                            threeDFormat.BevelBottomDepth = originalSize.TextBevelBottomHeight * scaleFactor;
+                            threeDFormat.Depth = originalSize.TextDepth * scaleFactor;
+                            threeDFormat.ContourWidth = originalSize.TextContourWidth * scaleFactor;
+                        }
 
                         // 缩放文本阴影距离
                         if (textRange.Font.Shadow.Visible == Office.MsoTriState.msoTrue)
@@ -358,7 +361,7 @@ namespace 课件帮PPT助手
                         PowerPoint.Table table = shape.Table;
                         for (int i = 1; i <= table.Rows.Count; i++)
                         {
-                            for (int j = 1; j <= table.Columns.Count; j++)
+                            for (int j = 1; i <= table.Columns.Count; j++)
                             {
                                 table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight = originalSize.TableBorderWidth;
                                 table.Cell(i, j).Borders[PowerPoint.PpBorderType.ppBorderLeft].Weight = originalSize.TableBorderWidth;

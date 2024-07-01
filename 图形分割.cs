@@ -65,9 +65,19 @@ namespace 课件帮PPT助手
 
         private void DivideCircle(PowerPoint.Shape circle, int numSectors)
         {
+            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Slide currentSlide = pptApp.ActiveWindow.View.Slide; // 获取当前活动的幻灯片
+
             float centerX = circle.Left + circle.Width / 2;
             float centerY = circle.Top + circle.Height / 2;
             float radius = circle.Width / 2;
+
+            // 复制原始圆形的格式
+            var fillColor = circle.Fill.ForeColor.RGB;
+            var lineColor = circle.Line.ForeColor.RGB;
+            var lineWeight = circle.Line.Weight;
+            var lineStyle = circle.Line.DashStyle;
+            var lineVisible = circle.Line.Visible;
 
             // 删除原始圆形
             circle.Delete();
@@ -81,7 +91,7 @@ namespace 课件帮PPT助手
                 float endAngle = startAngle + angleIncrement;
 
                 // 创建扇形
-                PowerPoint.Shape pieSlice = pptApp.ActivePresentation.Slides[1].Shapes.AddShape(
+                PowerPoint.Shape pieSlice = currentSlide.Shapes.AddShape(
                     Office.MsoAutoShapeType.msoShapePie,
                     centerX - radius,
                     centerY - radius,
@@ -92,6 +102,13 @@ namespace 课件帮PPT助手
                 // 设置扇形的角度
                 pieSlice.Adjustments[1] = startAngle;
                 pieSlice.Adjustments[2] = endAngle;
+
+                // 应用原始圆形的格式
+                pieSlice.Fill.ForeColor.RGB = fillColor;
+                pieSlice.Line.ForeColor.RGB = lineColor;
+                pieSlice.Line.Weight = lineWeight;
+                pieSlice.Line.DashStyle = lineStyle;
+                pieSlice.Line.Visible = lineVisible;
             }
         }
 
