@@ -5095,6 +5095,21 @@ End Sub
                 }
                 return;
             }
+            else if (prefixName == "睾" && structure == "上下" && radical == "目" && radicalStrokeCount == 5)
+            {
+                FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6 }, Color.Red);
+                return;
+            }
+            else if (prefixName == "柬" && structure == "单一" && radical == "木" && radicalStrokeCount == 4)
+            {
+                FillSpecificShapes(groupShape, new int[] { 1, 7, 8, 9 }, Color.Red);
+                return;
+            }
+            else if (prefixName == "龛" && structure == "上下" && radical == "龙" && radicalStrokeCount == 5)
+            {
+                FillLastNShapes(groupShape, 5, Color.Red);
+                return;
+            }
             else if (structure == "单一" && radical != prefixName)
             {
                 FillFirstNShapes(groupShape, 1, Color.Red);
@@ -5125,11 +5140,6 @@ End Sub
                 FillLastNShapes(groupShape, 3, Color.Red);
                 return;
             }
-            else if (structure == "上下" && radical == "龙" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
             else if (structure == "上下" && radical == "羽" && radicalStrokeCount == 6)
             {
                 FillLastNShapes(groupShape, 6, Color.Red);
@@ -5138,6 +5148,16 @@ End Sub
             else if (structure == "上下" && radical == "非" && radicalStrokeCount == 8)
             {
                 FillLastNShapes(groupShape, 8, Color.Red);
+                return;
+            }
+            else if (structure == "上下" && radical == "手、目" && radicalStrokeCount == 5)
+            {
+                FillLastNShapes(groupShape, 5, Color.Red);
+                return;
+            }
+            else if (structure == "上下" && radical == "日" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
                 return;
             }
             else if (structure == "上中下" && radical == "黄" && radicalStrokeCount == 11)
@@ -5160,11 +5180,6 @@ End Sub
                 FillSpecificShapes(groupShape, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 19, 20, 21 }, Color.Red);
                 return;
             }
-            else if (prefixName == "柬" && structure == "单一" && radical == "木" && radicalStrokeCount == 4)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 7, 8, 9 }, Color.Red);
-                return;
-            }
             else if (structure == "上中下" && radical == "鱼" && radicalStrokeCount == 8)
             {
                 FillLastNShapes(groupShape, 8, Color.Red);
@@ -5173,11 +5188,6 @@ End Sub
             else if (structure == "上下" && radical == "酉" && radicalStrokeCount == 7)
             {
                 FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (prefixName == "睾" && structure == "上下" && radical == "目" && radicalStrokeCount == 13)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6 }, Color.Red);
                 return;
             }
             else if (structure == "上下" && radical == "月" && radicalStrokeCount == 4)
