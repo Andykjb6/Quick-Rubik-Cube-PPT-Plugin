@@ -109,6 +109,7 @@ namespace 课件帮PPT助手
             this.拆分段落 = this.Factory.CreateRibbonButton();
             this.批量改字 = this.Factory.CreateRibbonButton();
             this.文本矢量化 = this.Factory.CreateRibbonButton();
+            this.部首描红 = this.Factory.CreateRibbonButton();
             this.更多便捷 = this.Factory.CreateRibbonMenu();
             this.统一 = this.Factory.CreateRibbonSplitButton();
             this.统一大小 = this.Factory.CreateRibbonButton();
@@ -147,7 +148,6 @@ namespace 课件帮PPT助手
             this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
-            this.部首描红 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -846,6 +846,14 @@ namespace 课件帮PPT助手
             this.文本矢量化.ShowImage = true;
             this.文本矢量化.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本矢量化_Click);
             // 
+            // 部首描红
+            // 
+            this.部首描红.Image = ((System.Drawing.Image)(resources.GetObject("部首描红.Image")));
+            this.部首描红.Label = "部首描红";
+            this.部首描红.Name = "部首描红";
+            this.部首描红.ShowImage = true;
+            this.部首描红.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.部首描红_Click);
+            // 
             // 更多便捷
             // 
             this.更多便捷.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -1220,14 +1228,6 @@ namespace 课件帮PPT助手
             this.comboBox2.ShowImage = true;
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
-            // 
-            // 部首描红
-            // 
-            this.部首描红.Image = ((System.Drawing.Image)(resources.GetObject("部首描红.Image")));
-            this.部首描红.Label = "部首描红";
-            this.部首描红.Name = "部首描红";
-            this.部首描红.ShowImage = true;
-            this.部首描红.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.部首描红_Click);
             // 
             // Ribbon1
             // 
