@@ -843,7 +843,9 @@ namespace 课件帮PPT助手
             this.文本矢量化.Image = ((System.Drawing.Image)(resources.GetObject("文本矢量化.Image")));
             this.文本矢量化.Label = "文本矢量";
             this.文本矢量化.Name = "文本矢量化";
+            this.文本矢量化.ScreenTip = "使用说明：";
             this.文本矢量化.ShowImage = true;
+            this.文本矢量化.SuperTip = "使用本功能，可将所选的文本转换为矢量形状。";
             this.文本矢量化.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本矢量化_Click);
             // 
             // 部首描红
@@ -851,7 +853,9 @@ namespace 课件帮PPT助手
             this.部首描红.Image = ((System.Drawing.Image)(resources.GetObject("部首描红.Image")));
             this.部首描红.Label = "部首描红";
             this.部首描红.Name = "部首描红";
+            this.部首描红.ScreenTip = "使用说明：";
             this.部首描红.ShowImage = true;
+            this.部首描红.SuperTip = "请先使用学科工具中的”笔画拆分“对汉字笔画进行拆分，并将拆分出来的汉字笔画进行组合，然后选中该组合执行”部首描红“。";
             this.部首描红.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.部首描红_Click);
             // 
             // 更多便捷
@@ -881,7 +885,9 @@ namespace 课件帮PPT助手
             this.统一大小.Image = ((System.Drawing.Image)(resources.GetObject("统一大小.Image")));
             this.统一大小.Label = "统一大小";
             this.统一大小.Name = "统一大小";
+            this.统一大小.ScreenTip = "使用说明：";
             this.统一大小.ShowImage = true;
+            this.统一大小.SuperTip = "使用本功能，将以第一个被选中的对象的大小为基准，统一所选对象的大小。";
             this.统一大小.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.统一大小_Click);
             // 
             // 统一格式
@@ -889,7 +895,9 @@ namespace 课件帮PPT助手
             this.统一格式.Image = ((System.Drawing.Image)(resources.GetObject("统一格式.Image")));
             this.统一格式.Label = "统一格式";
             this.统一格式.Name = "统一格式";
+            this.统一格式.ScreenTip = "使用说明：";
             this.统一格式.ShowImage = true;
+            this.统一格式.SuperTip = "使用本功能，将以第一个被选中的对象的格式为基准，统一所选对象的格式。";
             this.统一格式.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.统一格式_Click);
             // 
             // 统一控点
@@ -897,7 +905,9 @@ namespace 课件帮PPT助手
             this.统一控点.Image = ((System.Drawing.Image)(resources.GetObject("统一控点.Image")));
             this.统一控点.Label = "统一控点";
             this.统一控点.Name = "统一控点";
+            this.统一控点.ScreenTip = "使用说明：";
             this.统一控点.ShowImage = true;
+            this.统一控点.SuperTip = "使用本功能，将以第一个被选中的对象的控点为基准（如果对象存在控点），统一所选对象的控点。";
             this.统一控点.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.统一控点_Click);
             // 
             // 交换
@@ -915,7 +925,9 @@ namespace 课件帮PPT助手
             this.交换位置.Image = ((System.Drawing.Image)(resources.GetObject("交换位置.Image")));
             this.交换位置.Label = "交换位置";
             this.交换位置.Name = "交换位置";
+            this.交换位置.ScreenTip = "使用说明：";
             this.交换位置.ShowImage = true;
+            this.交换位置.SuperTip = "使用本功能，可将选中的两个对象交换彼此的位置（包括图层顺序）。";
             this.交换位置.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.交换位置_Click);
             // 
             // 交换文字
@@ -923,7 +935,9 @@ namespace 课件帮PPT助手
             this.交换文字.Image = ((System.Drawing.Image)(resources.GetObject("交换文字.Image")));
             this.交换文字.Label = "交换文字";
             this.交换文字.Name = "交换文字";
+            this.交换文字.ScreenTip = "使用说明：";
             this.交换文字.ShowImage = true;
+            this.交换文字.SuperTip = "使用本功能，可将选中的两个文本框内的文字进行交换。";
             this.交换文字.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.交换文字_Click);
             // 
             // 交换格式
@@ -931,7 +945,9 @@ namespace 课件帮PPT助手
             this.交换格式.Image = ((System.Drawing.Image)(resources.GetObject("交换格式.Image")));
             this.交换格式.Label = "交换格式";
             this.交换格式.Name = "交换格式";
+            this.交换格式.ScreenTip = "使用说明：";
             this.交换格式.ShowImage = true;
+            this.交换格式.SuperTip = "使用本功能，可将选中的两个对象的格式进行交换。";
             this.交换格式.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.交换格式_Click);
             // 
             // 交换尺寸
@@ -939,7 +955,9 @@ namespace 课件帮PPT助手
             this.交换尺寸.Image = ((System.Drawing.Image)(resources.GetObject("交换尺寸.Image")));
             this.交换尺寸.Label = "交换尺寸";
             this.交换尺寸.Name = "交换尺寸";
+            this.交换尺寸.ScreenTip = "使用说明：";
             this.交换尺寸.ShowImage = true;
+            this.交换尺寸.SuperTip = "使用本功能，可将选中的两个对象的尺寸（大小）进行交换。";
             this.交换尺寸.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.交换尺寸_Click);
             // 
             // 组合
@@ -1016,7 +1034,9 @@ namespace 课件帮PPT助手
             this.原位转图.Image = ((System.Drawing.Image)(resources.GetObject("原位转图.Image")));
             this.原位转图.Label = "原位转PNG";
             this.原位转图.Name = "原位转图";
+            this.原位转图.ScreenTip = "使用说明：";
             this.原位转图.ShowImage = true;
+            this.原位转图.SuperTip = "使用本功能，可将选中的对象原位转换成PNG图片。";
             this.原位转图.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.原位转图_Click);
             // 
             // 原位转JPG
@@ -1024,7 +1044,9 @@ namespace 课件帮PPT助手
             this.原位转JPG.Image = ((System.Drawing.Image)(resources.GetObject("原位转JPG.Image")));
             this.原位转JPG.Label = "原位转JPG";
             this.原位转JPG.Name = "原位转JPG";
+            this.原位转JPG.ScreenTip = "使用说明：";
             this.原位转JPG.ShowImage = true;
+            this.原位转JPG.SuperTip = "使用本功能，可将选中的对象原位转换成JPG图片。";
             this.原位转JPG.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.原位转JPG_Click);
             // 
             // 删除
@@ -1053,7 +1075,9 @@ namespace 课件帮PPT助手
             this.清空页外.Image = ((System.Drawing.Image)(resources.GetObject("清空页外.Image")));
             this.清空页外.Label = "清空页外";
             this.清空页外.Name = "清空页外";
+            this.清空页外.ScreenTip = "使用说明：";
             this.清空页外.ShowImage = true;
+            this.清空页外.SuperTip = "使用本功能，可对所选幻灯片页面的页外元素进行清空（超出页面边界的元素）。";
             this.清空页外.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.清空页外_Click);
             // 
             // 清除备注
@@ -1061,7 +1085,9 @@ namespace 课件帮PPT助手
             this.清除备注.Image = ((System.Drawing.Image)(resources.GetObject("清除备注.Image")));
             this.清除备注.Label = "清除备注";
             this.清除备注.Name = "清除备注";
+            this.清除备注.ScreenTip = "使用说明：";
             this.清除备注.ShowImage = true;
+            this.清除备注.SuperTip = "使用本功能，可将所选页面的备注进行清除。";
             this.清除备注.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.清除备注_Click);
             // 
             // 清除超链接
@@ -1079,7 +1105,9 @@ namespace 课件帮PPT助手
             this.删除未用版式.Image = ((System.Drawing.Image)(resources.GetObject("删除未用版式.Image")));
             this.删除未用版式.Label = "删除未用版式";
             this.删除未用版式.Name = "删除未用版式";
+            this.删除未用版式.ScreenTip = "使用说明：";
             this.删除未用版式.ShowImage = true;
+            this.删除未用版式.SuperTip = "使用本功能，可一键删除未使用的版式，可在一定程序上缩减文件大小。";
             this.删除未用版式.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.删除未用版式_Click);
             // 
             // group6

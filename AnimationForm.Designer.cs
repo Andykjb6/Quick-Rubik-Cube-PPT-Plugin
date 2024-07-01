@@ -70,7 +70,6 @@ namespace 课件帮PPT助手
             this.tabPage1.Size = new System.Drawing.Size(487, 416);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "第一步";
-           
             // 
             // label1
             // 
@@ -95,10 +94,10 @@ namespace 课件帮PPT助手
             // 
             // textBox
             // 
-            this.textBox.Font = new System.Drawing.Font("微软雅黑", 16.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox.Font = new System.Drawing.Font("宋体", 16.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox.Location = new System.Drawing.Point(22, 137);
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(440, 64);
+            this.textBox.Size = new System.Drawing.Size(440, 57);
             this.textBox.TabIndex = 2;
             // 
             // tabPage2

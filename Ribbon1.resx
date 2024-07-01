@@ -3843,7 +3843,7 @@
   <data name="部首描红.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIoAAACmCAYAAAAF6RcpAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAy
-        vgAAMr4BqPBiEgAACP9JREFUeF7tnL2qJUUUhS9oYODPgAYGRqI+gYGZ8wAGI4qRoaEPoCg4YiBooGAg
+        uAAAMrgBKPMmiQAACP9JREFUeF7tnL2qJUUUhS9oYODPgAYGRqI+gYGZ8wAGI4qRoaEPoCg4YiBooGAg
         KPgIipGgwQ0MxMjA0EDMRcHBHzAY1z7uHmrq7tu3u2tX9a7qteCDO3O762+ts6u7z7nnbHTdPjt7DDwH
         XgE3wcfgC/Ad+DnjXPkGfABugEe0KWpEweCXwY/gtgPSzqvgPm2eGkEwVCqHZXgpv4PXwL3aFdWzYKRs
         K5bRXnwCntTuqF4FE39KTK3Ft4CVpWfBwHcSQ2vypnZJ9SgY+Cj4OzG0FtLHE9ot1aNg4NuJoTV5Xbuk
@@ -4802,7 +4802,7 @@
   <data name="删除动画.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAKkAAACeCAYAAABJqio6AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAy
-        vQAAMr0BBUlDfwAADFtJREFUeF7tnV+IHlcZxrcapGiyuy4xiH+gUIN6obQES8U/BLFFkJTv21AqhUpA
+        twAAMrcBXj2IkwAADFtJREFUeF7tnV+IHlcZxrcapGiyuy4xiH+gUIN6obQES8U/BLFFkJTv21AqhUpA
         wRtBKaIoLeRKLGki6EUvTFGwuShaUwSxVkgCFbzwQumFIU2xgkhBL0qT/b4vIcL4PrvvF2Zn32/3nJlz
         Zs6ZeX7wQJudOee88z7fOWf+nVkihBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQghpzuro+tHl0eTk
         ynh6cS78P6SbENINashiL9GwpHXQc1pmdNBFLYKQeOiwbhnQWexVSTRCGHQuGpUEJ6RB56JRSTBiGHQu
@@ -4921,7 +4921,7 @@
   <data name="清除备注.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAV8AAAFfCAYAAADptc+BAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAy
-        vQAAMr0BBUlDfwAAE/NJREFUeF7t3emSJkd9RnF5x5vgcvjIJWBCF4F3eWUH79iWbV0Sl8JH75ZtbLEI
+        twAAMrcBXj2IkwAAE/NJREFUeF7t3emSJkd9RnF5x5vgcvjIJWBCF4F3eWUH79iWbV0Sl8JH75ZtbLEI
         kJ8MqsKtUc5MZ3e9b/0z63ciTgSzdHfW8pxphgjmjU/+2vsfkiTvq/iS5AmKL0meoPiS5AmKL0meoPiS
         5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0me
         oPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmKL0meoPiS5AmK
@@ -5012,7 +5012,7 @@
   <data name="清除超链接.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAALkAAAC6CAYAAADyOezyAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAy
-        vQAAMr0BBUlDfwAADIZJREFUeF7tnTvPZEcRhjcgIEBAQOCAwNwJCZwABizAgATBIlmIO6lDQkL+AT+B
+        twAAMrcBXj2IkwAADIZJREFUeF7tnTvPZEcRhjcgIEBAQOCAwNwJCZwABizAgATBIlmIO6lDQkL+AT+B
         Ow4IHBAgrou4CQkhAgfcISQksCBxYN4aqj/O9vaZOZfu6qru95UeWd5v5vTpqmd6+js7e+YeM0dee//F
         p4RX3//3l4XXfPw/Dxa8fIXLY9LzBDmOHpZh+iUJrZKW5K3Bnfw6LMO0jYgt4mUiWnKRXk+HYerEgdhr
         UHjmXAy2ItWQc+U+ntkUx6v2JkR2ru7MaiBJWLlzKDrzUHRbUpQlOpR98kTfmuyBsk+YkVfvNSj6JJlp
@@ -5071,7 +5071,7 @@
   <data name="删除未用版式.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAANIAAAC4CAYAAACW9rJ+AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAy
-        vQAAMr0BBUlDfwAACuVJREFUeF7tnWuO5DYSBvsE3j2SjzB7o7nZHGrh/evNbFB2IZ2U+EhKpBgfELCn
+        twAAMrcBXj2IkwAACuVJREFUeF7tnWuO5DYSBvsE3j2SjzB7o7nZHGrh/evNbFB2IZ2U+EhKpBgfELCn
         p8RnhqiqasNfR/7947+//+s///uV+BMA8vz244+fSZ2/kyRyLwCAPOpO0ujry3sBAJTxLZMeUd5fAkAx
         vziNAPpBJIAIEAkgAEQCCACRAAJAJIAAEAkggCqR9Dsn/fIJIBqv3nLcUYe1369WiaQdpF+GICQ0Xr3l
         uKMOtQ+v7xyIRKaIV285EImQTLx6y4FIhGTi1VsORCIkE6/eciASIZl49ZYDkQjJxKu3HIhESCZeveVA

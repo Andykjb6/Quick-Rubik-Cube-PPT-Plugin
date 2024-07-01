@@ -4744,6 +4744,7 @@ End Sub
             }
         }
 
+
         private void 删除动画_Click(object sender, RibbonControlEventArgs e)
         {
            Application pptApp = Globals.ThisAddIn.Application;
@@ -5014,14 +5015,14 @@ End Sub
 
                 if (selection.Type != PpSelectionType.ppSelectionShapes)
                 {
-                    MessageBox.Show("请先选中一个组合。");
+                    MessageBox.Show("请先用“笔画拆分”获取汉字笔画并组合。");
                     return;
                 }
 
                 var groupShape = selection.ShapeRange[1];
                 if (groupShape.Type != MsoShapeType.msoGroup)
                 {
-                    MessageBox.Show("请先选中一个组合。");
+                    MessageBox.Show("请先选中该字笔画的组合。（如未对笔画进行组合，请选组合后再选中该组合）");
                     return;
                 }
 
@@ -5074,7 +5075,7 @@ End Sub
                 string remark = match.Groups[2].Success ? match.Groups[2].Value : string.Empty;
                 return (strokeCount, remark);
             }
-            throw new FormatException("输入字符串的格式不正确。");
+            throw new FormatException("未能识别部首笔画位置。");
         }
 
         private void FillShapes(Shape groupShape, string structure, string radical, int radicalStrokeCount, string prefixName, string remark)
@@ -5109,6 +5110,62 @@ End Sub
                 FillLastNShapes(groupShape, 3, Color.Red);
                 return;
             }
+            else if (structure == "左右" && radical == "斤" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "戈" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "鸟" && radicalStrokeCount == 5)
+            {
+                FillLastNShapes(groupShape, 5, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "页" && radicalStrokeCount == 6)
+            {
+                FillLastNShapes(groupShape, 6, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "旡" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "见" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
+            else if (prefixName == "孵" && structure == "左右" && radical == "爫" && radicalStrokeCount == 4)
+            {
+                FillSpecificShapes(groupShape, new int[] { 8, 9, 10, 11 }, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "韦" && radicalStrokeCount == 4)
+            {
+                FillLastNShapes(groupShape, 4, Color.Red);
+                return;
+            }
+            else if (structure == "上下" && radical == "示" && radicalStrokeCount == 5)
+            {
+                FillLastNShapes(groupShape, 5, Color.Red);
+                return;
+            }
+            else if (structure == "上下" && radical == "几" && radicalStrokeCount == 2)
+            {
+                FillLastNShapes(groupShape, 2, Color.Red);
+                return;
+            }
+            else if (structure == "左右" && radical == "色" && radicalStrokeCount == 6)
+            {
+                FillLastNShapes(groupShape, 6, Color.Red);
+                return;
+            }
+
             else if (structure == "全包围" && radical == "囗" && radicalStrokeCount == 3)
             {
                 FillFirstNShapes(groupShape, 2, Color.Red);

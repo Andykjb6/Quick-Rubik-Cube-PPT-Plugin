@@ -17,19 +17,97 @@ namespace 课件帮PPT助手
 {
     public partial class DesignTools : UserControl
     {
-
+        private ToolTip toolTip1;
 
         public DesignTools()
         {
             InitializeComponent();
-
-
+            InitializeToolTips();
         }
 
+        private void ToolTipsInitializeComponent()
+        {
+            this.笔画拆分 = new Button();
+            this.分解笔顺 = new Button();
+            this.挖词填空 = new Button();
+            this.SuspendLayout();
 
-        private void DesignTools_Load(object sender, EventArgs e)
+            // 笔画拆分按钮
+            this.笔画拆分.Location = new System.Drawing.Point(50, 130);
+            this.笔画拆分.Name = "笔画拆分";
+            this.笔画拆分.Size = new Size(100, 30);
+            this.笔画拆分.TabIndex = 3;
+            this.笔画拆分.Text = "笔画拆分";
+            this.笔画拆分.UseVisualStyleBackColor = true;
+
+            // 分解笔顺按钮
+            this.分解笔顺.Location = new System.Drawing.Point(50, 170);
+            this.分解笔顺.Name = "分解笔顺";
+            this.分解笔顺.Size = new Size(100, 30);
+            this.分解笔顺.TabIndex = 4;
+            this.分解笔顺.Text = "分解笔顺";
+            this.分解笔顺.UseVisualStyleBackColor = true;
+            this.分解笔顺.MouseHover += new EventHandler(this.分解笔顺_MouseHover);
+
+            // 挖词填空按钮
+            this.挖词填空.Location = new System.Drawing.Point(50, 210);
+            this.挖词填空.Name = "挖词填空";
+            this.挖词填空.Size = new Size(100, 30);
+            this.挖词填空.TabIndex = 5;
+            this.挖词填空.Text = "挖词填空";
+            this.挖词填空.UseVisualStyleBackColor = true;
+            this.挖词填空.Click += new EventHandler(this.挖词填空_Click);
+            this.挖词填空.MouseHover += new EventHandler(this.挖词填空_MouseHover);
+
+            // DesignTools
+            this.Controls.Add(this.笔画拆分);
+            this.Controls.Add(this.分解笔顺);
+            this.Controls.Add(this.挖词填空);
+            this.Name = "DesignTools";
+            this.Size = new Size(200, 300);
+            this.ResumeLayout(false);
+        }
+
+        private void InitializeToolTips()
+        {
+            toolTip1 = new ToolTip
+            {
+                IsBalloon = false, // 不使用气泡形式显示提示
+                AutoPopDelay = 5000, // 提示显示时间，单位为毫秒
+                InitialDelay = 1000, // 鼠标悬停后显示提示的时间延迟，单位为毫秒
+                ReshowDelay = 500, // 从一个控件移到另一个控件时，提示再次显示的时间延迟，单位为毫秒
+                ShowAlways = true // 总是显示提示
+            };
+
+            // 设置多个按钮的ToolTip提示
+            toolTip1.SetToolTip(this.笔画拆分, "选中文本拆分该字笔画。");
+
+            string 分解笔顺ToolTipText = "选中文本可分解该字笔顺，默认按一行排列；\n按住Ctrl键单击，可按两行排列。";
+            toolTip1.SetToolTip(this.分解笔顺, 分解笔顺ToolTipText);
+
+            string 挖词填空ToolTipText = "①默认单击，使用字符充当下划线并挖空。\n" +
+                                    "②按住Ctrl键单击则使用字体自带的下划线并挖空。\n" +
+                                    "③按住Shift单击则使用括号挖空。";
+            toolTip1.SetToolTip(this.挖词填空, 挖词填空ToolTipText);
+        }
+
+        private void 分解笔顺_MouseHover(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            toolTip1.Show(toolTip1.GetToolTip(button), button, 0, button.Height + 5, 5000); // 显示在按钮下方
+        }
+
+        private void 挖词填空_MouseHover(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            toolTip1.Show(toolTip1.GetToolTip(button), button, 0, button.Height + 5, 5000); // 显示在按钮下方
+        }
+    
+
+         private void DesignTools_Load(object sender, EventArgs e)
         {
             // Any initialization code if necessary
+
         }
 
         private void 文字标注_Click(object sender, EventArgs e)
@@ -43,19 +121,19 @@ namespace 课件帮PPT助手
         private void ApplyAnnotation(string annotationType, Color color, bool isBold, bool isItalic, Color highlightColor, Color textColor)
         {
             PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Selection sel = app.ActiveWindow.Selection;
+            Selection sel = app.ActiveWindow.Selection;
 
-            if (sel.Type == PowerPoint.PpSelectionType.ppSelectionText)
+            if (sel.Type == PpSelectionType.ppSelectionText)
             {
-                PowerPoint.TextRange textRange = sel.TextRange;
-                PowerPoint.Slide slide = (PowerPoint.Slide)app.ActiveWindow.View.Slide;
+                TextRange textRange = sel.TextRange;
+                Slide slide = (Slide)app.ActiveWindow.View.Slide;
 
                 // 获取所选文本的字体大小
                 float baseFontSize = textRange.Font.Size;
 
                 // Apply text properties
-                textRange.Font.Bold = isBold ? Office.MsoTriState.msoTrue : Office.MsoTriState.msoFalse;
-                textRange.Font.Italic = isItalic ? Office.MsoTriState.msoTrue : Office.MsoTriState.msoFalse;
+                textRange.Font.Bold = isBold ? MsoTriState.msoTrue : MsoTriState.msoFalse;
+                textRange.Font.Italic = isItalic ? MsoTriState.msoTrue : MsoTriState.msoFalse;
                 textRange.Font.Color.RGB = ColorTranslator.ToOle(textColor);
 
                 float lineSpacing = textRange.ParagraphFormat.SpaceWithin; // 获取行间距
@@ -80,11 +158,11 @@ namespace 课件帮PPT助手
                     float additionalOffset = 4; // 固定的偏移量，可以根据需要调整
                     float highlightTop = topText - adjustedHeight - 5 + additionalOffset;
 
-                    var highlightRect = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, highlightTop, width, adjustedHeight);
+                    var highlightRect = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, left, highlightTop, width, adjustedHeight);
                     highlightRect.Name = "Annotation_Highlight";
                     highlightRect.Fill.ForeColor.RGB = ColorTranslator.ToOle(highlightColor);
-                    highlightRect.Line.Visible = Office.MsoTriState.msoFalse;
-                    highlightRect.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    highlightRect.Line.Visible = MsoTriState.msoFalse;
+                    highlightRect.ZOrder(MsoZOrderCmd.msoSendBackward);
                 }
 
                 if (annotationType.Contains("(") && annotationType.Contains(" - "))
@@ -148,7 +226,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void AddLine(PowerPoint.Slide slide, float left, float top, float width, Color color)
+        private void AddLine(Slide slide, float left, float top, float width, Color color)
         {
             var line = slide.Shapes.AddLine(left, top, left + width, top);
             line.Name = "Annotation_Line";
@@ -156,7 +234,7 @@ namespace 课件帮PPT助手
             line.Line.Weight = 1.5f;
         }
 
-        private void AddWavyLine(PowerPoint.Slide slide, float left, float top, float width, Color color)
+        private void AddWavyLine(Slide slide, float left, float top, float width, Color color)
         {
             float step = 5f; // 每个波浪的宽度
             float amplitude = 2f; // 波浪的高度
@@ -189,19 +267,19 @@ namespace 课件帮PPT助手
             waveShape.Name = "Annotation_WavyLine";
             waveShape.Line.ForeColor.RGB = ColorTranslator.ToOle(color);
             waveShape.Line.Weight = 1.5f;
-            waveShape.Line.DashStyle = Office.MsoLineDashStyle.msoLineSolid;
-            waveShape.Line.EndArrowheadStyle = Office.MsoArrowheadStyle.msoArrowheadNone;
-            waveShape.Line.BeginArrowheadStyle = Office.MsoArrowheadStyle.msoArrowheadNone;
+            waveShape.Line.DashStyle = MsoLineDashStyle.msoLineSolid;
+            waveShape.Line.EndArrowheadStyle = MsoArrowheadStyle.msoArrowheadNone;
+            waveShape.Line.BeginArrowheadStyle = MsoArrowheadStyle.msoArrowheadNone;
         }
 
-        private void AddRepeatedSymbols(PowerPoint.Slide slide, float left, float top, float width, Color color, string symbol, int count, float baseFontSize)
+        private void AddRepeatedSymbols(Slide slide, float left, float top, float width, Color color, string symbol, int count, float baseFontSize)
         {
             float step = width / count;
             float symbolFontSize = baseFontSize / 3; // 动态调整符号字号
 
             for (int i = 0; i < count; i++)
             {
-                var textBox = slide.Shapes.AddTextbox(Office.MsoTextOrientation.msoTextOrientationHorizontal, left + i * step, top, step, symbolFontSize);
+                var textBox = slide.Shapes.AddTextbox(MsoTextOrientation.msoTextOrientationHorizontal, left + i * step, top, step, symbolFontSize);
                 textBox.Name = "Annotation_Symbol_" + i;
                 var textRange = textBox.TextFrame.TextRange;
                 textRange.Text = symbol;
@@ -226,16 +304,6 @@ namespace 课件帮PPT助手
             animationForm.Show();
         }
 
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DesignTools_Load_1(object sender, EventArgs e)
-        {
-
-        }
 
         private void 汉字字典_Click(object sender, EventArgs e)
         {
@@ -482,6 +550,7 @@ namespace 课件帮PPT助手
                 MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
+
 
         private void 挖词填空_Click(object sender, EventArgs e)
         {
