@@ -12,7 +12,8 @@ namespace 课件帮PPT助手
     {
         private List<PowerPoint.Shape> selectedShapes;
         private Dictionary<string, NumericUpDown> durationControls;
-        private const string ShapesFilePath = "selectedShapes.txt";
+        private static readonly string ShapesFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "课件帮PPT助手", "selectedShapes.txt");
+        private static readonly object fileLock = new object();
 
         public AnimationForm()
         {
@@ -31,13 +32,29 @@ namespace 课件帮PPT助手
             Globals.ThisAddIn.Application.WindowSelectionChange += Application_WindowSelectionChange;
 
             LoadSelectedShapes();
+
+            multiDurationControl.ValueChanged += MultiDurationControl_ValueChanged;
+            this.FormClosing += AnimationForm_FormClosing; // 订阅关闭事件
+        }
+
+        private void AnimationForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 取消事件订阅
+            Globals.ThisAddIn.Application.WindowSelectionChange -= Application_WindowSelectionChange;
+            textBox.KeyDown -= TextBox_KeyDown;
+            selectAllButton.Click -= SelectAllButton_Click;
+            animateButton.Click -= AnimateButton_Click;
+            adjustAnimationButton.Click -= AdjustAnimationButton_Click;
+            listBox.SelectedIndexChanged -= ListBox_SelectedIndexChanged;
+            multiDurationControl.ValueChanged -= MultiDurationControl_ValueChanged;
         }
 
         private void Application_WindowSelectionChange(PowerPoint.Selection Sel)
         {
             if (Sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
             {
-                if (selectedShapes != null && Sel.ShapeRange.Cast<PowerPoint.Shape>().All(shape => selectedShapes.Contains(shape)))
+                PowerPoint.Slide currentSlide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+                if (selectedShapes != null && Sel.ShapeRange.Cast<PowerPoint.Shape>().All(shape => selectedShapes.Contains(shape) && shape.Parent == currentSlide))
                 {
                     UpdateAnimationPaneSelection(Sel.ShapeRange);
                 }
@@ -46,6 +63,8 @@ namespace 课件帮PPT助手
 
         private void UpdateAnimationPaneSelection(PowerPoint.ShapeRange shapeRange)
         {
+            if (this.IsDisposed) return; // 检查窗口是否已被释放
+
             listBox.ClearSelected();
             foreach (PowerPoint.Shape shape in shapeRange)
             {
@@ -213,6 +232,7 @@ namespace 课件帮PPT助手
 
             foreach (string shapeName in listBox.SelectedItems)
             {
+                var shape = slide.Shapes[shapeName];
                 var effect = slide.TimeLine.MainSequence.Cast<PowerPoint.Effect>().FirstOrDefault(e => e.Shape.Name == shapeName);
                 if (effect != null)
                 {
@@ -228,94 +248,108 @@ namespace 课件帮PPT助手
 
         private void ListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // 清除调整面板中的所有 NumericUpDown 控件
             adjustPanel.Controls.OfType<NumericUpDown>().ToList().ForEach(control => adjustPanel.Controls.Remove(control));
 
             PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            pptApp.ActiveWindow.Selection.Unselect();
+            PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
 
             if (listBox.SelectedItems.Count > 1)
             {
+                // 清除所有选择，重新选择多选的项目
+                pptApp.ActiveWindow.Selection.Unselect();
                 foreach (var selectedItem in listBox.SelectedItems)
                 {
                     string shapeName = selectedItem.ToString();
-                    var shape = pptApp.ActiveWindow.View.Slide.Shapes[shapeName];
+                    var shape = slide.Shapes[shapeName];
                     shape.Select(Office.MsoTriState.msoFalse);
                 }
 
-                NumericUpDown multiDurationControl = new NumericUpDown
-                {
-                    Minimum = 0.1m,
-                    Maximum = 10m,
-                    DecimalPlaces = 2,
-                    Increment = 0.1m,
-                    Value = 0.50m
-                };
-                multiDurationControl.ValueChanged += MultiDurationControl_ValueChanged;
+                // 设置 multiDurationControl 的位置和显示
                 multiDurationControl.Location = new System.Drawing.Point(270, 170);
                 adjustPanel.Controls.Add(multiDurationControl);
+                multiDurationControl.Visible = true;
+            }
+            else if (listBox.SelectedItems.Count == 1)
+            {
+                // 清除所有选择，重新选择单选的项目
+                pptApp.ActiveWindow.Selection.Unselect();
+                string shapeName = listBox.SelectedItems[0].ToString();
+                var shape = slide.Shapes[shapeName];
+                shape.Select(Office.MsoTriState.msoFalse);
+
+                if (!durationControls.TryGetValue(shapeName, out NumericUpDown durationControl))
+                {
+                    durationControl = new NumericUpDown
+                    {
+                        Minimum = 0.1m,
+                        Maximum = 10m,
+                        DecimalPlaces = 2,
+                        Increment = 0.1m,
+                        Value = 0.50m,
+                        Tag = shapeName
+                    };
+                    durationControl.ValueChanged += DurationControl_ValueChanged;
+                    durationControls[shapeName] = durationControl;
+                }
+
+                durationControl.Location = new System.Drawing.Point(270, 170);
+                adjustPanel.Controls.Add(durationControl);
+                durationControl.Visible = true;
             }
             else
             {
-                foreach (var selectedItem in listBox.SelectedItems)
+                // 如果没有选中任何动画层，隐藏 multiDurationControl 并清除 ListBox 选择
+                if (multiDurationControl != null && !multiDurationControl.IsDisposed)
                 {
-                    string shapeName = selectedItem.ToString();
-                    var shape = pptApp.ActiveWindow.View.Slide.Shapes[shapeName];
-                    shape.Select(Office.MsoTriState.msoFalse);
-
-                    if (!durationControls.TryGetValue(shapeName, out NumericUpDown durationControl))
-                    {
-                        durationControl = new NumericUpDown
-                        {
-                            Minimum = 0.1m,
-                            Maximum = 10m,
-                            DecimalPlaces = 2,
-                            Increment = 0.1m,
-                            Value = 0.50m,
-                            Tag = shapeName
-                        };
-                        durationControl.ValueChanged += DurationControl_ValueChanged;
-                        durationControls[shapeName] = durationControl;
-                    }
-
-                    durationControl.Location = new System.Drawing.Point(270, 170);
-                    adjustPanel.Controls.Add(durationControl);
+                    multiDurationControl.Visible = false;
                 }
+
+                // 清除 ListBox 中的选择
+                listBox.ClearSelected();
             }
         }
 
         private void SaveSelectedShapes()
         {
-            using (StreamWriter writer = new StreamWriter(ShapesFilePath))
+            lock (fileLock)
             {
-                foreach (var shape in selectedShapes)
+                Directory.CreateDirectory(Path.GetDirectoryName(ShapesFilePath));
+                using (StreamWriter writer = new StreamWriter(ShapesFilePath))
                 {
-                    writer.WriteLine(shape.Name);
+                    foreach (var shape in selectedShapes)
+                    {
+                        writer.WriteLine(shape.Name);
+                    }
                 }
             }
         }
 
         private void LoadSelectedShapes()
         {
-            if (File.Exists(ShapesFilePath))
+            lock (fileLock)
             {
-                selectedShapes = new List<PowerPoint.Shape>();
-                PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-                PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
-
-                using (StreamReader reader = new StreamReader(ShapesFilePath))
+                if (File.Exists(ShapesFilePath))
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
+                    selectedShapes = new List<PowerPoint.Shape>();
+                    PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
+                    PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
+
+                    using (StreamReader reader = new StreamReader(ShapesFilePath))
                     {
-                        if (slide.Shapes.Cast<PowerPoint.Shape>().Any(s => s.Name == line))
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            var shape = slide.Shapes[line];
-                            if (shape != null)
+                            if (slide.Shapes.Cast<PowerPoint.Shape>().Any(s => s.Name == line))
                             {
-                                selectedShapes.Add(shape);
+                                var shape = slide.Shapes[line];
+                                if (shape != null)
+                                {
+                                    selectedShapes.Add(shape);
+                                }
                             }
+                            // 忽略不存在的形状
                         }
-                        // 忽略不存在的形状
                     }
                 }
             }

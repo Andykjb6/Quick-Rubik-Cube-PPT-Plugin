@@ -21,21 +21,23 @@ namespace 课件帮PPT助手
         private Button downButton;
         private Button leftButton;
         private Button rightButton;
+        private NumericUpDown multiDurationControl;
 
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AnimationForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.textBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.inputLabel = new System.Windows.Forms.Label();
-            this.textBox = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.selectAllButton = new System.Windows.Forms.Button();
             this.animateButton = new System.Windows.Forms.Button();
             this.adjustAnimationButton = new System.Windows.Forms.Button();
             this.adjustPanel = new System.Windows.Forms.Panel();
+            this.multiDurationControl = new System.Windows.Forms.NumericUpDown();
             this.listBox = new System.Windows.Forms.ListBox();
             this.upButton = new System.Windows.Forms.Button();
             this.downButton = new System.Windows.Forms.Button();
@@ -46,6 +48,10 @@ namespace 课件帮PPT助手
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.adjustPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.multiDurationControl)).BeginInit();
+            this.SuspendLayout();
+            this.multiDurationControl = new NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.multiDurationControl)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl
@@ -62,14 +68,22 @@ namespace 课件帮PPT助手
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.textBox);
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.inputLabel);
-            this.tabPage1.Controls.Add(this.textBox);
             this.tabPage1.Location = new System.Drawing.Point(8, 39);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Size = new System.Drawing.Size(487, 416);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "第一步";
+            // 
+            // textBox
+            // 
+            this.textBox.Font = new System.Drawing.Font("宋体", 16.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox.Location = new System.Drawing.Point(22, 141);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(440, 57);
+            this.textBox.TabIndex = 2;
             // 
             // label1
             // 
@@ -91,14 +105,6 @@ namespace 课件帮PPT助手
             this.inputLabel.Size = new System.Drawing.Size(269, 37);
             this.inputLabel.TabIndex = 1;
             this.inputLabel.Text = "①请输入对应汉字：";
-            // 
-            // textBox
-            // 
-            this.textBox.Font = new System.Drawing.Font("宋体", 16.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox.Location = new System.Drawing.Point(22, 137);
-            this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(440, 57);
-            this.textBox.TabIndex = 2;
             // 
             // tabPage2
             // 
@@ -125,42 +131,57 @@ namespace 课件帮PPT助手
             // 
             // selectAllButton
             // 
-            this.selectAllButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.selectAllButton.BackColor = System.Drawing.Color.White;
+            this.selectAllButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("selectAllButton.BackgroundImage")));
+            this.selectAllButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.selectAllButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(237)))));
+            this.selectAllButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(223)))), ((int)(((byte)(249)))));
+            this.selectAllButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+            this.selectAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.selectAllButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.selectAllButton.ForeColor = System.Drawing.Color.White;
+            this.selectAllButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(237)))));
             this.selectAllButton.Location = new System.Drawing.Point(10, 65);
             this.selectAllButton.Name = "selectAllButton";
             this.selectAllButton.Size = new System.Drawing.Size(220, 45);
             this.selectAllButton.TabIndex = 1;
-            this.selectAllButton.Text = "②智能全选";
             this.selectAllButton.UseVisualStyleBackColor = false;
             // 
             // animateButton
             // 
-            this.animateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.animateButton.BackColor = System.Drawing.Color.White;
+            this.animateButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("animateButton.BackgroundImage")));
+            this.animateButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.animateButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(237)))));
+            this.animateButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(223)))), ((int)(((byte)(249)))));
+            this.animateButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+            this.animateButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.animateButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.animateButton.ForeColor = System.Drawing.Color.White;
+            this.animateButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(237)))));
             this.animateButton.Location = new System.Drawing.Point(250, 65);
             this.animateButton.Name = "animateButton";
             this.animateButton.Size = new System.Drawing.Size(220, 45);
             this.animateButton.TabIndex = 2;
-            this.animateButton.Text = "③智能动画";
             this.animateButton.UseVisualStyleBackColor = false;
             // 
             // adjustAnimationButton
             // 
             this.adjustAnimationButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(81)))), ((int)(((byte)(246)))));
+            this.adjustAnimationButton.FlatAppearance.BorderSize = 0;
+            this.adjustAnimationButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(209)))));
+            this.adjustAnimationButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(55)))), ((int)(((byte)(55)))), ((int)(((byte)(235)))));
+            this.adjustAnimationButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.adjustAnimationButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.adjustAnimationButton.ForeColor = System.Drawing.Color.White;
             this.adjustAnimationButton.Location = new System.Drawing.Point(10, 120);
             this.adjustAnimationButton.Name = "adjustAnimationButton";
             this.adjustAnimationButton.Size = new System.Drawing.Size(458, 45);
             this.adjustAnimationButton.TabIndex = 3;
-            this.adjustAnimationButton.Text = "动画调整";
+            this.adjustAnimationButton.Text = "▾动画调整";
             this.adjustAnimationButton.UseVisualStyleBackColor = false;
             // 
             // adjustPanel
             // 
+            this.adjustPanel.Controls.Add(this.multiDurationControl);
             this.adjustPanel.Controls.Add(this.listBox);
             this.adjustPanel.Controls.Add(this.upButton);
             this.adjustPanel.Controls.Add(this.downButton);
@@ -173,6 +194,23 @@ namespace 课件帮PPT助手
             this.adjustPanel.TabIndex = 4;
             this.adjustPanel.Visible = false;
             // 
+            // multiDurationControl
+            // 
+            this.multiDurationControl.DecimalPlaces = 2;
+            this.multiDurationControl.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+            this.multiDurationControl.Location = new System.Drawing.Point(270, 180);
+            this.multiDurationControl.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            this.multiDurationControl.Minimum = new decimal(new int[] { 1, 0, 0, 65536 });
+            this.multiDurationControl.Name = "multiDurationControl";
+            this.multiDurationControl.Size = new System.Drawing.Size(120, 35);
+            this.multiDurationControl.TabIndex = 6;
+            this.multiDurationControl.Value = new decimal(new int[] { 5, 0, 0, 65536 });
+            this.multiDurationControl.Visible = false;
+
+            ((System.ComponentModel.ISupportInitialize)(this.multiDurationControl)).EndInit();
+            this.ResumeLayout(false);
+        
+            // 
             // listBox
             // 
             this.listBox.ItemHeight = 24;
@@ -184,41 +222,69 @@ namespace 课件帮PPT助手
             // 
             // upButton
             // 
+            this.upButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.upButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("upButton.BackgroundImage")));
+            this.upButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.upButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(39)))), ((int)(((byte)(226)))));
+            this.upButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(221)))), ((int)(((byte)(249)))));
+            this.upButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(252)))));
+            this.upButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.upButton.Location = new System.Drawing.Point(320, 10);
             this.upButton.Name = "upButton";
             this.upButton.Size = new System.Drawing.Size(50, 50);
             this.upButton.TabIndex = 1;
-            this.upButton.Text = "↑";
+            this.upButton.UseVisualStyleBackColor = false;
             // 
             // downButton
             // 
-            this.downButton.Location = new System.Drawing.Point(320, 70);
+            this.downButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.downButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("downButton.BackgroundImage")));
+            this.downButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.downButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(39)))), ((int)(((byte)(226)))));
+            this.downButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(221)))), ((int)(((byte)(249)))));
+            this.downButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(252)))));
+            this.downButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.downButton.Location = new System.Drawing.Point(320, 71);
             this.downButton.Name = "downButton";
             this.downButton.Size = new System.Drawing.Size(50, 50);
             this.downButton.TabIndex = 2;
-            this.downButton.Text = "↓";
+            this.downButton.UseVisualStyleBackColor = false;
             // 
             // leftButton
             // 
-            this.leftButton.Location = new System.Drawing.Point(270, 40);
+            this.leftButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.leftButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("leftButton.BackgroundImage")));
+            this.leftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.leftButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(39)))), ((int)(((byte)(226)))));
+            this.leftButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(221)))), ((int)(((byte)(249)))));
+            this.leftButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(252)))));
+            this.leftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.leftButton.Location = new System.Drawing.Point(263, 40);
             this.leftButton.Name = "leftButton";
             this.leftButton.Size = new System.Drawing.Size(50, 50);
             this.leftButton.TabIndex = 3;
-            this.leftButton.Text = "←";
+            this.leftButton.UseVisualStyleBackColor = false;
             // 
             // rightButton
             // 
-            this.rightButton.Location = new System.Drawing.Point(370, 40);
+            this.rightButton.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.rightButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rightButton.BackgroundImage")));
+            this.rightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.rightButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(39)))), ((int)(((byte)(226)))));
+            this.rightButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(221)))), ((int)(((byte)(249)))));
+            this.rightButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(252)))));
+            this.rightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rightButton.Location = new System.Drawing.Point(379, 40);
             this.rightButton.Name = "rightButton";
             this.rightButton.Size = new System.Drawing.Size(50, 50);
             this.rightButton.TabIndex = 4;
-            this.rightButton.Text = "→";
+            this.rightButton.UseVisualStyleBackColor = false;
             // 
             // durationLabel
             // 
             this.durationLabel.AutoSize = true;
             this.durationLabel.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.durationLabel.Location = new System.Drawing.Point(269, 135);
+            this.durationLabel.Location = new System.Drawing.Point(269, 132);
             this.durationLabel.Name = "durationLabel";
             this.durationLabel.Size = new System.Drawing.Size(182, 31);
             this.durationLabel.TabIndex = 5;
@@ -242,6 +308,7 @@ namespace 课件帮PPT助手
             this.tabPage2.PerformLayout();
             this.adjustPanel.ResumeLayout(false);
             this.adjustPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.multiDurationControl)).EndInit();
             this.ResumeLayout(false);
 
         }
