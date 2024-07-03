@@ -445,20 +445,64 @@ namespace 课件帮PPT助手
                     return;
                 }
 
+                Slide slide = app.ActiveWindow.View.Slide;
+
+                // 重命名所有现有形状以避免名称冲突
+                foreach (PowerPoint.Shape shape in slide.Shapes)
+                {
+                    if (!shape.Name.StartsWith("*"))
+                    {
+                        shape.Name = "*" + shape.Name;
+                    }
+                }
+
                 // 调用笔画拆分的点击事件
                 笔画拆分_Click(sender, e);
 
-                Slide slide = app.ActiveWindow.View.Slide;
-
                 // 收集所有前缀名与所选文本相同且填充颜色为“0,112,192”的形状
                 List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
+                Dictionary<string, PowerPoint.Shape> uniqueShapes = new Dictionary<string, PowerPoint.Shape>();
+                List<PowerPoint.Shape> duplicateShapes = new List<PowerPoint.Shape>();
+
                 foreach (PowerPoint.Shape shape in slide.Shapes)
                 {
                     if (shape.Name.StartsWith(selectedText) && shape.Fill.ForeColor.RGB == ColorTranslator.ToOle(Color.FromArgb(0, 112, 192)))
                     {
-                        shapesToGroup.Add(shape);
+                        string baseName = shape.Name;
+                        int suffixIndex = baseName.LastIndexOf('_');
+                        if (suffixIndex != -1)
+                        {
+                            baseName = baseName.Substring(0, suffixIndex);
+                        }
+
+                        if (!uniqueShapes.ContainsKey(baseName))
+                        {
+                            uniqueShapes[baseName] = shape;
+                        }
+                        else
+                        {
+                            PowerPoint.Shape existingShape = uniqueShapes[baseName];
+                            if ((existingShape.Top == shape.Top && existingShape.Left == shape.Left && existingShape.Width == shape.Width && existingShape.Height == shape.Height) ||
+                                existingShape.Name == shape.Name)
+                            {
+                                // 如果形状的位置和大小都相同或名称相同，则认为是重复的
+                                duplicateShapes.Add(shape);
+                            }
+                            else
+                            {
+                                uniqueShapes[baseName] = shape;
+                            }
+                        }
                     }
                 }
+
+                // 重命名重复的对象
+                foreach (var shape in duplicateShapes)
+                {
+                    shape.Name = shape.Name + "_dup" + Guid.NewGuid().ToString("N");
+                }
+
+                shapesToGroup.AddRange(uniqueShapes.Values);
 
                 // 对这些形状进行组合
                 if (shapesToGroup.Count > 0)
@@ -532,16 +576,22 @@ namespace 课件帮PPT助手
                         // 删除原来的组合形状
                         groupShape.Delete();
 
-                        // 将所有新组合再次进行组合
-                        PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
-                        PowerPoint.Shape newGroupShape = newShapeRange.Group();
+                        // 收集所有前缀名为“【所选文本】：分步”的形状
+                        List<PowerPoint.Shape> finalGroupsToAlign = newGroups.Where(g => g.Name.StartsWith($"【{selectedText}】：分步")).ToList();
 
-                        // 对新组合执行水平居中对齐
-                        float slideCenter = slide.Master.Width / 2;
-                        newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
+                        // 确保不影响其他已存在的形状
+                        if (finalGroupsToAlign.Count > 0)
+                        {
+                            PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(finalGroupsToAlign.Select(s => s.Name).ToArray());
+                            PowerPoint.Shape newGroupShape = newShapeRange.Group();
 
-                        // 取消组合
-                        newGroupShape.Ungroup();
+                            // 对新组合执行水平居中对齐
+                            float slideCenter = slide.Master.Width / 2;
+                            newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
+
+                            // 取消组合
+                            newGroupShape.Ungroup();
+                        }
                     }
                 }
             }
@@ -550,6 +600,7 @@ namespace 课件帮PPT助手
                 MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
+
 
 
         private void 挖词填空_Click(object sender, EventArgs e)
@@ -849,8 +900,7 @@ End Sub";
             vbProject.VBComponents.Remove(vbModule);
         }
 
-
-        public void PerformStrokeSplit()
+        public void PerformStrokeSplit(string selectedText)
         {
             笔画拆分_Click(this, EventArgs.Empty);
         }
