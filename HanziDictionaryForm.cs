@@ -50,34 +50,28 @@ namespace 课件帮PPT助手
 
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
-                if (package.Workbook.Worksheets.Count == 0)
+                foreach (var worksheet in package.Workbook.Worksheets)
                 {
-                    MessageBox.Show("没有查到相关信息。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                var worksheet = package.Workbook.Worksheets[0];
-
-                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
-                {
-                    string hanzi = worksheet.Cells[row, 1].Text;
-                    string pinyin = worksheet.Cells[row, 2].Text;
-                    string radical = worksheet.Cells[row, 3].Text;
-                    string structure = worksheet.Cells[row, 4].Text;
-                    int strokes = int.Parse(worksheet.Cells[row, 5].Text);
-                    string relatedWords = worksheet.Cells[row, 6].Text;
-
-                    hanziDictionary[hanzi] = new HanziInfo
+                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                     {
-                        Pinyin = pinyin,
-                        Radical = radical,
-                        Structure = structure,
-                        Strokes = strokes,
-                        RelatedWords = relatedWords.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(word => word.Trim())
-                                                    .Where(word => !string.IsNullOrEmpty(word)) // 移除空白词语
-                                                    .ToArray()
-                    };
+                        string hanzi = worksheet.Cells[row, 1].Text;
+                        string pinyin = worksheet.Cells[row, 2].Text;
+                        string radical = worksheet.Cells[row, 5].Text;
+                        string structure = worksheet.Cells[row, 6].Text;
+                        int strokes = int.Parse(worksheet.Cells[row, 3].Text);
+                        string relatedWords = worksheet.Cells[row, 4].Text;
+
+                        hanziDictionary[hanzi] = new HanziInfo
+                        {
+                            Pinyin = pinyin,
+                            Radical = radical,
+                            Structure = structure,
+                            Strokes = strokes,
+                            RelatedWords = relatedWords.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                        .Select(word => word.Trim())
+                                                        .ToArray()
+                        };
+                    }
                 }
             }
         }
