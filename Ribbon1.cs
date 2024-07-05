@@ -5004,657 +5004,7 @@ End Sub
             return false;
         }
 
-        private void 部首描红_Click(object sender, RibbonControlEventArgs e)
-        {
-            try
-            {
-                // 获取当前PPT应用程序
-                var app = Globals.ThisAddIn.Application;
-                var slide = app.ActiveWindow.View.Slide;
-                var selection = app.ActiveWindow.Selection;
-
-                if (selection.Type != PpSelectionType.ppSelectionShapes)
-                {
-                    MessageBox.Show("请先用“笔画拆分”获取汉字笔画并组合。");
-                    return;
-                }
-
-                var groupShape = selection.ShapeRange[1];
-                if (groupShape.Type != MsoShapeType.msoGroup)
-                {
-                    MessageBox.Show("请先选中该字笔画的组合。（如未对笔画进行组合，请选组合后再选中该组合）");
-                    return;
-                }
-
-                // 获取组合中第一个形状的前缀名
-                var firstShapeName = groupShape.GroupItems[1].Name;
-                var prefixName = firstShapeName.Split('-')[0];
-
-                // 设置EPPlus的许可证上下文
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                // 加载嵌入资源的Excel文件
-                string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
-
-                using (var package = new ExcelPackage(new FileInfo(filePath)))
-                {
-                    var worksheet = package.Workbook.Worksheets[0];
-
-                    // 查找前缀名对应的结构和部首笔画数
-                    var startCell = worksheet.Cells["A:A"].FirstOrDefault(cell => cell.Text == prefixName);
-                    if (startCell == null)
-                    {
-                        MessageBox.Show("未找到对应的汉字信息。");
-                        return;
-                    }
-
-                    var structure = worksheet.Cells[startCell.Start.Row, 4].Text;
-                    var radical = worksheet.Cells[startCell.Start.Row, 3].Text;
-                    var radicalStrokeCountText = worksheet.Cells[startCell.Start.Row, 7].Text;
-                    var (radicalStrokeCount, remark) = ParseRadicalStrokeCount(radicalStrokeCountText);
-
-                    // 根据结构和部首笔画数填充颜色
-                    FillShapes(groupShape, structure, radical, radicalStrokeCount, prefixName, remark);
-                }
-
-                MessageBox.Show("部首描红完成。");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"发生错误: {ex.Message}");
-            }
-        }
-
-        private (int, string) ParseRadicalStrokeCount(string input)
-        {
-            // 提取字符串中的第一个数字
-            var match = Regex.Match(input, @"(\d+)(?:\s*\(([^)]+)\))?");
-            if (match.Success)
-            {
-                int strokeCount = int.Parse(match.Groups[1].Value);
-                string remark = match.Groups[2].Success ? match.Groups[2].Value : string.Empty;
-                return (strokeCount, remark);
-            }
-            throw new FormatException("未能识别部首笔画位置。");
-        }
-
-        private void FillShapes(Shape groupShape, string structure, string radical, int radicalStrokeCount, string prefixName, string remark)
-        {
-            int totalShapes = groupShape.GroupItems.Count;
-
-            // 处理特殊情况
-            if (structure == "左右" && radical == "阝" && radicalStrokeCount == 2)
-            {
-                if (remark == "左耳旁")
-                {
-                    FillFirstNShapes(groupShape, 2, Color.Red);
-                }
-                else
-                {
-                    FillLastNShapes(groupShape, 2, Color.Red);
-                }
-                return;
-            }
-            else if (prefixName == "吏" && structure == "上下" && radical == "口" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "睾" && structure == "上下" && radical == "目" && radicalStrokeCount == 5)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "呙" && structure == "上下" && radical == "口" && radicalStrokeCount == 3)
-            {
-                FillFirstNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if ((prefixName == "夸" || prefixName == "夯" || prefixName == "奎" || prefixName == "奁") && structure == "上下" && radical == "大" && radicalStrokeCount == 3)
-            {
-                FillFirstNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (prefixName == "柬" && structure == "单一" && radical == "木" && radicalStrokeCount == 4)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 7, 8, 9 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "华" && structure == "上下" && radical == "十" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (prefixName == "龛" && structure == "上下" && radical == "龙" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "皿" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "目" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "彐" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "言" && radicalStrokeCount == 7)
-            {
-                FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "⺗" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "夂" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "单一" && radical != prefixName)
-            {
-                FillFirstNShapes(groupShape, 1, Color.Red);
-                return;
-            }
-            else if (structure == "单一" && radical == prefixName)
-            {
-                FillAllShapes(groupShape, Color.Red);
-                return;
-            }
-            else if ((structure == "上下" || structure == "上中下") && radical == "口" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "犬" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "巾" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "斤" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "寸" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "羽" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "非" && radicalStrokeCount == 8)
-            {
-                FillLastNShapes(groupShape, 8, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "手、目" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "日" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "木" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "小" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上中下" && radical == "小" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上中下" && radical == "黄" && radicalStrokeCount == 11)
-            {
-                FillLastNShapes(groupShape, 11, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "金" && radicalStrokeCount == 8)
-            {
-                FillLastNShapes(groupShape, 8, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "贝" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (prefixName == "赣" && structure == "左右" && radical == "音、贝" && radicalStrokeCount == 13)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 19, 20, 21 }, Color.Red);
-                return;
-            }
-            else if (structure == "上中下" && radical == "鱼" && radicalStrokeCount == 8)
-            {
-                FillLastNShapes(groupShape, 8, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "酉" && radicalStrokeCount == 7)
-            {
-                FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "月" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "火" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "糸" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "力" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "弓" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "肉" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "牛" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "手" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "氺" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "黑" && radicalStrokeCount == 12)
-            {
-                FillLastNShapes(groupShape, 12, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "斗" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "马" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "戈" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "鸟" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "页" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "旡" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "见" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "见" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-
-            else if (prefixName == "孵" && structure == "左右" && radical == "爫" && radicalStrokeCount == 4)
-            {
-                FillSpecificShapes(groupShape, new int[] { 8, 9, 10, 11 }, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "韦" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "示" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "几" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "色" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "全包围" && radical == "囗" && radicalStrokeCount == 3)
-            {
-                FillFirstNShapes(groupShape, 2, Color.Red);
-                FillNthShape(groupShape, totalShapes, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "刂" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "灬" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "心" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "大" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "女" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "水" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "辛" && radicalStrokeCount == 7)
-            {
-                FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "㔾" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "左下包围" && radical == "辶" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "左下包围" && radical == "廴" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "下三包围" && radical == "凵" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "衣" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 6, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "攵" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "土" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "石" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if ((structure == "上下" || structure == "上中下") && radical == "虫" && radicalStrokeCount == 6)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "矢" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "口" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "足" && radicalStrokeCount == 7)
-            {
-                FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "子" && radicalStrokeCount == 3)
-            {
-                FillLastNShapes(groupShape, 3, Color.Red);
-                return;
-            }
-            else if (structure == "上下" && radical == "儿" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "皮" && radicalStrokeCount == 5)
-            {
-                FillLastNShapes(groupShape, 5, Color.Red);
-                return;
-            }
-            else if ((prefixName == "丢" || prefixName == "县") && structure == "上下" && radical == "厶" && radicalStrokeCount == 2)
-            {
-                FillLastNShapes(groupShape, 2, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "豕" && radicalStrokeCount == 7)
-            {
-                FillLastNShapes(groupShape, 7, Color.Red);
-                return;
-            }
-            else if (prefixName == "爽" && structure == "镶嵌" && radical == "大" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 10, 11 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "巫" && structure == "镶嵌" && radical == "工" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 2, 7 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "幽" && structure == "镶嵌" && radical == "山" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 8, 9 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "彧" && structure == "镶嵌" && radical == "山" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 7, 8, 9 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "豖" && structure == "镶嵌" && radical == "豕" && radicalStrokeCount == 7)
-            {
-                FillSpecificShapes(groupShape, new int[] { 1, 2, 3, 4, 5, 7, 8 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "巿" && structure == "镶嵌" && radical == "巾" && radicalStrokeCount == 3)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "隺" && structure == "镶嵌" && radical == "隹" && radicalStrokeCount == 8)
-            {
-                FillSpecificShapes(groupShape, new int[] { 3, 4, 5, 6, 7, 8, 9, 10 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "豳" && structure == "镶嵌" && radical == "豕" && radicalStrokeCount == 7)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6, 7, 8 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "臿" && structure == "镶嵌" && radical == "臼" && radicalStrokeCount == 7)
-            {
-                FillSpecificShapes(groupShape, new int[] { 4, 5, 6, 7, 8, 9 }, Color.Red);
-                return;
-            }
-            else if (prefixName == "果" && structure == "镶嵌" && radical == "丨、木" && radicalStrokeCount == 4)
-            {
-                FillSpecificShapes(groupShape, new int[] { 5, 6, 7, 8 }, Color.Red);
-                return;
-            }
-            else if (structure == "左右" && radical == "欠" && radicalStrokeCount == 4)
-            {
-                FillLastNShapes(groupShape, 4, Color.Red);
-                return;
-            }
-            else if (prefixName == "皕" && structure == "左右" && radical == "白" && radicalStrokeCount == 5)
-            {
-                FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6 }, Color.Red);
-                return;
-            }
-            else if (structure == "全包围" && radical == "口" && radicalStrokeCount == 3)
-            {
-                FillFirstNShapes(groupShape, 2, Color.Red);
-                FillNthShape(groupShape, totalShapes, Color.Red);
-                return;
-            }
-
-            // 默认处理逻辑
-            FillFirstNShapes(groupShape, radicalStrokeCount, Color.Red);
-        }
-
-        private void FillFirstNShapes(Shape groupShape, int n, Color color)
-        {
-            for (int i = 1; i <= groupShape.GroupItems.Count; i++)
-            {
-                var shape = groupShape.GroupItems[i];
-                if (i <= n)
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
-                }
-                else
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
-                }
-            }
-        }
-
-        private void FillLastNShapes(Shape groupShape, int n, Color color)
-        {
-            int totalShapes = groupShape.GroupItems.Count;
-            for (int i = 1; i <= totalShapes; i++)
-            {
-                var shape = groupShape.GroupItems[i];
-                if (i > totalShapes - n)
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
-                }
-                else
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
-                }
-            }
-        }
-
-        private void FillSpecificShapes(Shape groupShape, int[] indices, Color color)
-        {
-            for (int i = 1; i <= groupShape.GroupItems.Count; i++)
-            {
-                var shape = groupShape.GroupItems[i];
-                if (indices.Contains(i))
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
-                }
-                else
-                {
-                    shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
-                }
-            }
-        }
-
-        private void FillAllShapes(Shape groupShape, Color color)
-        {
-            for (int i = 1; i <= groupShape.GroupItems.Count; i++)
-            {
-                var shape = groupShape.GroupItems[i];
-                shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
-            }
-        }
-
-        private void FillNthShape(Shape groupShape, int index, Color color)
-        {
-            var shape = groupShape.GroupItems[index];
-            shape.Fill.ForeColor.RGB = ColorTranslator.ToOle(color);
-        }
-
-
-        private string Resource(string resourceName)
-        {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            using (var resourceStream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (resourceStream == null)
-                    throw new Exception("资源未找到");
-
-                var tempFilePath = Path.GetTempFileName();
-                using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
-                {
-                    resourceStream.CopyTo(fileStream);
-                }
-
-                return tempFilePath;
-            }
-        }
+       
 
         private void 分解笔顺_Click(object sender, RibbonControlEventArgs e)
         {
@@ -5747,6 +5097,105 @@ End Sub
             {
                 MessageBox.Show($"发生错误：{ex.Message}");
             }
+        }
+
+        private void 部首描红_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                // 设置EPPlus的许可证上下文
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                // 加载嵌入资源的Excel文件
+                string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
+
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+
+                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes && sel.ShapeRange.Count == 1)
+                {
+                    PowerPoint.Shape selectedShape = sel.ShapeRange[1];
+                    if (selectedShape.Type == Office.MsoShapeType.msoGroup)
+                    {
+                        // 获取组合中第一个形状的前缀名
+                        var firstShapeName = selectedShape.GroupItems[1].Name;
+                        var prefixName = firstShapeName.Split('-')[0].Trim();
+
+                        // Load Excel data
+                        var hanziStrokeOrderDictionary = new Dictionary<string, string>();
+
+                        if (!File.Exists(filePath))
+                        {
+                            MessageBox.Show($"未找到文件：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        using (var package = new ExcelPackage(new FileInfo(filePath)))
+                        {
+                            foreach (var worksheet in package.Workbook.Worksheets)
+                            {
+                                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                                {
+                                    string hanziFromExcel = worksheet.Cells[row, 1].Text;
+                                    string strokeOrderValue = worksheet.Cells[row, 8].Text;
+                                    hanziStrokeOrderDictionary[hanziFromExcel] = strokeOrderValue;
+                                }
+                            }
+                        }
+
+                        if (hanziStrokeOrderDictionary.TryGetValue(prefixName, out string foundStrokeOrder))
+                        {
+                            var strokeIndices = foundStrokeOrder.Split(',').Select(int.Parse).ToList();
+                            for (int i = 1; i <= selectedShape.GroupItems.Count; i++)
+                            {
+                                PowerPoint.Shape subShape = selectedShape.GroupItems[i];
+                                if (strokeIndices.Contains(i))
+                                {
+                                    subShape.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                                }
+                                else
+                                {
+                                    subShape.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("未找到该汉字的部首笔画序列。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选中需要部首描红的汉字笔画组合。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("所选对象非组合对象。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发生错误：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string Resource(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceStream = assembly.GetManifestResourceStream(resourceName);
+
+            if (resourceStream == null)
+                throw new Exception($"Embedded resource {resourceName} not found.");
+
+            string tempFilePath = Path.Combine(Path.GetTempPath(), resourceName);
+
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create))
+            {
+                resourceStream.CopyTo(fileStream);
+            }
+
+            return tempFilePath;
         }
     }
 }
