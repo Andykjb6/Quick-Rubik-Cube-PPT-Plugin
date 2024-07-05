@@ -110,6 +110,7 @@ namespace 课件帮PPT助手
             this.批量改字 = this.Factory.CreateRibbonButton();
             this.文本矢量化 = this.Factory.CreateRibbonButton();
             this.部首描红 = this.Factory.CreateRibbonButton();
+            this.分解笔顺 = this.Factory.CreateRibbonButton();
             this.更多便捷 = this.Factory.CreateRibbonMenu();
             this.统一 = this.Factory.CreateRibbonSplitButton();
             this.统一大小 = this.Factory.CreateRibbonButton();
@@ -784,6 +785,7 @@ namespace 课件帮PPT助手
             this.文本.Items.Add(this.批量改字);
             this.文本.Items.Add(this.文本矢量化);
             this.文本.Items.Add(this.部首描红);
+            this.文本.Items.Add(this.分解笔顺);
             this.文本.Label = "文本";
             this.文本.Name = "文本";
             this.文本.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.splitButton2_Click);
@@ -857,6 +859,14 @@ namespace 课件帮PPT助手
             this.部首描红.ShowImage = true;
             this.部首描红.SuperTip = "请先使用学科工具中的”笔画拆分“对汉字笔画进行拆分，并将拆分出来的汉字笔画进行组合，然后选中该组合执行”部首描红“。";
             this.部首描红.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.部首描红_Click);
+            // 
+            // 分解笔顺
+            // 
+            this.分解笔顺.Image = ((System.Drawing.Image)(resources.GetObject("分解笔顺.Image")));
+            this.分解笔顺.Label = "分解笔顺（旧版）";
+            this.分解笔顺.Name = "分解笔顺";
+            this.分解笔顺.ShowImage = true;
+            this.分解笔顺.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.分解笔顺_Click);
             // 
             // 更多便捷
             // 
@@ -1398,6 +1408,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 清除超链接;
         internal RibbonButton 删除未用版式;
         internal RibbonButton 部首描红;
+        internal RibbonButton 分解笔顺;
     }
 
     partial class ThisRibbonCollection

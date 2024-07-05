@@ -508,7 +508,17 @@ namespace 课件帮PPT助手
                 if (shapesToGroup.Count > 0)
                 {
                     PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(shapesToGroup.Select(s => s.Name).ToArray());
-                    PowerPoint.Shape groupShape = shapeRange.Group();
+                    PowerPoint.Shape groupShape = null;
+
+                    try
+                    {
+                        groupShape = shapeRange.Group();
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("请勿重复分解同一汉字笔顺，如需继续请删除当前已创建的分解笔顺");
+                        return;
+                    }
 
                     // 手动缩放编组后的形状
                     float scaleFactor = 0.26f;

@@ -5095,9 +5095,19 @@ End Sub
                 }
                 return;
             }
+            else if (prefixName == "吏" && structure == "上下" && radical == "口" && radicalStrokeCount == 3)
+            {
+                FillSpecificShapes(groupShape, new int[] { 2, 3, 4 }, Color.Red);
+                return;
+            }
             else if (prefixName == "睾" && structure == "上下" && radical == "目" && radicalStrokeCount == 5)
             {
                 FillSpecificShapes(groupShape, new int[] { 2, 3, 4, 5, 6 }, Color.Red);
+                return;
+            }
+            else if (prefixName == "呙" && structure == "上下" && radical == "口" && radicalStrokeCount == 3)
+            {
+                FillFirstNShapes(groupShape, 3, Color.Red);
                 return;
             }
             else if ((prefixName == "夸" || prefixName == "夯" || prefixName == "奎" || prefixName == "奁") && structure == "上下" && radical == "大" && radicalStrokeCount == 3)
@@ -5457,6 +5467,11 @@ End Sub
                 FillLastNShapes(groupShape, 5, Color.Red);
                 return;
             }
+            else if (structure == "上下" && radical == "口" && radicalStrokeCount == 3)
+            {
+                FillLastNShapes(groupShape, 3, Color.Red);
+                return;
+            }
             else if (structure == "上下" && radical == "足" && radicalStrokeCount == 7)
             {
                 FillLastNShapes(groupShape, 7, Color.Red);
@@ -5638,6 +5653,99 @@ End Sub
                 }
 
                 return tempFilePath;
+            }
+        }
+
+        private void 分解笔顺_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                PowerPoint.Application app = Globals.ThisAddIn.Application;
+                Selection sel = app.ActiveWindow.Selection;
+
+                // 确保用户选中一个组合
+                if (sel.Type != PpSelectionType.ppSelectionShapes || sel.ShapeRange.Count != 1 || sel.ShapeRange[1].Type != MsoShapeType.msoGroup)
+                {
+                    MessageBox.Show("请选择需要填色分解的汉字笔画组合。");
+                    return;
+                }
+
+                PowerPoint.Shape groupShape = sel.ShapeRange[1];
+                PowerPoint.GroupShapes groupItems = groupShape.GroupItems;
+                int itemCount = groupItems.Count;
+
+                // Create new groups based on the number of items in the original group
+                List<PowerPoint.Shape> newGroups = new List<PowerPoint.Shape>();
+                for (int i = 0; i < itemCount; i++)
+                {
+                    // Duplicate the original group
+                    PowerPoint.Shape newGroup = groupShape.Duplicate()[1];
+                    newGroup.Left += (i + 1) * (groupShape.Width + 10); // Adjust position
+                    newGroups.Add(newGroup);
+                }
+
+                // Check if Ctrl key is pressed
+                bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+                // Set colors and remove borders based on the pattern
+                for (int i = 0; i < newGroups.Count; i++)
+                {
+                    PowerPoint.Shape newGroup = newGroups[i];
+                    PowerPoint.GroupShapes newGroupItems = newGroup.GroupItems;
+
+                    for (int j = 1; j <= itemCount; j++)
+                    {
+                        newGroupItems[j].Line.Visible = MsoTriState.msoFalse; // Remove border
+
+                        if (j <= i + 1)
+                        {
+                            newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
+                        }
+                        if (j == i + 1)
+                        {
+                            newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Red);
+                        }
+                        if (j > i + 1)
+                        {
+                            newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Gray);
+                        }
+                    }
+
+                    // 命名新组合
+                    newGroup.Name = $"【G】：分步第{i + 1}笔";
+
+                    // Adjust positions for two-row layout if Ctrl key is pressed
+                    if (isCtrlPressed)
+                    {
+                        int columns = (int)Math.Ceiling(newGroups.Count / 2.0);
+                        int row = i / columns;
+                        int column = i % columns;
+
+                        newGroup.Left = groupShape.Left + column * (groupShape.Width + 10);
+                        newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
+                    }
+                }
+
+                // 删除原来的组合形状
+                groupShape.Delete();
+
+                // 将所有新组合再次进行组合
+                if (newGroups.Count > 0)
+                {
+                    PowerPoint.ShapeRange newShapeRange = app.ActiveWindow.View.Slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
+                    PowerPoint.Shape finalGroupShape = newShapeRange.Group();
+
+                    // 对新组合执行水平居中对齐
+                    float slideCenter = app.ActiveWindow.View.Slide.Master.Width / 2;
+                    finalGroupShape.Left = slideCenter - finalGroupShape.Width / 2;
+
+                    // 取消组合
+                    finalGroupShape.Ungroup();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
     }
