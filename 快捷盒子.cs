@@ -391,22 +391,17 @@ namespace 课件帮PPT助手
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
-                if (package.Workbook.Worksheets.Count == 0)
+                foreach (var worksheet in package.Workbook.Worksheets)
                 {
-                    throw new Exception("没有查到相关信息。");
-                }
-
-                var worksheet = package.Workbook.Worksheets[0];
-
-                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
-                {
-                    if (worksheet.Cells[row, 1].Text == character)
+                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                     {
-                        return worksheet.Cells[row, 2].Text;
+                        if (worksheet.Cells[row, 1].Text == character)
+                        {
+                            return worksheet.Cells[row, 2].Text;
+                        }
                     }
                 }
             }
-
             return null;
         }
 
@@ -427,33 +422,28 @@ namespace 课件帮PPT助手
             var info = new HanziInfo();
 
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
-                if (package.Workbook.Worksheets.Count == 0)
+                foreach (var worksheet in package.Workbook.Worksheets)
                 {
-                    throw new Exception("没有查到相关信息。");
-                }
-
-                var worksheet = package.Workbook.Worksheets[0];
-
-                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
-                {
-                    if (worksheet.Cells[row, 1].Text == character)
+                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                     {
-                        info.Radical = worksheet.Cells[row, 3].Text;
-                        info.Structure = worksheet.Cells[row, 4].Text;
-                        info.Strokes = int.Parse(worksheet.Cells[row, 5].Text);
-                        info.RelatedWords = worksheet.Cells[row, 6].Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(word => word.Trim())
-                                                    .Where(word => !string.IsNullOrEmpty(word))
-                                                    .ToArray();
-                        break;
+                        if (worksheet.Cells[row, 1].Text == character)
+                        {
+                            info.Radical = worksheet.Cells[row, 5].Text;
+                            info.Structure = worksheet.Cells[row, 6].Text;
+                            info.Strokes = int.Parse(worksheet.Cells[row, 3].Text);
+                            info.RelatedWords = worksheet.Cells[row, 4].Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                .Select(word => word.Trim())
+                                                .Where(word => !string.IsNullOrEmpty(word))
+                                                .ToArray();
+                            return info;
+                        }
                     }
                 }
             }
 
-            return info;
+            return null;
         }
 
         private string ExtractResourceFile(string resourceName)
@@ -482,6 +472,7 @@ namespace 课件帮PPT助手
             public int Strokes { get; set; }
             public string[] RelatedWords { get; set; }
         }
+
 
         private void BatchRename(PowerPoint.Selection selection, string prefix)
         {

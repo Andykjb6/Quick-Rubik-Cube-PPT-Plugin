@@ -3118,14 +3118,16 @@ End Sub
             var hanziPinyinDictionary = new Dictionary<string, string>();
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
-                var worksheet = package.Workbook.Worksheets[0];
-                for (int row = 2; row <= worksheet.Dimension.End.Row; row++) // Assuming the first row is header
+                foreach (var worksheet in package.Workbook.Worksheets)
                 {
-                    string hanzi = worksheet.Cells[row, 1].Text;
-                    string pinyin = worksheet.Cells[row, 2].Text;
-                    if (!string.IsNullOrWhiteSpace(hanzi) && !string.IsNullOrWhiteSpace(pinyin))
+                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++) // Assuming the first row is header
                     {
-                        hanziPinyinDictionary[hanzi] = pinyin;
+                        string hanzi = worksheet.Cells[row, 1].Text;
+                        string pinyin = worksheet.Cells[row, 2].Text;
+                        if (!string.IsNullOrWhiteSpace(hanzi) && !string.IsNullOrWhiteSpace(pinyin))
+                        {
+                            hanziPinyinDictionary[hanzi] = pinyin;
+                        }
                     }
                 }
             }
@@ -4722,9 +4724,11 @@ End Sub
                     {
                         Slide slide = pptApp.ActiveWindow.View.Slide;
 
-                        // 在左上角插入一个小正方形
+                        // 在页面以外左上角插入一个小正方形
                         float squareSize = 50; // 正方形边长
-                        Shape squareShape = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, 0, 0, squareSize, squareSize);
+                        float leftPosition = -squareSize; // 移动到页面以外
+                        float topPosition = -squareSize;  // 移动到页面以外
+                        Shape squareShape = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, leftPosition, topPosition, squareSize, squareSize);
 
                         // 选中正方形和文本框
                         selectedShape.Select();
@@ -5078,20 +5082,6 @@ End Sub
 
                 // 删除原来的组合形状
                 groupShape.Delete();
-
-                // 将所有新组合再次进行组合
-                if (newGroups.Count > 0)
-                {
-                    PowerPoint.ShapeRange newShapeRange = app.ActiveWindow.View.Slide.Shapes.Range(newGroups.Select(s => s.Name).ToArray());
-                    PowerPoint.Shape finalGroupShape = newShapeRange.Group();
-
-                    // 对新组合执行水平居中对齐
-                    float slideCenter = app.ActiveWindow.View.Slide.Master.Width / 2;
-                    finalGroupShape.Left = slideCenter - finalGroupShape.Width / 2;
-
-                    // 取消组合
-                    finalGroupShape.Ungroup();
-                }
             }
             catch (Exception ex)
             {
@@ -5109,13 +5099,13 @@ End Sub
                 // 加载嵌入资源的Excel文件
                 string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
 
-                PowerPoint.Application app = Globals.ThisAddIn.Application;
-                PowerPoint.Selection sel = app.ActiveWindow.Selection;
+                Application app = Globals.ThisAddIn.Application;
+                Selection sel = app.ActiveWindow.Selection;
 
-                if (sel.Type == PowerPoint.PpSelectionType.ppSelectionShapes && sel.ShapeRange.Count == 1)
+                if (sel.Type == PpSelectionType.ppSelectionShapes && sel.ShapeRange.Count == 1)
                 {
-                    PowerPoint.Shape selectedShape = sel.ShapeRange[1];
-                    if (selectedShape.Type == Office.MsoShapeType.msoGroup)
+                    Shape selectedShape = sel.ShapeRange[1];
+                    if (selectedShape.Type == MsoShapeType.msoGroup)
                     {
                         // 获取组合中第一个形状的前缀名
                         var firstShapeName = selectedShape.GroupItems[1].Name;
@@ -5151,11 +5141,11 @@ End Sub
                                 PowerPoint.Shape subShape = selectedShape.GroupItems[i];
                                 if (strokeIndices.Contains(i))
                                 {
-                                    subShape.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                                    subShape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Red);
                                 }
                                 else
                                 {
-                                    subShape.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                                    subShape.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
                                 }
                             }
                         }
@@ -5194,7 +5184,6 @@ End Sub
             {
                 resourceStream.CopyTo(fileStream);
             }
-
             return tempFilePath;
         }
     }
