@@ -48,7 +48,8 @@ namespace 课件帮PPT助手
             this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
-            this.button7 = this.Factory.CreateRibbonButton();
+            this.关于我 = this.Factory.CreateRibbonSplitButton();
+            this.检查更新 = this.Factory.CreateRibbonButton();
             this.toggleTaskPaneButton = this.Factory.CreateRibbonButton();
             this.button5 = this.Factory.CreateRibbonButton();
             this.笔顺图解 = this.Factory.CreateRibbonButton();
@@ -175,7 +176,7 @@ namespace 课件帮PPT助手
             // 
             // group3
             // 
-            this.group3.Items.Add(this.button7);
+            this.group3.Items.Add(this.关于我);
             this.group3.Label = "关于我";
             this.group3.Name = "group3";
             // 
@@ -286,16 +287,22 @@ namespace 课件帮PPT助手
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
             // 
-            // button7
+            // 关于我
             // 
-            this.button7.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.button7.Image = ((System.Drawing.Image)(resources.GetObject("button7.Image")));
-            this.button7.Label = "Andy";
-            this.button7.Name = "button7";
-            this.button7.ScreenTip = "关于我：";
-            this.button7.ShowImage = true;
-            this.button7.SuperTip = "访问Andy老师创建的资源分享博客";
-            this.button7.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.button7_Click);
+            this.关于我.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.关于我.Image = ((System.Drawing.Image)(resources.GetObject("关于我.Image")));
+            this.关于我.Items.Add(this.检查更新);
+            this.关于我.Label = "快捷魔方";
+            this.关于我.Name = "关于我";
+            this.关于我.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.关于我_Click);
+            // 
+            // 检查更新
+            // 
+            this.检查更新.Image = ((System.Drawing.Image)(resources.GetObject("检查更新.Image")));
+            this.检查更新.Label = "检查更新";
+            this.检查更新.Name = "检查更新";
+            this.检查更新.ShowImage = true;
+            this.检查更新.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.检查更新_Click);
             // 
             // toggleTaskPaneButton
             // 
@@ -1307,7 +1314,6 @@ namespace 课件帮PPT助手
         internal RibbonButton button5;
         internal RibbonButton button6;
         internal RibbonGroup group3;
-        internal RibbonButton button7;
         internal RibbonButton button10;
         internal RibbonGroup group4;
         internal RibbonButton button11;
@@ -1411,6 +1417,8 @@ namespace 课件帮PPT助手
         internal RibbonButton 删除未用版式;
         internal RibbonButton 部首描红;
         internal RibbonButton 分解笔顺;
+        internal RibbonSplitButton 关于我;
+        internal RibbonButton 检查更新;
     }
 
     partial class ThisRibbonCollection

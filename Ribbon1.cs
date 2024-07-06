@@ -301,34 +301,6 @@ namespace 课件帮PPT助手
             }
         }
 
-        #region Helper methods
-
-        private static string getResourceText(string resourceName)
-        {
-            var asm = System.Reflection.Assembly.GetExecutingAssembly();
-            string[] resourceNames = asm.GetManifestResourceNames();
-            foreach (string resource in resourceNames)
-            {
-                if (string.Compare(resourceName, resource, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    using (StreamReader resourceReader = new StreamReader(asm.GetManifestResourceStream(resource)))
-                    {
-                        if (resourceReader != null)
-                        {
-                            return resourceReader.ReadToEnd();
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        #endregion
-
-        private void button7_Click(object sender, RibbonControlEventArgs e)
-        {
-            OpenWebPage("https://flowus.cn/andyblog/share/6da481ac-a57b-4214-9ce8-94273bbf2f45?code=GEH4ZC");
-        }
 
         private void OpenWebPage(string url)
         {
@@ -5185,6 +5157,16 @@ End Sub
                 resourceStream.CopyTo(fileStream);
             }
             return tempFilePath;
+        }
+
+        private void 关于我_Click(object sender, RibbonControlEventArgs e)
+        {
+            OpenWebPage("https://flowus.cn/andyblog/share/6da481ac-a57b-4214-9ce8-94273bbf2f45?code=GEH4ZC");
+        }
+
+        private void 检查更新_Click(object sender, RibbonControlEventArgs e)
+        {
+            OpenWebPage("https://flowus.cn/andyblog/share/d3ba4de8-3319-476e-ab7a-260bbf8add5b?code=GEH4ZC");
         }
     }
 }
