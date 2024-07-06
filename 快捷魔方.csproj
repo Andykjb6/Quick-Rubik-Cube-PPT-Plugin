@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.47</ApplicationVersion>
+    <ApplicationVersion>1.0.0.48</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
