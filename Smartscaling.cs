@@ -11,15 +11,15 @@ namespace 课件帮PPT助手
     {
         private Dictionary<int, (float Width, float Height, float Left, float Top, float LineWeight, float FontSize, float BevelTopWidth, float BevelTopHeight, float BevelBottomWidth, float BevelBottomHeight, float Depth, float ContourWidth, float ShadowBlur, float ShadowOffsetX, float ShadowOffsetY, float GlowRadius, float TextOutlineWeight, float TextBevelTopWidth, float TextBevelTopHeight, float TextBevelBottomWidth, float TextBevelBottomHeight, float TextDepth, float TextContourWidth, float TableBorderWidth)> originalSizes;
         private PowerPoint.Selection selection;
-        private PointF scaleCenter; // 用于存储当前缩放中心
-        private bool isHandlingCheckBoxEvent = false; // 防止递归调用
+        private PointF scaleCenter;
+        private bool isHandlingCheckBoxEvent = false;
 
         public SmartScalingForm()
         {
             InitializeComponent();
             SaveOriginalSizes();
             TogglePropertySettings();
-            scaleCenter = new PointF(0.5f, 0.5f); // 初始设置为中心点
+            scaleCenter = new PointF(0.5f, 0.5f);
         }
 
         private void SaveOriginalSizes()
@@ -94,7 +94,6 @@ namespace 课件帮PPT助手
 
                 if (shape.HasTable == Office.MsoTriState.msoTrue)
                 {
-                    // 获取表格边框宽度
                     PowerPoint.Table table = shape.Table;
                     tableBorderWidth = table.Cell(1, 1).Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight;
                 }
@@ -173,7 +172,6 @@ namespace 课件帮PPT助手
         {
             if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
             {
-                // 获取选中形状整体的边界框
                 float totalLeft = float.MaxValue;
                 float totalTop = float.MaxValue;
                 float totalRight = float.MinValue;
@@ -187,7 +185,6 @@ namespace 课件帮PPT助手
                     totalBottom = Math.Max(totalBottom, shape.Top + shape.Height);
                 }
 
-                // 计算中心点位置
                 float centerX = totalLeft + (totalRight - totalLeft) * scaleCenter.X;
                 float centerY = totalTop + (totalBottom - totalTop) * scaleCenter.Y;
 
@@ -200,7 +197,6 @@ namespace 课件帮PPT助手
 
         private void ScaleShape(PowerPoint.Shape shape, float scaleFactor, float centerX, float centerY)
         {
-            // 递归处理组合中的每个子对象
             if (shape.Type == Office.MsoShapeType.msoGroup)
             {
                 foreach (PowerPoint.Shape subShape in shape.GroupItems)
@@ -210,20 +206,16 @@ namespace 课件帮PPT助手
             }
             else
             {
-                // 获取原始大小和位置
                 if (!originalSizes.ContainsKey(shape.Id))
                 {
-                    // 如果没有找到，说明此形状是新添加的，忽略
                     return;
                 }
 
                 var originalSize = originalSizes[shape.Id];
 
-                // 缩放形状的大小
                 shape.Width = originalSize.Width * scaleFactor;
                 shape.Height = originalSize.Height * scaleFactor;
 
-                // 缩放位置
                 try
                 {
                     shape.Left = centerX + (originalSize.Left + originalSize.Width / 2 - centerX) * scaleFactor - shape.Width / 2;
@@ -237,7 +229,6 @@ namespace 课件帮PPT助手
 
                 if (shape.HasTable == Office.MsoTriState.msoTrue)
                 {
-                    // 缩放表格边框宽度
                     PowerPoint.Table table = shape.Table;
                     float newBorderWidth = originalSize.TableBorderWidth * scaleFactor;
                     for (int i = 1; i <= table.Rows.Count; i++)
@@ -253,25 +244,26 @@ namespace 课件帮PPT助手
                 }
                 else
                 {
-                    // 缩放线条属性
                     if (shape.Line != null && shape.Line.Visible == Office.MsoTriState.msoTrue)
                     {
-                        shape.Line.Weight = originalSize.LineWeight * scaleFactor;
+                        // Ensure the line weight is within a valid range
+                        if (originalSize.LineWeight > 0)
+                        {
+                            float newLineWeight = originalSize.LineWeight * scaleFactor;
+                            shape.Line.Weight = Math.Max(0.25f, Math.Min(6.0f, newLineWeight));
+                        }
                     }
 
-                    // 缩放字体大小及其相关属性
                     if (shape.TextFrame.HasText == Office.MsoTriState.msoTrue && checkBoxText.Checked)
                     {
                         var textRange = shape.TextFrame2.TextRange;
                         textRange.Font.Size = originalSize.FontSize * scaleFactor;
 
-                        // 缩放文本轮廓
                         if (originalSize.TextOutlineWeight > 0 && textRange.Font.Line.Visible == Office.MsoTriState.msoTrue)
                         {
                             textRange.Font.Line.Weight = originalSize.TextOutlineWeight * scaleFactor;
                         }
 
-                        // 缩放文本三维效果（如果存在）
                         var threeDFormat = shape.TextFrame2.ThreeD;
                         if (threeDFormat.Visible == Office.MsoTriState.msoTrue)
                         {
@@ -283,7 +275,6 @@ namespace 课件帮PPT助手
                             threeDFormat.ContourWidth = originalSize.TextContourWidth * scaleFactor;
                         }
 
-                        // 缩放文本阴影距离
                         if (textRange.Font.Shadow.Visible == Office.MsoTriState.msoTrue)
                         {
                             textRange.Font.Shadow.OffsetX = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetX * scaleFactor));
@@ -291,27 +282,23 @@ namespace 课件帮PPT助手
                         }
                     }
 
-                    // 缩放形状阴影模糊度
                     if (checkBoxShadow.Checked && shape.Shadow != null && shape.Shadow.Visible == Office.MsoTriState.msoTrue)
                     {
                         float newBlur = originalSize.ShadowBlur * scaleFactor;
-                        if (newBlur >= 0 && newBlur <= 100) // 设置合理范围
+                        if (newBlur >= 0 && newBlur <= 100)
                         {
                             shape.Shadow.Blur = newBlur;
                         }
 
-                        // 缩放形状阴影距离
                         shape.Shadow.OffsetX = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetX * scaleFactor));
                         shape.Shadow.OffsetY = Math.Max(0, Math.Min(200, originalSize.ShadowOffsetY * scaleFactor));
                     }
 
-                    // 缩放形状发光效果
                     if (checkBoxGlow.Checked && shape.Glow != null && shape.Glow.Radius > 0)
                     {
                         shape.Glow.Radius = originalSize.GlowRadius * scaleFactor;
                     }
 
-                    // 缩放形状三维效果
                     if (checkBox3D.Checked && shape.ThreeD != null && shape.ThreeD.Visible == Office.MsoTriState.msoTrue)
                     {
                         shape.ThreeD.BevelTopInset = originalSize.BevelTopWidth * scaleFactor;
@@ -357,7 +344,6 @@ namespace 课件帮PPT助手
 
                     if (shape.HasTable == Office.MsoTriState.msoTrue)
                     {
-                        // 恢复表格边框宽度
                         PowerPoint.Table table = shape.Table;
                         for (int i = 1; i <= table.Rows.Count; i++)
                         {
@@ -441,15 +427,14 @@ namespace 课件帮PPT助手
 
             if (isChecked)
             {
-                this.ClientSize = new System.Drawing.Size(482, 670); // 展开
+                this.ClientSize = new System.Drawing.Size(482, 670);
             }
             else
             {
-                this.ClientSize = new System.Drawing.Size(482, 135); // 折叠
+                this.ClientSize = new System.Drawing.Size(482, 135);
             }
         }
 
-        // 缩放中心复选框的事件处理
         private void checkBoxCenter_CheckedChanged(object sender, EventArgs e)
         {
             if (isHandlingCheckBoxEvent) return;
@@ -458,7 +443,7 @@ namespace 课件帮PPT助手
                 isHandlingCheckBoxEvent = true;
                 ResetCenterSelection();
                 checkBoxCenter.Checked = true;
-                scaleCenter = new PointF(0.5f, 0.5f); // 中心点
+                scaleCenter = new PointF(0.5f, 0.5f);
                 isHandlingCheckBoxEvent = false;
             }
         }
@@ -471,7 +456,7 @@ namespace 课件帮PPT助手
                 isHandlingCheckBoxEvent = true;
                 ResetCenterSelection();
                 checkBoxTopLeft.Checked = true;
-                scaleCenter = new PointF(0, 0); // 左上角
+                scaleCenter = new PointF(0, 0);
                 isHandlingCheckBoxEvent = false;
             }
         }
@@ -484,7 +469,7 @@ namespace 课件帮PPT助手
                 isHandlingCheckBoxEvent = true;
                 ResetCenterSelection();
                 checkBoxTopRight.Checked = true;
-                scaleCenter = new PointF(1, 0); // 右上角
+                scaleCenter = new PointF(1, 0);
                 isHandlingCheckBoxEvent = false;
             }
         }
@@ -497,7 +482,7 @@ namespace 课件帮PPT助手
                 isHandlingCheckBoxEvent = true;
                 ResetCenterSelection();
                 checkBoxBottomLeft.Checked = true;
-                scaleCenter = new PointF(0, 1); // 左下角
+                scaleCenter = new PointF(0, 1);
                 isHandlingCheckBoxEvent = false;
             }
         }
@@ -510,7 +495,7 @@ namespace 课件帮PPT助手
                 isHandlingCheckBoxEvent = true;
                 ResetCenterSelection();
                 checkBoxBottomRight.Checked = true;
-                scaleCenter = new PointF(1, 1); // 右下角
+                scaleCenter = new PointF(1, 1);
                 isHandlingCheckBoxEvent = false;
             }
         }
