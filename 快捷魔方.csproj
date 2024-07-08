@@ -668,6 +668,7 @@
       <DependentUpon>快捷盒子.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="汉字字典\汉字字典.xlsx" />
+    <None Include="汉字字典\汉字拼音信息库.xlsx" />
     <None Include="课件帮PPT助手_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
