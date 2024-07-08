@@ -5168,5 +5168,11 @@ End Sub
         {
             OpenWebPage("https://flowus.cn/andyblog/share/d3ba4de8-3319-476e-ab7a-260bbf8add5b?code=GEH4ZC");
         }
+
+        private void 文本转形状_Click(object sender, RibbonControlEventArgs e)
+        {
+          
+            
+        }
     }
 }

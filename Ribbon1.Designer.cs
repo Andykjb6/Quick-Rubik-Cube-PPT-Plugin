@@ -78,6 +78,7 @@ namespace 课件帮PPT助手
             this.Bgsub = this.Factory.CreateRibbonButton();
             this.矢量 = this.Factory.CreateRibbonSplitButton();
             this.Tmttool = this.Factory.CreateRibbonButton();
+            this.文本转形转 = this.Factory.CreateRibbonButton();
             this.矩形拆分 = this.Factory.CreateRibbonButton();
             this.Mosaic = this.Factory.CreateRibbonButton();
             this.ApplyFilter = this.Factory.CreateRibbonButton();
@@ -511,6 +512,7 @@ namespace 课件帮PPT助手
             this.在线工具.Image = ((System.Drawing.Image)(resources.GetObject("在线工具.Image")));
             this.在线工具.Items.Add(this.抠图);
             this.在线工具.Items.Add(this.矢量);
+            this.在线工具.Items.Add(this.文本转形转);
             this.在线工具.Label = "在线工具";
             this.在线工具.Name = "在线工具";
             // 
@@ -565,6 +567,14 @@ namespace 课件帮PPT助手
             this.Tmttool.Name = "Tmttool";
             this.Tmttool.ShowImage = true;
             this.Tmttool.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.位图转矢量图_Click);
+            // 
+            // 文本转形转
+            // 
+            this.文本转形转.Image = ((System.Drawing.Image)(resources.GetObject("文本转形转.Image")));
+            this.文本转形转.Label = "文本转形状";
+            this.文本转形转.Name = "文本转形转";
+            this.文本转形转.ShowImage = true;
+            this.文本转形转.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本转形状_Click);
             // 
             // 矩形拆分
             // 
@@ -1419,6 +1429,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 分解笔顺;
         internal RibbonSplitButton 关于我;
         internal RibbonButton 检查更新;
+        internal RibbonButton 文本转形转;
     }
 
     partial class ThisRibbonCollection
