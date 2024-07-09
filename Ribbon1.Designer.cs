@@ -151,6 +151,7 @@ namespace 课件帮PPT助手
             this.button20 = this.Factory.CreateRibbonButton();
             this.快捷盒子 = this.Factory.CreateRibbonButton();
             this.Replaceaudio = this.Factory.CreateRibbonButton();
+            this.汉字注意 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -378,6 +379,7 @@ namespace 课件帮PPT助手
             this.注音工具.Items.Add(this.button3);
             this.注音工具.Items.Add(this.便捷注音);
             this.注音工具.Items.Add(this.一键注音);
+            this.注音工具.Items.Add(this.汉字注意);
             this.注音工具.Items.Add(this.提取拼音);
             this.注音工具.Items.Add(this.精准注音);
             this.注音工具.Label = "注音工具";
@@ -1286,6 +1288,14 @@ namespace 课件帮PPT助手
             this.Replaceaudio.SuperTip = "选中音频图标，可直接替换原音频，并获取原音频的部分相同属性。";
             this.Replaceaudio.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Replaceaudio_Click);
             // 
+            // 汉字注意
+            // 
+            this.汉字注意.Image = ((System.Drawing.Image)(resources.GetObject("汉字注意.Image")));
+            this.汉字注意.Label = "长文注音";
+            this.汉字注意.Name = "汉字注意";
+            this.汉字注意.ShowImage = true;
+            this.汉字注意.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.汉字注意_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -1430,6 +1440,7 @@ namespace 课件帮PPT助手
         internal RibbonSplitButton 关于我;
         internal RibbonButton 检查更新;
         internal RibbonButton 文本转形转;
+        internal RibbonButton 汉字注意;
     }
 
     partial class ThisRibbonCollection

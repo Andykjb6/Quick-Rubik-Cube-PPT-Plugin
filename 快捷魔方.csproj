@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.49</ApplicationVersion>
+    <ApplicationVersion>1.0.0.50</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -232,6 +232,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -298,11 +299,13 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Tools.v4.0.Framework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -529,6 +532,9 @@
     <Compile Include="TransparencyForm.Designer.cs">
       <DependentUpon>TransparencyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ZhuYinEditor.xaml.cs">
+      <DependentUpon>ZhuYinEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="图形分割.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -668,7 +674,7 @@
       <DependentUpon>快捷盒子.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="汉字字典\汉字字典.xlsx" />
-    <None Include="汉字字典\汉字拼音信息库.xlsx" />
+    <EmbeddedResource Include="汉字字典\汉字拼音信息库.xlsx" />
     <None Include="课件帮PPT助手_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -747,6 +753,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Microsoft\Office\Interop\PowerPoint\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ZhuYinEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

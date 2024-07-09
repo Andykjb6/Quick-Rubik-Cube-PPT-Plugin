@@ -3040,7 +3040,7 @@ End Sub
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // 从嵌入资源中提取汉字字典Excel文件
-            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字字典.xlsx");
+            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字拼音信息库.xlsx");
 
             // 加载汉字拼音字典
             Dictionary<string, string> hanziPinyinDictionary = LoadHanziPinyinDictionary(filePath);
@@ -5173,6 +5173,12 @@ End Sub
         {
           
             
+        }
+
+        private void 汉字注意_Click(object sender, RibbonControlEventArgs e)
+        {
+            ZhuYinEditor editor = new ZhuYinEditor();
+            editor.Show();
         }
     }
 }

@@ -1,0 +1,15 @@
+﻿<Window x:Class="课件帮PPT助手.ZhuYinEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="注音编辑器" Height="450" Width="800">
+    <Grid>
+        <TextBox Name="InputTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10,10,10,250" TextChanged="InputTextBox_TextChanged"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10,250,10,70">
+            <StackPanel Name="StackPanelContent" Orientation="Horizontal" />
+        </ScrollViewer>
+        <Button Name="BtnDetectMultiPronunciations" Content="多音字检测" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,10" Width="100" Click="BtnDetectMultiPronunciations_Click"/>
+        <Button Name="BtnAddPronunciations" Content="注音" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Width="100" Click="BtnAddPronunciations_Click"/>
+        <Button Name="BtnImport" Content="导入" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="120,0,0,10" Width="100" Click="BtnImport_Click"/>
+        <Button Name="BtnExport" Content="导出" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,120,10" Width="100" Click="BtnExport_Click"/>
+    </Grid>
+</Window>
