@@ -735,6 +735,8 @@
     <Content Include="icon\选择结束.png" />
     <Content Include="icon\选择记录中.png" />
     <Content Include="icon\顶部对齐.png" />
+    <EmbeddedResource Include="Resources\汉字转拼音.ico" />
+    <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
     <EmbeddedResource Include="Resources\原始样机4.png" />

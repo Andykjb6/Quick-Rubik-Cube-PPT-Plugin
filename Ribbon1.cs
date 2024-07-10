@@ -5169,16 +5169,39 @@ End Sub
             OpenWebPage("https://flowus.cn/andyblog/share/d3ba4de8-3319-476e-ab7a-260bbf8add5b?code=GEH4ZC");
         }
 
-        private void 文本转形状_Click(object sender, RibbonControlEventArgs e)
-        {
-          
-            
-        }
 
         private void 汉字注意_Click(object sender, RibbonControlEventArgs e)
         {
             ZhuYinEditor editor = new ZhuYinEditor();
             editor.Show();
+        }
+
+        private void 形转路径_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+            PowerPoint.ShapeRange shapeRange = app.ActiveWindow.Selection.ShapeRange;
+
+            foreach (PowerPoint.Shape shape in shapeRange)
+            {
+                float shapeLeft = shape.Left;
+                float shapeTop = shape.Top;
+                float shapeWidth = shape.Width;
+                float shapeHeight = shape.Height;
+
+                if (shapeWidth > shapeHeight)
+                {
+                    // 横向线条
+                    slide.Shapes.AddLine(shapeLeft, shapeTop + shapeHeight / 2, shapeLeft + shapeWidth, shapeTop + shapeHeight / 2)
+                        .Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                }
+                else
+                {
+                    // 竖向线条
+                    slide.Shapes.AddLine(shapeLeft + shapeWidth / 2, shapeTop, shapeLeft + shapeWidth / 2, shapeTop + shapeHeight)
+                        .Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                }
+            }
         }
     }
 }

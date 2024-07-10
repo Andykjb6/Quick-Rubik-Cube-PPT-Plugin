@@ -241,6 +241,16 @@ namespace 课件帮PPT助手.Properties {
         }
         
         /// <summary>
+        ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Icon 汉字转拼音 {
+            get {
+                object obj = ResourceManager.GetObject("汉字转拼音", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
         internal static byte[] 生字教学 {
