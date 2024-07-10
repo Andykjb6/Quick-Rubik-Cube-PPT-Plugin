@@ -31,13 +31,50 @@ namespace 课件帮PPT助手
             // 添加右键菜单
             var contextMenu = new ContextMenu();
 
-            var setMaxCharsItem = new MenuItem { Header = "设置每行字符数" };
-            setMaxCharsItem.Click += SetMaxCharsItem_Click;
-            contextMenu.Items.Add(setMaxCharsItem);
+            var setMaxCharsMenuItem = new MenuItem { Header = "设置每行字符数" };
+            var maxCharsPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            var maxCharsSlider = new Slider
+            {
+                Minimum = 1,
+                Maximum = 100,
+                Value = MaxCharsPerLine,
+                Width = 100,
+                Margin = new Thickness(5, 0, 5, 0)
+            };
+            var maxCharsValueText = new TextBlock { Text = MaxCharsPerLine.ToString(), VerticalAlignment = VerticalAlignment.Center };
+            maxCharsSlider.ValueChanged += (sender, e) =>
+            {
+                MaxCharsPerLine = (int)e.NewValue;
+                maxCharsValueText.Text = MaxCharsPerLine.ToString();
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+            };
+            maxCharsPanel.Children.Add(maxCharsSlider);
+            maxCharsPanel.Children.Add(maxCharsValueText);
+            setMaxCharsMenuItem.Items.Add(maxCharsPanel);
 
-            var setOddLineSpacingItem = new MenuItem { Header = "设置文本行间距" };
-            setOddLineSpacingItem.Click += SetOddLineSpacingItem_Click;
-            contextMenu.Items.Add(setOddLineSpacingItem);
+            var setOddLineSpacingMenuItem = new MenuItem { Header = "设置文本行间距" };
+            var oddLineSpacingPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            var oddLineSpacingSlider = new Slider
+            {
+                Minimum = 0.5,
+                Maximum = 3,
+                Value = OddLineSpacing,
+                Width = 100,
+                Margin = new Thickness(5, 0, 5, 0)
+            };
+            var oddLineSpacingValueText = new TextBlock { Text = OddLineSpacing.ToString("F1"), VerticalAlignment = VerticalAlignment.Center };
+            oddLineSpacingSlider.ValueChanged += (sender, e) =>
+            {
+                OddLineSpacing = e.NewValue;
+                oddLineSpacingValueText.Text = OddLineSpacing.ToString("F1");
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+            };
+            oddLineSpacingPanel.Children.Add(oddLineSpacingSlider);
+            oddLineSpacingPanel.Children.Add(oddLineSpacingValueText);
+            setOddLineSpacingMenuItem.Items.Add(oddLineSpacingPanel);
+
+            contextMenu.Items.Add(setMaxCharsMenuItem);
+            contextMenu.Items.Add(setOddLineSpacingMenuItem);
 
             ContextMenu = contextMenu;
             MouseRightButtonUp += ZhuYinEditor_MouseRightButtonUp;
@@ -46,32 +83,6 @@ namespace 课件帮PPT助手
         private void ZhuYinEditor_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             ContextMenu.IsOpen = true;
-        }
-
-        private void SetMaxCharsItem_Click(object sender, RoutedEventArgs e)
-        {
-            var inputBox = new InputBox("设置每行最大字符数", MaxCharsPerLine.ToString());
-            if (inputBox.ShowDialog() == true)
-            {
-                if (int.TryParse(inputBox.InputText, out int maxChars))
-                {
-                    MaxCharsPerLine = maxChars;
-                    UpdateStackPanelContent(GetPlainTextFromRichTextBox());
-                }
-            }
-        }
-
-        private void SetOddLineSpacingItem_Click(object sender, RoutedEventArgs e)
-        {
-            var inputBox = new InputBox("设置段落文本行间距", OddLineSpacing.ToString());
-            if (inputBox.ShowDialog() == true)
-            {
-                if (double.TryParse(inputBox.InputText, out double spacing))
-                {
-                    OddLineSpacing = spacing;
-                    UpdateStackPanelContent(GetPlainTextFromRichTextBox());
-                }
-            }
         }
 
         private void LoadHanziPinyinDict()
@@ -174,11 +185,6 @@ namespace 课件帮PPT助手
                     }
                 }
             }
-        }
-
-        private void BtnAddPronunciations_Click(object sender, RoutedEventArgs e)
-        {
-            UpdateStackPanelContent(GetPlainTextFromRichTextBox());
         }
 
         private void BtnImport_Click(object sender, RoutedEventArgs e)
@@ -338,14 +344,14 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void RichTextBoxContent_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void RichTextBoxContent_TextChanged(object sender, TextChangedEventArgs e)
         {
             UpdateStackPanelContent(GetPlainTextFromRichTextBox());
         }
 
         private string GetPlainTextFromRichTextBox()
         {
-            System.Windows.Documents.TextRange textRange = new System.Windows.Documents.TextRange(RichTextBoxContent.Document.ContentStart, RichTextBoxContent.Document.ContentEnd);
+            TextRange textRange = new TextRange(RichTextBoxContent.Document.ContentStart, RichTextBoxContent.Document.ContentEnd);
             return textRange.Text;
         }
 
@@ -428,34 +434,5 @@ namespace 课件帮PPT助手
 
             return sp;
         }
-    }
-}
-
-// InputBox 窗口类，用于输入配置值
-public class InputBox : Window
-{
-    public string InputText { get; private set; }
-
-    public InputBox(string title, string defaultText)
-    {
-        Title = title;
-        WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        Width = 300;
-        Height = 150;
-
-        var stackPanel = new StackPanel();
-        var textBox = new TextBox { Text = defaultText, Margin = new Thickness(10) };
-        var button = new Button { Content = "确定", Margin = new Thickness(10), IsDefault = true };
-
-        button.Click += (sender, e) =>
-        {
-            InputText = textBox.Text;
-            DialogResult = true;
-        };
-
-        stackPanel.Children.Add(textBox);
-        stackPanel.Children.Add(button);
-
-        Content = stackPanel;
     }
 }

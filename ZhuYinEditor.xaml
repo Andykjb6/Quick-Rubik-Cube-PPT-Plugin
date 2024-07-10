@@ -1,7 +1,8 @@
 ﻿<Window x:Class="课件帮PPT助手.ZhuYinEditor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="注音编辑器" Height="450" Width="497" Icon="/课件帮PPT助手;component/Resources/汉字转拼音.ico">
+        Title="注音编辑器" Height="450" Width="497"
+        Icon="pack://application:,,,/课件帮PPT助手;component/Resources/汉字转拼音.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="425*"/>
@@ -12,7 +13,6 @@
             <StackPanel Name="StackPanelContent" Orientation="Vertical" />
         </ScrollViewer>
         <Button Name="BtnDetectMultiPronunciations" Content="多音字检测" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,12" Width="100" Click="BtnDetectMultiPronunciations_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF2629F4" Foreground="White" FontSize="14" FontWeight="Bold" Height="23"/>
-        <Button Name="BtnAddPronunciations" Content="注音" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,12" Width="100" Click="BtnAddPronunciations_Click" BorderBrush="#FF1E1EF3" BorderThickness="0,0,0,0" FontSize="14" Foreground="White" FontWeight="Bold" Background="#FF1E1EF3" Height="23" Grid.ColumnSpan="2"/>
         <Button Name="BtnImport" Content="导入" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="120,0,0,12" Width="100" Click="BtnImport_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF1E1EF3" FontSize="14" Foreground="White" FontWeight="Bold" Height="23"/>
         <Button Name="BtnExport" Content="导出" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,48,12" Width="100" Click="BtnExport_Click" BorderThickness="0,0,0,0" BorderBrush="#FF1E1EF3" Background="#FF1E1EF3" Foreground="White" FontSize="14" FontWeight="Bold" Height="23"/>
     </Grid>
