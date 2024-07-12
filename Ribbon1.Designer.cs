@@ -73,6 +73,7 @@ namespace 课件帮PPT助手
             this.Bgsub = this.Factory.CreateRibbonButton();
             this.矢量 = this.Factory.CreateRibbonSplitButton();
             this.Tmttool = this.Factory.CreateRibbonButton();
+            this.形转路径 = this.Factory.CreateRibbonButton();
             this.矩形拆分 = this.Factory.CreateRibbonButton();
             this.Mosaic = this.Factory.CreateRibbonButton();
             this.ApplyFilter = this.Factory.CreateRibbonButton();
@@ -151,7 +152,6 @@ namespace 课件帮PPT助手
             this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
-            this.形转路径 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -501,6 +501,14 @@ namespace 课件帮PPT助手
             this.Tmttool.Name = "Tmttool";
             this.Tmttool.ShowImage = true;
             this.Tmttool.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.位图转矢量图_Click);
+            // 
+            // 形转路径
+            // 
+            this.形转路径.Image = ((System.Drawing.Image)(resources.GetObject("形转路径.Image")));
+            this.形转路径.Label = "形转路径";
+            this.形转路径.Name = "形转路径";
+            this.形转路径.ShowImage = true;
+            this.形转路径.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.形转路径_Click);
             // 
             // 矩形拆分
             // 
@@ -1287,14 +1295,6 @@ namespace 课件帮PPT助手
             this.comboBox2.ShowImage = true;
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
-            // 
-            // 形转路径
-            // 
-            this.形转路径.Image = ((System.Drawing.Image)(resources.GetObject("形转路径.Image")));
-            this.形转路径.Label = "形转路径";
-            this.形转路径.Name = "形转路径";
-            this.形转路径.ShowImage = true;
-            this.形转路径.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.形转路径_Click);
             // 
             // Ribbon1
             // 

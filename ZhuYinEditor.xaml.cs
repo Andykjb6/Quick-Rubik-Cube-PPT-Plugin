@@ -247,17 +247,33 @@ namespace 课件帮PPT助手
             float hanziFontSize = 20;
             float pinyinFontSize = hanziFontSize * 0.5f;
 
-            // 填充表格内容
+            // 创建一个二维数组来存储表格内容
+            var content = new string[rowCount, columnCount];
+
             for (int i = 0; i < pinyinLines.Count; i++)
             {
                 for (int j = 0; j < pinyinLines[i].Count; j++)
                 {
-                    table.Cell(i * 2 + 1, j + 1).Shape.TextFrame.TextRange.Text = pinyinLines[i][j];
-                    table.Cell(i * 2 + 1, j + 1).Shape.TextFrame.TextRange.Font.Size = pinyinFontSize;
-                    table.Cell(i * 2 + 1, j + 1).Shape.TextFrame.TextRange.Font.Color.RGB = ColorTranslator.ToOle(System.Drawing.Color.Black);
+                    content[i * 2, j] = pinyinLines[i][j];
+                    content[i * 2 + 1, j] = hanziLines[i][j];
+                }
+            }
 
-                    table.Cell(i * 2 + 2, j + 1).Shape.TextFrame.TextRange.Text = hanziLines[i][j];
-                    table.Cell(i * 2 + 2, j + 1).Shape.TextFrame.TextRange.Font.Size = hanziFontSize;
+            // 批量设置表格内容
+            for (int row = 0; row < rowCount; row++)
+            {
+                for (int col = 0; col < columnCount; col++)
+                {
+                    var cell = table.Cell(row + 1, col + 1);
+                    if (!string.IsNullOrEmpty(content[row, col]))
+                    {
+                        cell.Shape.TextFrame.TextRange.Text = content[row, col];
+                        cell.Shape.TextFrame.TextRange.Font.Size = row % 2 == 0 ? pinyinFontSize : hanziFontSize;
+                        if (row % 2 == 0)
+                        {
+                            cell.Shape.TextFrame.TextRange.Font.Color.RGB = ColorTranslator.ToOle(System.Drawing.Color.Black);
+                        }
+                    }
                 }
             }
 
@@ -327,6 +343,7 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
 
         private void RichTextBoxContent_KeyDown(object sender, KeyEventArgs e)
         {
