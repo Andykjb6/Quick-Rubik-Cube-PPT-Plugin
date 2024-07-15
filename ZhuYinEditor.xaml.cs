@@ -29,7 +29,8 @@ namespace 课件帮PPT助手
             InitializeComponent();
             LoadHanziPinyinDict();
             LoadMultiPronunciationDict();
-            RichTextBoxContent.KeyDown += RichTextBoxContent_KeyDown;
+            TextBoxLeft.KeyDown += TextBoxLeft_KeyDown;
+            TextBoxLeft.TextChanged += TextBoxLeft_TextChanged;
 
             // 添加右键菜单
             var contextMenu = new ContextMenu();
@@ -49,7 +50,7 @@ namespace 课件帮PPT助手
             {
                 MaxCharsPerLine = (int)e.NewValue;
                 maxCharsValueText.Text = MaxCharsPerLine.ToString();
-                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                UpdateStackPanelContent(GetPlainTextFromTextBox());
             };
             maxCharsPanel.Children.Add(maxCharsSlider);
             maxCharsPanel.Children.Add(maxCharsValueText);
@@ -70,7 +71,7 @@ namespace 课件帮PPT助手
             {
                 OddLineSpacing = e.NewValue;
                 oddLineSpacingValueText.Text = OddLineSpacing.ToString("F1");
-                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                UpdateStackPanelContent(GetPlainTextFromTextBox());
             };
             oddLineSpacingPanel.Children.Add(oddLineSpacingSlider);
             oddLineSpacingPanel.Children.Add(oddLineSpacingValueText);
@@ -217,8 +218,7 @@ namespace 课件帮PPT助手
             if (openFileDialog.ShowDialog() == true)
             {
                 string text = File.ReadAllText(openFileDialog.FileName);
-                RichTextBoxContent.Document.Blocks.Clear();
-                RichTextBoxContent.Document.Blocks.Add(new Paragraph(new Run(text)));
+                TextBoxLeft.Text = text;
             }
         }
 
@@ -234,7 +234,7 @@ namespace 课件帮PPT助手
 
         private void CorrectPronunciations()
         {
-            string text = GetPlainTextFromRichTextBox();
+            string text = GetPlainTextFromTextBox();
             UpdateStackPanelContentWithCorrection(text);
         }
 
@@ -434,31 +434,29 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void RichTextBoxContent_KeyDown(object sender, KeyEventArgs e)
+        private void TextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
             {
                 e.Handled = true;
-                var caretPosition = RichTextBoxContent.CaretPosition;
-                var tabRun = new Run("　　"); // 中文全角空格，等宽于汉字
-                RichTextBoxContent.CaretPosition.InsertTextInRun(tabRun.Text);
-                RichTextBoxContent.CaretPosition = caretPosition.GetNextInsertionPosition(LogicalDirection.Forward);
+                int caretIndex = TextBoxLeft.CaretIndex;
+                TextBoxLeft.Text = TextBoxLeft.Text.Insert(caretIndex, "　　"); // 插入中文全角空格
+                TextBoxLeft.CaretIndex = caretIndex + 2;
             }
             else if (e.Key == Key.Enter)
             {
-                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                UpdateStackPanelContent(GetPlainTextFromTextBox());
             }
         }
 
-        private void RichTextBoxContent_TextChanged(object sender, TextChangedEventArgs e)
+        private void TextBoxLeft_TextChanged(object sender, TextChangedEventArgs e)
         {
-            UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+            UpdateStackPanelContent(GetPlainTextFromTextBox());
         }
 
-        private string GetPlainTextFromRichTextBox()
+        private string GetPlainTextFromTextBox()
         {
-            TextRange textRange = new TextRange(RichTextBoxContent.Document.ContentStart, RichTextBoxContent.Document.ContentEnd);
-            return textRange.Text;
+            return TextBoxLeft.Text;
         }
 
         private void UpdateStackPanelContent(string text)
