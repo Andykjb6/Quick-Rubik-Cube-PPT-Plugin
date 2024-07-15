@@ -21,14 +21,14 @@ namespace 课件帮PPT助手
         private int MaxCharsPerLine = DefaultMaxCharsPerLine;
         private double OddLineSpacing = DefaultOddLineSpacing;
         private Dictionary<string, List<string>> hanziPinyinDict;
-        private Dictionary<string, string> lightToneDict;
+        private Dictionary<string, string> multiPronunciationDict;
         private List<TextBlock> multiPronunciationTextBlocks = new List<TextBlock>();
 
         public ZhuYinEditor()
         {
             InitializeComponent();
             LoadHanziPinyinDict();
-            LoadLightToneDict();
+            LoadMultiPronunciationDict();
             RichTextBoxContent.KeyDown += RichTextBoxContent_KeyDown;
 
             // 添加右键菜单
@@ -107,19 +107,19 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void LoadLightToneDict()
+        private void LoadMultiPronunciationDict()
         {
-            lightToneDict = new Dictionary<string, string>();
-            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.轻读音词语.txt");
+            multiPronunciationDict = new Dictionary<string, string>();
+            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.多音字词语.txt");
 
-            foreach (var line in File.ReadAllLines(filePath))
+            foreach (var line in File.ReadLines(filePath))
             {
                 var parts = line.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
-                    string word = StandardizeText(parts[0]);
-                    string pinyin = StandardizeText(parts[1]);
-                    lightToneDict[word] = pinyin;
+                    string word = parts[0].Trim();
+                    string pinyin = parts[1].Trim();
+                    multiPronunciationDict[word] = pinyin;
                 }
             }
         }
@@ -207,28 +207,6 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void BtnCorrectLightTone_Click(object sender, RoutedEventArgs e)
-        {
-            CorrectLightTone();
-        }
-
-        private void CorrectLightTone()
-        {
-            foreach (var line in StackPanelContent.Children.OfType<StackPanel>())
-            {
-                foreach (var charPanel in line.Children.OfType<StackPanel>())
-                {
-                    var hanziBlock = charPanel.Children[1] as TextBlock;
-                    string hanzi = hanziBlock.Text;
-                    if (lightToneDict.ContainsKey(hanzi))
-                    {
-                        var pinyinBlock = charPanel.Children[0] as TextBlock;
-                        pinyinBlock.Text = lightToneDict[hanzi];
-                    }
-                }
-            }
-        }
-
         private void BtnImport_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -247,6 +225,76 @@ namespace 课件帮PPT助手
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
             ExportToTable();
+        }
+
+        private void BtnCorrectPronunciations_Click(object sender, RoutedEventArgs e)
+        {
+            CorrectPronunciations();
+        }
+
+        private void CorrectPronunciations()
+        {
+            string text = GetPlainTextFromRichTextBox();
+            UpdateStackPanelContentWithCorrection(text);
+        }
+
+        private void UpdateStackPanelContentWithCorrection(string text)
+        {
+            StackPanelContent.Children.Clear();
+            StackPanel currentLinePanel = CreateNewLinePanel();
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    StackPanelContent.Children.Add(currentLinePanel);
+                    currentLinePanel = CreateNewLinePanel();
+                }
+                else
+                {
+                    if (currentLinePanel.Children.Count >= MaxCharsPerLine)
+                    {
+                        StackPanelContent.Children.Add(currentLinePanel);
+                        currentLinePanel = CreateNewLinePanel();
+                    }
+
+                    string wordToCheck = GetWordToCheck(text, i);
+                    if (multiPronunciationDict.ContainsKey(wordToCheck))
+                    {
+                        string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
+                        for (int j = 0; j < wordToCheck.Length; j++)
+                        {
+                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
+                            currentLinePanel.Children.Add(sp);
+                        }
+                        i += wordToCheck.Length - 1;
+                    }
+                    else
+                    {
+                        StackPanel sp = CreateCharacterPanel(text[i]);
+                        currentLinePanel.Children.Add(sp);
+                    }
+                }
+            }
+
+            StackPanelContent.Children.Add(currentLinePanel);
+        }
+
+        private string GetWordToCheck(string text, int startIndex)
+        {
+            int maxLength = multiPronunciationDict.Keys.Max(k => k.Length);
+            for (int length = maxLength; length > 0; length--)
+            {
+                if (startIndex + length <= text.Length)
+                {
+                    string substring = text.Substring(startIndex, length);
+                    if (multiPronunciationDict.ContainsKey(substring))
+                    {
+                        return substring;
+                    }
+                }
+            }
+            return text[startIndex].ToString();
         }
 
         private void ExportToTable()
@@ -451,7 +499,7 @@ namespace 课件帮PPT助手
             };
         }
 
-        private StackPanel CreateCharacterPanel(char c)
+        private StackPanel CreateCharacterPanel(char c, string pinyin = null)
         {
             StackPanel sp = new StackPanel
             {
@@ -461,11 +509,11 @@ namespace 课件帮PPT助手
             };
 
             // 处理汉字和标点符号
-            if (hanziPinyinDict.ContainsKey(c.ToString()))
+            if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
             {
                 sp.Children.Add(new TextBlock
                 {
-                    Text = hanziPinyinDict[c.ToString()][0],
+                    Text = pinyin ?? hanziPinyinDict[c.ToString()][0],
                     FontSize = 10,
                     TextAlignment = TextAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center
@@ -491,11 +539,6 @@ namespace 课件帮PPT助手
             });
 
             return sp;
-        }
-
-        private string StandardizeText(string text)
-        {
-            return text.Trim().ToLowerInvariant();
         }
     }
 }

@@ -737,7 +737,6 @@
     <Content Include="icon\顶部对齐.png" />
     <Resource Include="Resources\汉字转拼音.ico" />
     <EmbeddedResource Include="汉字字典\多音字词语.txt" />
-    <EmbeddedResource Include="汉字字典\轻读音词语.txt" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
