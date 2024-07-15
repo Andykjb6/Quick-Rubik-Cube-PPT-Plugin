@@ -464,9 +464,9 @@ namespace 课件帮PPT助手
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
 
-            foreach (char c in text)
+            for (int i = 0; i < text.Length; i++)
             {
-                if (c == '\n')
+                if (text[i] == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
@@ -479,7 +479,7 @@ namespace 课件帮PPT助手
                         currentLinePanel = CreateNewLinePanel();
                     }
 
-                    StackPanel sp = CreateCharacterPanel(c);
+                    StackPanel sp = CreateCharacterPanel(text[i], i < text.Length - 1 ? text[i + 1].ToString() : null);
                     currentLinePanel.Children.Add(sp);
                 }
             }
@@ -497,7 +497,7 @@ namespace 课件帮PPT助手
             };
         }
 
-        private StackPanel CreateCharacterPanel(char c, string pinyin = null)
+        private StackPanel CreateCharacterPanel(char c, string nextChar = null)
         {
             StackPanel sp = new StackPanel
             {
@@ -505,6 +505,9 @@ namespace 课件帮PPT助手
                 Margin = new Thickness(5, 0, 5, 0),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
+
+            // 特殊处理汉字“一”
+            string pinyin = c == '一' && nextChar != null ? GetCorrectPinyinForYi(nextChar) : null;
 
             // 处理汉字和标点符号
             if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
@@ -537,6 +540,27 @@ namespace 课件帮PPT助手
             });
 
             return sp;
+        }
+
+        private string GetCorrectPinyinForYi(string nextChar)
+        {
+            string pinyin = "yi";
+            if (hanziPinyinDict.ContainsKey(nextChar))
+            {
+                var pinyins = hanziPinyinDict[nextChar];
+                foreach (var p in pinyins)
+                {
+                    if ("āēīōūǖáéíóúǘǎěǐǒǔǚ".Any(x => p.Contains(x)))
+                    {
+                        return "yì";
+                    }
+                    if ("àèìòùǜ".Any(x => p.Contains(x)))
+                    {
+                        return "yí";
+                    }
+                }
+            }
+            return pinyin;
         }
     }
 }
