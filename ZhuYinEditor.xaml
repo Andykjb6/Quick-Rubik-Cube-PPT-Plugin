@@ -5,15 +5,16 @@
         Icon="pack://application:,,,/课件帮PPT助手;component/Resources/汉字转拼音.ico">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="425*"/>
-            <ColumnDefinition Width="72*"/>
+            <ColumnDefinition Width="495*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <RichTextBox Name="RichTextBoxContent" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10,10,10,270" TextChanged="RichTextBoxContent_TextChanged" Grid.ColumnSpan="2"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,166,10,52" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.ColumnSpan="2">
+        <RichTextBox Name="RichTextBoxContent" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10,10,3,270" TextChanged="RichTextBoxContent_TextChanged"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,166,3,52" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1">
             <StackPanel Name="StackPanelContent" Orientation="Vertical" />
         </ScrollViewer>
         <Button Name="BtnDetectMultiPronunciations" Content="多音字检测" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,12" Width="100" Click="BtnDetectMultiPronunciations_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF2629F4" Foreground="White" FontSize="14" FontWeight="Bold" Height="23"/>
-        <Button Name="BtnImport" Content="导入" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="120,0,0,12" Width="100" Click="BtnImport_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF1E1EF3" FontSize="14" Foreground="White" FontWeight="Bold" Height="23"/>
+        <Button Name="BtnCorrectPronunciations" Content="智能纠正" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="120,0,0,12" Width="100" Click="BtnCorrectPronunciations_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF2629F4" Foreground="White" FontSize="14" FontWeight="Bold" Height="23"/>
+        <Button Name="BtnImport" Content="导入" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="230,0,0,12" Width="100" Click="BtnImport_Click" Background="#FF1E1EF3" BorderThickness="0,0,0,0" BorderBrush="#FF1E1EF3" FontSize="14" Foreground="White" FontWeight="Bold" Height="23"/>
         <Button Name="BtnExport" Content="导出" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,48,12" Width="100" Click="BtnExport_Click" BorderThickness="0,0,0,0" BorderBrush="#FF1E1EF3" Background="#FF1E1EF3" Foreground="White" FontSize="14" FontWeight="Bold" Height="23"/>
     </Grid>
 </Window>
