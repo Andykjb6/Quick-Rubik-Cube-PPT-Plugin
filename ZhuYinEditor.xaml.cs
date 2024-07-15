@@ -124,7 +124,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
         private string ExtractEmbeddedResource(string resourceName)
         {
             string tempFile = Path.Combine(Path.GetTempPath(), resourceName);
@@ -236,55 +235,66 @@ namespace 课件帮PPT助手
         private void CorrectPronunciations()
         {
             string text = GetPlainTextFromRichTextBox();
-            foreach (var word in multiPronunciationDict.Keys)
-            {
-                if (text.Contains(word))
-                {
-                    string pinyin = multiPronunciationDict[word];
-                    ApplyPinyinToWord(word, pinyin);
-                }
-            }
+            UpdateStackPanelContentWithCorrection(text);
         }
 
-
-        private void ApplyPinyinToWord(string word, string pinyin)
+        private void UpdateStackPanelContentWithCorrection(string text)
         {
-            // 清除现有的内容
             StackPanelContent.Children.Clear();
-            string text = GetPlainTextFromRichTextBox();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            int wordIndex = 0;
 
-            while (wordIndex < text.Length)
+            for (int i = 0; i < text.Length; i++)
             {
-                string subText = text.Substring(wordIndex, Math.Min(word.Length, text.Length - wordIndex));
-                if (subText == word)
-                {
-                    var pinyinArray = pinyin.Split(' ');
-
-                    for (int i = 0; i < word.Length; i++)
-                    {
-                        StackPanel sp = CreateCharacterPanel(word[i], pinyinArray[i]);
-                        currentLinePanel.Children.Add(sp);
-                    }
-
-                    wordIndex += word.Length;
-                }
-                else
-                {
-                    StackPanel sp = CreateCharacterPanel(text[wordIndex]);
-                    currentLinePanel.Children.Add(sp);
-                    wordIndex++;
-                }
-
-                if (currentLinePanel.Children.Count >= MaxCharsPerLine || wordIndex >= text.Length)
+                if (text[i] == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
                 }
+                else
+                {
+                    if (currentLinePanel.Children.Count >= MaxCharsPerLine)
+                    {
+                        StackPanelContent.Children.Add(currentLinePanel);
+                        currentLinePanel = CreateNewLinePanel();
+                    }
+
+                    string wordToCheck = GetWordToCheck(text, i);
+                    if (multiPronunciationDict.ContainsKey(wordToCheck))
+                    {
+                        string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
+                        for (int j = 0; j < wordToCheck.Length; j++)
+                        {
+                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
+                            currentLinePanel.Children.Add(sp);
+                        }
+                        i += wordToCheck.Length - 1;
+                    }
+                    else
+                    {
+                        StackPanel sp = CreateCharacterPanel(text[i]);
+                        currentLinePanel.Children.Add(sp);
+                    }
+                }
             }
 
             StackPanelContent.Children.Add(currentLinePanel);
+        }
+
+        private string GetWordToCheck(string text, int startIndex)
+        {
+            int maxLength = multiPronunciationDict.Keys.Max(k => k.Length);
+            for (int length = maxLength; length > 0; length--)
+            {
+                if (startIndex + length <= text.Length)
+                {
+                    string substring = text.Substring(startIndex, length);
+                    if (multiPronunciationDict.ContainsKey(substring))
+                    {
+                        return substring;
+                    }
+                }
+            }
+            return text[startIndex].ToString();
         }
 
         private void ExportToTable()
