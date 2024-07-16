@@ -123,6 +123,19 @@ namespace 课件帮PPT助手
                     multiPronunciationDict[word] = pinyin;
                 }
             }
+
+            // 加载汉字词语文件
+            string hanziPhraseFilePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字词语库.txt");
+            foreach (var line in File.ReadLines(hanziPhraseFilePath))
+            {
+                var parts = line.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                {
+                    string phrase = parts[0].Trim();
+                    string pinyin = parts[1].Trim();
+                    multiPronunciationDict[phrase] = pinyin;
+                }
+            }
         }
 
         private string ExtractEmbeddedResource(string resourceName)
@@ -482,8 +495,22 @@ namespace 课件帮PPT助手
                     string previousChar = i > 0 ? text[i - 1].ToString() : null;
                     string nextChar = i < text.Length - 1 ? text[i + 1].ToString() : null;
 
-                    StackPanel sp = CreateCharacterPanel(text[i], previousChar, nextChar);
-                    currentLinePanel.Children.Add(sp);
+                    string wordToCheck = GetWordToCheck(text, i);
+                    if (multiPronunciationDict.ContainsKey(wordToCheck))
+                    {
+                        string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
+                        for (int j = 0; j < wordToCheck.Length; j++)
+                        {
+                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], j > 0 ? wordToCheck[j - 1].ToString() : null, j < wordToCheck.Length - 1 ? wordToCheck[j + 1].ToString() : null);
+                            currentLinePanel.Children.Add(sp);
+                        }
+                        i += wordToCheck.Length - 1;
+                    }
+                    else
+                    {
+                        StackPanel sp = CreateCharacterPanel(text[i], previousChar, nextChar);
+                        currentLinePanel.Children.Add(sp);
+                    }
                 }
             }
 
