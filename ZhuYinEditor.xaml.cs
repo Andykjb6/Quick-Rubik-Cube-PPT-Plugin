@@ -32,7 +32,6 @@ namespace 课件帮PPT助手
             TextBoxLeft.KeyDown += TextBoxLeft_KeyDown;
             TextBoxLeft.TextChanged += TextBoxLeft_TextChanged;
 
-            // 添加右键菜单
             var contextMenu = new ContextMenu();
 
             var setMaxCharsMenuItem = new MenuItem { Header = "设置每行字符数" };
@@ -242,8 +241,9 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
+            int i = 0;
 
-            for (int i = 0; i < text.Length; i++)
+            while (i < text.Length)
             {
                 if (text[i] == '\n')
                 {
@@ -258,6 +258,7 @@ namespace 课件帮PPT助手
                         currentLinePanel = CreateNewLinePanel();
                     }
 
+                    // Special character processing logic
                     string wordToCheck = GetWordToCheck(text, i);
                     if (multiPronunciationDict.ContainsKey(wordToCheck))
                     {
@@ -267,17 +268,61 @@ namespace 课件帮PPT助手
                             StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                             currentLinePanel.Children.Add(sp);
                         }
-                        i += wordToCheck.Length - 1;
+                        i += wordToCheck.Length - 1; // Skip processed characters
                     }
                     else
                     {
-                        StackPanel sp = CreateCharacterPanel(text[i]);
+                        char currentChar = text[i];
+                        string pinyin = GetCorrectedPinyin(text, i);
+                        StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
+                    }
+                }
+                i++;
+            }
+
+            StackPanelContent.Children.Add(currentLinePanel);
+        }
+
+        private string GetCorrectedPinyin(string text, int index)
+        {
+            char currentChar = text[index];
+
+            if (currentChar == '哇')
+            {
+                if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                {
+                    return "wa";
+                }
+            }
+
+            if (currentChar == '一')
+            {
+                if (index < text.Length - 1)
+                {
+                    string nextCharPinyin = hanziPinyinDict.ContainsKey(text[index + 1].ToString()) ?
+                                             hanziPinyinDict[text[index + 1].ToString()][0] : string.Empty;
+                    if (nextCharPinyin.IndexOfAny(new char[] { 'ā', 'ō', 'ē', 'ī', 'ū', 'ǖ', 'á', 'ó', 'é', 'ú', 'ǘ', 'ǎ', 'ǒ', 'ě', 'ǐ', 'ǔ', 'ǚ' }) >= 0)
+                    {
+                        return "yì";
+                    }
+                    else if (nextCharPinyin.IndexOfAny(new char[] { 'à', 'ò', 'è', 'ì', 'ù', 'ǜ' }) >= 0)
+                    {
+                        return "yí";
+                    }
+                }
+
+                if (index > 0)
+                {
+                    char prevChar = text[index - 1];
+                    if (new string[] { "第", "其", "专", "任", "唯", "无", "万", "不", "如", "非", "为", "若", "归", "说", "十", "合", "惟", "当", "失", "挂" }.Contains(prevChar.ToString()))
+                    {
+                        return "yī";
                     }
                 }
             }
 
-            StackPanelContent.Children.Add(currentLinePanel);
+            return hanziPinyinDict.ContainsKey(currentChar.ToString()) ? hanziPinyinDict[currentChar.ToString()][0] : string.Empty;
         }
 
         private string GetWordToCheck(string text, int startIndex)
@@ -337,7 +382,6 @@ namespace 课件帮PPT助手
             float hanziFontSize = 20;
             float pinyinFontSize = hanziFontSize * 0.5f;
 
-            // 创建一个二维数组来存储表格内容
             var content = new string[rowCount, columnCount];
 
             for (int i = 0; i < pinyinLines.Count; i++)
@@ -349,7 +393,6 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // 批量设置表格内容
             for (int row = 0; row < rowCount; row++)
             {
                 for (int col = 0; col < columnCount; col++)
@@ -367,7 +410,6 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // 删除空白列
             for (int col = columnCount; col >= 1; col--)
             {
                 bool isColumnEmpty = true;
@@ -386,7 +428,6 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // 删除空白行
             for (int row = rowCount; row >= 1; row--)
             {
                 bool isRowEmpty = true;
@@ -405,7 +446,6 @@ namespace 课件帮PPT助手
                 }
             }
 
-            // 应用样式和属性
             for (int row = 1; row <= rowCount; row++)
             {
                 for (int col = 1; col <= columnCount; col++)
@@ -440,7 +480,7 @@ namespace 课件帮PPT助手
             {
                 e.Handled = true;
                 int caretIndex = TextBoxLeft.CaretIndex;
-                TextBoxLeft.Text = TextBoxLeft.Text.Insert(caretIndex, "　　"); // 插入中文全角空格
+                TextBoxLeft.Text = TextBoxLeft.Text.Insert(caretIndex, "　　");
                 TextBoxLeft.CaretIndex = caretIndex + 2;
             }
             else if (e.Key == Key.Enter)
@@ -506,7 +546,6 @@ namespace 课件帮PPT助手
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
-            // 处理汉字和标点符号
             if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
             {
                 sp.Children.Add(new TextBlock
