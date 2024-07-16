@@ -264,14 +264,14 @@ namespace 课件帮PPT助手
                         string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
                         for (int j = 0; j < wordToCheck.Length; j++)
                         {
-                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], null, text.Length > i + wordToCheck.Length ? text[i + wordToCheck.Length].ToString() : null);
+                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                             currentLinePanel.Children.Add(sp);
                         }
                         i += wordToCheck.Length - 1;
                     }
                     else
                     {
-                        StackPanel sp = CreateCharacterPanel(text[i], i > 0 ? text[i - 1].ToString() : null, i < text.Length - 1 ? text[i + 1].ToString() : null);
+                        StackPanel sp = CreateCharacterPanel(text[i]);
                         currentLinePanel.Children.Add(sp);
                     }
                 }
@@ -464,9 +464,9 @@ namespace 课件帮PPT助手
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
 
-            for (int i = 0; i < text.Length; i++)
+            foreach (char c in text)
             {
-                if (text[i] == '\n')
+                if (c == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
@@ -479,10 +479,7 @@ namespace 课件帮PPT助手
                         currentLinePanel = CreateNewLinePanel();
                     }
 
-                    string previousChar = i > 0 ? text[i - 1].ToString() : null;
-                    string nextChar = i < text.Length - 1 ? text[i + 1].ToString() : null;
-
-                    StackPanel sp = CreateCharacterPanel(text[i], previousChar, nextChar);
+                    StackPanel sp = CreateCharacterPanel(c);
                     currentLinePanel.Children.Add(sp);
                 }
             }
@@ -500,7 +497,7 @@ namespace 课件帮PPT助手
             };
         }
 
-        private StackPanel CreateCharacterPanel(char c, string previousChar = null, string nextChar = null)
+        private StackPanel CreateCharacterPanel(char c, string pinyin = null)
         {
             StackPanel sp = new StackPanel
             {
@@ -508,21 +505,6 @@ namespace 课件帮PPT助手
                 Margin = new Thickness(5, 0, 5, 0),
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-
-            // 特殊处理汉字“一”
-            string pinyin = null;
-            if (c == '一')
-            {
-                // 判断前一个字符是否为“第、其、专、任”中的一个
-                if (previousChar != null && "第其专任".Contains(previousChar))
-                {
-                    pinyin = "yī";
-                }
-                else if (nextChar != null)
-                {
-                    pinyin = GetCorrectPinyinForYi(nextChar);
-                }
-            }
 
             // 处理汉字和标点符号
             if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
@@ -555,27 +537,6 @@ namespace 课件帮PPT助手
             });
 
             return sp;
-        }
-
-        private string GetCorrectPinyinForYi(string nextChar)
-        {
-            string pinyin = "yi";
-            if (hanziPinyinDict.ContainsKey(nextChar))
-            {
-                var pinyins = hanziPinyinDict[nextChar];
-                foreach (var p in pinyins)
-                {
-                    if ("āēīōūǖáéíóúǘǎěǐǒǔǚ".Any(x => p.Contains(x)))
-                    {
-                        return "yì";
-                    }
-                    if ("àèìòùǜ".Any(x => p.Contains(x)))
-                    {
-                        return "yí";
-                    }
-                }
-            }
-            return pinyin;
         }
     }
 }
