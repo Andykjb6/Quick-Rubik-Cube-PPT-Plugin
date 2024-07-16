@@ -14,7 +14,8 @@
         </Grid.ColumnDefinitions>
 
         <!-- 左侧TextBox -->
-        <TextBox Name="TextBoxLeft" Grid.Row="0" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="10" TextChanged="TextBoxLeft_TextChanged"/>
+        <TextBox Name="TextBoxLeft" Grid.Row="0" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10" TextChanged="TextBoxLeft_TextChanged"/>
 
         <!-- 右侧包含RichTextBox的StackPanel -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="0" Grid.Column="1">
