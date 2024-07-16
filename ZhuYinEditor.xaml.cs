@@ -20,7 +20,6 @@ namespace 课件帮PPT助手
         private const double DefaultOddLineSpacing = 1.2;
         private int MaxCharsPerLine = DefaultMaxCharsPerLine;
         private double OddLineSpacing = DefaultOddLineSpacing;
-        private double TextBoxFontSize = 20.0; // 与StackPanelContent中的字符大小保持一致
         private Dictionary<string, List<string>> hanziPinyinDict;
         private Dictionary<string, string> multiPronunciationDict;
         private List<TextBlock> multiPronunciationTextBlocks = new List<TextBlock>();
@@ -32,7 +31,6 @@ namespace 课件帮PPT助手
             LoadMultiPronunciationDict();
             TextBoxLeft.KeyDown += TextBoxLeft_KeyDown;
             TextBoxLeft.TextChanged += TextBoxLeft_TextChanged;
-            TextBoxLeft.FontSize = TextBoxFontSize; // 设置TextBox字体大小
 
             var contextMenu = new ContextMenu();
 

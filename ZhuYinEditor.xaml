@@ -32,12 +32,12 @@
 
         <!-- 左侧TextBox -->
         <TextBox Name="TextBoxLeft" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10,10,10,10" TextChanged="TextBoxLeft_TextChanged"/>
+                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10,10,10,10" TextChanged="TextBoxLeft_TextChanged" FontSize="20" TextAlignment="Justify"/>
 
         <!-- 右侧包含RichTextBox的StackPanel -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="1" Grid.Column="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">
             <StackPanel Name="StackPanelContent" Orientation="Vertical">
-                <RichTextBox Name="RichTextBoxContent" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10" FontSize="8" BorderBrush="{x:Null}" Background="#FFF9FAFD"/>
+                <RichTextBox Name="RichTextBoxContent" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10" FontSize="8" BorderBrush="{x:Null}" Background="#FFF9FAFD" HorizontalScrollBarVisibility="Auto"/>
             </StackPanel>
         </ScrollViewer>
 
