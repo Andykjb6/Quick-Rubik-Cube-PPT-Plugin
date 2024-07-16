@@ -739,8 +739,6 @@
     <Resource Include="Resources\汉字转拼音.ico" />
     <EmbeddedResource Include="汉字字典\多音字词语.txt" />
     <EmbeddedResource Include="检测结果查询.png" />
-    <Resource Include="Resources\1错别字纠正.png" />
-    <Resource Include="Resources\检测结果查询.png" />
     <Resource Include="Resources\多音字检测.png" />
     <Resource Include="Resources\导入.png" />
     <Resource Include="Resources\智能纠正.png" />
