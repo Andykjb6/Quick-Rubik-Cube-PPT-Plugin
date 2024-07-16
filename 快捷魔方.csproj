@@ -725,6 +725,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="1错别字纠正.png" />
     <Content Include="icon\search_icon.png" />
     <Content Include="icon\中心对齐.png" />
     <Content Include="icon\右对齐.png" />
@@ -737,6 +738,9 @@
     <Content Include="icon\顶部对齐.png" />
     <Resource Include="Resources\汉字转拼音.ico" />
     <EmbeddedResource Include="汉字字典\多音字词语.txt" />
+    <Content Include="导入 %281%29.png" />
+    <Content Include="导出.png" />
+    <Content Include="检测结果查询.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
