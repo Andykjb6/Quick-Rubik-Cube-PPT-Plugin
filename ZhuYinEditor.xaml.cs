@@ -20,6 +20,7 @@ namespace 课件帮PPT助手
         private const double DefaultOddLineSpacing = 1.2;
         private int MaxCharsPerLine = DefaultMaxCharsPerLine;
         private double OddLineSpacing = DefaultOddLineSpacing;
+        private double TextBoxFontSize = 20.0; // 与StackPanelContent中的字符大小保持一致
         private Dictionary<string, List<string>> hanziPinyinDict;
         private Dictionary<string, string> multiPronunciationDict;
         private List<TextBlock> multiPronunciationTextBlocks = new List<TextBlock>();
@@ -31,6 +32,7 @@ namespace 课件帮PPT助手
             LoadMultiPronunciationDict();
             TextBoxLeft.KeyDown += TextBoxLeft_KeyDown;
             TextBoxLeft.TextChanged += TextBoxLeft_TextChanged;
+            TextBoxLeft.FontSize = TextBoxFontSize; // 设置TextBox字体大小
 
             var contextMenu = new ContextMenu();
 
@@ -241,14 +243,15 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            int i = 0;
+            bool newLine = true;
 
-            while (i < text.Length)
+            for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
+                    newLine = true;
                 }
                 else
                 {
@@ -256,9 +259,9 @@ namespace 课件帮PPT助手
                     {
                         StackPanelContent.Children.Add(currentLinePanel);
                         currentLinePanel = CreateNewLinePanel();
+                        newLine = true;
                     }
 
-                    // Special character processing logic
                     string wordToCheck = GetWordToCheck(text, i);
                     if (multiPronunciationDict.ContainsKey(wordToCheck))
                     {
@@ -268,7 +271,7 @@ namespace 课件帮PPT助手
                             StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                             currentLinePanel.Children.Add(sp);
                         }
-                        i += wordToCheck.Length - 1; // Skip processed characters
+                        i += wordToCheck.Length - 1;
                     }
                     else
                     {
@@ -277,11 +280,14 @@ namespace 课件帮PPT助手
                         StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
                     }
+                    newLine = false;
                 }
-                i++;
             }
 
-            StackPanelContent.Children.Add(currentLinePanel);
+            if (!newLine)
+            {
+                StackPanelContent.Children.Add(currentLinePanel);
+            }
         }
 
         private string GetCorrectedPinyin(string text, int index)
@@ -503,6 +509,7 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
+            bool newLine = true;
 
             foreach (char c in text)
             {
@@ -510,6 +517,7 @@ namespace 课件帮PPT助手
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
+                    newLine = true;
                 }
                 else
                 {
@@ -517,14 +525,19 @@ namespace 课件帮PPT助手
                     {
                         StackPanelContent.Children.Add(currentLinePanel);
                         currentLinePanel = CreateNewLinePanel();
+                        newLine = true;
                     }
 
                     StackPanel sp = CreateCharacterPanel(c);
                     currentLinePanel.Children.Add(sp);
+                    newLine = false;
                 }
             }
 
-            StackPanelContent.Children.Add(currentLinePanel);
+            if (!newLine)
+            {
+                StackPanelContent.Children.Add(currentLinePanel);
+            }
         }
 
         private StackPanel CreateNewLinePanel()
@@ -533,7 +546,7 @@ namespace 课件帮PPT助手
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(0, 5, 0, 0)
+                Margin = new Thickness(0, 0, 0, 0)
             };
         }
 

@@ -5,8 +5,8 @@
         Icon="pack://application:,,,/课件帮PPT助手;component/Resources/汉字转拼音.ico">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" MinHeight="38" />
+            <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -15,42 +15,34 @@
         </Grid.ColumnDefinitions>
 
         <!-- 工具栏按钮 -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.ColumnSpan="2" Margin="5">
-            <Button Name="BtnImport" Content="" Width="28" Height="28" Click="BtnImport_Click" BorderThickness="0" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="/课件帮PPT助手;component/导入 (1).png"/>
-                </Button.Background>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Margin="5,5,0,5" Width="112">
+            <Button Name="BtnImport" Width="28" Height="28" Click="BtnImport_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/导入.png" Stretch="Uniform" ToolTip="导入txt文件"/>
             </Button>
-            <Button Name="BtnExport" Content="" Width="28" Height="28" Click="BtnExport_Click" BorderThickness="0" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="/课件帮PPT助手;component/导出.png"/>
-                </Button.Background>
+            <Button Name="BtnExport" Width="28" Height="28" Click="BtnExport_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/导出.png" Stretch="Uniform" ToolTip="导出注音文本到幻灯片"/>
             </Button>
-            <Button Name="BtnDetectMultiPronunciations" Content="" Width="28" Height="28" Click="BtnDetectMultiPronunciations_Click" BorderThickness="0" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="/课件帮PPT助手;component/检测结果查询.png"/>
-                </Button.Background>
+            <Button Name="BtnDetectMultiPronunciations" Width="28" Height="28" Click="BtnDetectMultiPronunciations_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/多音字检测.png" Stretch="Uniform" ToolTip="多音字检测"/>
             </Button>
-            <Button x:Name="BtnCorrectPronunciations" Content="" Width="28" Height="28" Click="BtnCorrectPronunciations_Click" BorderThickness="0" Foreground="White">
-                <Button.Background>
-                    <ImageBrush ImageSource="/课件帮PPT助手;component/Resources/1错别字纠正.png"/>
-                </Button.Background>
+            <Button x:Name="BtnCorrectPronunciations" Width="28" Height="28" Click="BtnCorrectPronunciations_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/智能纠正.png" Stretch="Uniform" ToolTip="智能纠音"/>
             </Button>
         </StackPanel>
 
         <!-- 左侧TextBox -->
         <TextBox Name="TextBoxLeft" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10" TextChanged="TextBoxLeft_TextChanged"/>
+                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10,10,10,10" TextChanged="TextBoxLeft_TextChanged"/>
 
         <!-- 右侧包含RichTextBox的StackPanel -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="1" Grid.Column="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="1" Grid.Column="1">
             <StackPanel Name="StackPanelContent" Orientation="Vertical">
                 <RichTextBox Name="RichTextBoxContent" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10" FontSize="8" BorderBrush="{x:Null}" Background="#FFF9FAFD"/>
             </StackPanel>
         </ScrollViewer>
 
         <!-- 底部按钮（保留以防未来需要） -->
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="0" Width="0">
             <!-- 如果不需要底部按钮可以将此部分删除 -->
         </StackPanel>
     </Grid>
