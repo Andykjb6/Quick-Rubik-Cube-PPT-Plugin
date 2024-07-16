@@ -523,6 +523,14 @@ namespace 课件帮PPT助手
                     pinyin = GetCorrectPinyinForYi(nextChar);
                 }
             }
+            // 特殊处理汉字“哇”
+            else if (c == '哇')
+            {
+                if (previousChar != null && nextChar != null && previousChar == nextChar)
+                {
+                    pinyin = "wa";
+                }
+            }
 
             // 处理汉字和标点符号
             if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
