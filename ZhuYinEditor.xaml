@@ -33,7 +33,7 @@
             </Button>
             <Button x:Name="BtnCorrectPronunciations" Content="" Width="28" Height="28" Click="BtnCorrectPronunciations_Click" BorderThickness="0" Foreground="White">
                 <Button.Background>
-                    <ImageBrush ImageSource="/课件帮PPT助手;component/1错别字纠正.png"/>
+                    <ImageBrush ImageSource="/课件帮PPT助手;component/Resources/1错别字纠正.png"/>
                 </Button.Background>
             </Button>
         </StackPanel>

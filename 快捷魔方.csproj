@@ -742,6 +742,9 @@
     <EmbeddedResource Include="导出.png" />
     <EmbeddedResource Include="检测结果查询.png" />
     <EmbeddedResource Include="Resources\1错别字纠正.png" />
+    <EmbeddedResource Include="Resources\导入 %281%29.png" />
+    <EmbeddedResource Include="Resources\导出.png" />
+    <EmbeddedResource Include="Resources\检测结果查询.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
