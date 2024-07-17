@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- 工具栏按钮 -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Margin="5,5,0,5" Width="112">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Margin="5,5,0,5">
             <Button Name="BtnImport" Width="28" Height="28" Click="BtnImport_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/导入.png" Stretch="Uniform" ToolTip="导入txt文件"/>
             </Button>
@@ -27,6 +27,16 @@
             </Button>
             <Button x:Name="BtnCorrectPronunciations" Width="28" Height="28" Click="BtnCorrectPronunciations_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/智能纠正.png" Stretch="Uniform" ToolTip="智能纠音"/>
+            </Button>
+            <!-- 新增文本对齐按钮 -->
+            <Button Name="BtnAlignLeft" Width="28" Height="28" Click="BtnAlignLeft_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/左对齐.png" Stretch="Uniform" ToolTip="左对齐"/>
+            </Button>
+            <Button Name="BtnAlignCenter" Width="28" Height="28" Click="BtnAlignCenter_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/居中对齐.png" Stretch="Uniform" ToolTip="居中对齐"/>
+            </Button>
+            <Button Name="BtnAlignJustify" Width="28" Height="28" Click="BtnAlignJustify_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/两端对齐.png" Stretch="Uniform" ToolTip="两端对齐"/>
             </Button>
         </StackPanel>
 

@@ -241,15 +241,14 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            bool newLine = true;
+            int i = 0;
 
-            for (int i = 0; i < text.Length; i++)
+            while (i < text.Length)
             {
                 if (text[i] == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
-                    newLine = true;
                 }
                 else
                 {
@@ -257,9 +256,9 @@ namespace 课件帮PPT助手
                     {
                         StackPanelContent.Children.Add(currentLinePanel);
                         currentLinePanel = CreateNewLinePanel();
-                        newLine = true;
                     }
 
+                    // Special character processing logic
                     string wordToCheck = GetWordToCheck(text, i);
                     if (multiPronunciationDict.ContainsKey(wordToCheck))
                     {
@@ -269,7 +268,7 @@ namespace 课件帮PPT助手
                             StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                             currentLinePanel.Children.Add(sp);
                         }
-                        i += wordToCheck.Length - 1;
+                        i += wordToCheck.Length - 1; // Skip processed characters
                     }
                     else
                     {
@@ -278,14 +277,11 @@ namespace 课件帮PPT助手
                         StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
                     }
-                    newLine = false;
                 }
+                i++;
             }
 
-            if (!newLine)
-            {
-                StackPanelContent.Children.Add(currentLinePanel);
-            }
+            StackPanelContent.Children.Add(currentLinePanel);
         }
 
         private string GetCorrectedPinyin(string text, int index)
@@ -507,7 +503,6 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            bool newLine = true;
 
             foreach (char c in text)
             {
@@ -515,7 +510,6 @@ namespace 课件帮PPT助手
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
-                    newLine = true;
                 }
                 else
                 {
@@ -523,19 +517,14 @@ namespace 课件帮PPT助手
                     {
                         StackPanelContent.Children.Add(currentLinePanel);
                         currentLinePanel = CreateNewLinePanel();
-                        newLine = true;
                     }
 
                     StackPanel sp = CreateCharacterPanel(c);
                     currentLinePanel.Children.Add(sp);
-                    newLine = false;
                 }
             }
 
-            if (!newLine)
-            {
-                StackPanelContent.Children.Add(currentLinePanel);
-            }
+            StackPanelContent.Children.Add(currentLinePanel);
         }
 
         private StackPanel CreateNewLinePanel()
@@ -544,7 +533,7 @@ namespace 课件帮PPT助手
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(0, 0, 0, 0)
+                Margin = new Thickness(0, 5, 0, 0)
             };
         }
 
@@ -587,6 +576,33 @@ namespace 课件帮PPT助手
             });
 
             return sp;
+        }
+
+        private void BtnAlignLeft_Click(object sender, RoutedEventArgs e)
+        {
+            TextBoxLeft.TextAlignment = TextAlignment.Left;
+            foreach (StackPanel linePanel in StackPanelContent.Children)
+            {
+                linePanel.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+        }
+
+        private void BtnAlignCenter_Click(object sender, RoutedEventArgs e)
+        {
+            TextBoxLeft.TextAlignment = TextAlignment.Center;
+            foreach (StackPanel linePanel in StackPanelContent.Children)
+            {
+                linePanel.HorizontalAlignment = HorizontalAlignment.Center;
+            }
+        }
+
+        private void BtnAlignJustify_Click(object sender, RoutedEventArgs e)
+        {
+            TextBoxLeft.TextAlignment = TextAlignment.Justify;
+            foreach (StackPanel linePanel in StackPanelContent.Children)
+            {
+                linePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            }
         }
     }
 }

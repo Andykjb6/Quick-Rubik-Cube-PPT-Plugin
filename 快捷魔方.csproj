@@ -743,6 +743,9 @@
     <Resource Include="Resources\导入.png" />
     <Resource Include="Resources\智能纠正.png" />
     <Resource Include="Resources\导出.png" />
+    <Resource Include="Resources\两端对齐.png" />
+    <Resource Include="Resources\居中对齐.png" />
+    <Resource Include="Resources\左对齐.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
