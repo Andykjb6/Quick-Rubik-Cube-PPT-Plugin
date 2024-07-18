@@ -22,15 +22,17 @@ namespace 课件帮PPT助手
         private double OddLineSpacing = DefaultOddLineSpacing;
         private Dictionary<string, List<string>> hanziPinyinDict;
         private Dictionary<string, string> multiPronunciationDict;
+        private Dictionary<int, string> correctedPinyinDict = new Dictionary<int, string>();
         private List<TextBlock> multiPronunciationTextBlocks = new List<TextBlock>();
+        private bool isTextChangedEventHandlerActive = true;
 
         public ZhuYinEditor()
         {
             InitializeComponent();
             LoadHanziPinyinDict();
             LoadMultiPronunciationDict();
-            TextBoxLeft.KeyDown += TextBoxLeft_KeyDown;
-            TextBoxLeft.TextChanged += TextBoxLeft_TextChanged;
+            RichTextBoxLeft.KeyDown += RichTextBoxLeft_KeyDown;
+            RichTextBoxLeft.TextChanged += RichTextBoxLeft_TextChanged;
 
             var contextMenu = new ContextMenu();
 
@@ -49,7 +51,8 @@ namespace 课件帮PPT助手
             {
                 MaxCharsPerLine = (int)e.NewValue;
                 maxCharsValueText.Text = MaxCharsPerLine.ToString();
-                UpdateStackPanelContent(GetPlainTextFromTextBox());
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                SyncAlignmentWithPinyin();
             };
             maxCharsPanel.Children.Add(maxCharsSlider);
             maxCharsPanel.Children.Add(maxCharsValueText);
@@ -70,7 +73,8 @@ namespace 课件帮PPT助手
             {
                 OddLineSpacing = e.NewValue;
                 oddLineSpacingValueText.Text = OddLineSpacing.ToString("F1");
-                UpdateStackPanelContent(GetPlainTextFromTextBox());
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                SyncAlignmentWithPinyin();
             };
             oddLineSpacingPanel.Children.Add(oddLineSpacingSlider);
             oddLineSpacingPanel.Children.Add(oddLineSpacingValueText);
@@ -202,6 +206,13 @@ namespace 课件帮PPT助手
                     {
                         var pinyinBlock = charPanel.Children[0] as TextBlock;
                         pinyinBlock.Text = menuItem.Header.ToString();
+
+                        // 保存纠正后的拼音到字典
+                        int index = GetCharacterIndex(charPanel);
+                        if (index >= 0)
+                        {
+                            correctedPinyinDict[index] = pinyinBlock.Text;
+                        }
                     }
                 }
             }
@@ -217,7 +228,8 @@ namespace 课件帮PPT助手
             if (openFileDialog.ShowDialog() == true)
             {
                 string text = File.ReadAllText(openFileDialog.FileName);
-                TextBoxLeft.Text = text;
+                RichTextBoxLeft.Document.Blocks.Clear();
+                RichTextBoxLeft.Document.Blocks.Add(new Paragraph(new Run(text)));
             }
         }
 
@@ -229,12 +241,14 @@ namespace 课件帮PPT助手
         private void BtnCorrectPronunciations_Click(object sender, RoutedEventArgs e)
         {
             CorrectPronunciations();
+            SyncAlignmentWithPinyin();
         }
 
         private void CorrectPronunciations()
         {
-            string text = GetPlainTextFromTextBox();
+            string text = GetPlainTextFromRichTextBox();
             UpdateStackPanelContentWithCorrection(text);
+            SyncAlignmentWithPinyin();
         }
 
         private void UpdateStackPanelContentWithCorrection(string text)
@@ -258,7 +272,6 @@ namespace 课件帮PPT助手
                         currentLinePanel = CreateNewLinePanel();
                     }
 
-                    // Special character processing logic
                     string wordToCheck = GetWordToCheck(text, i);
                     if (multiPronunciationDict.ContainsKey(wordToCheck))
                     {
@@ -267,8 +280,12 @@ namespace 课件帮PPT助手
                         {
                             StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                             currentLinePanel.Children.Add(sp);
+
+                            // 保存纠正后的拼音到字典
+                            int index = GetCharacterIndex(sp);
+                            correctedPinyinDict[index] = pinyinArray[j];
                         }
-                        i += wordToCheck.Length - 1; // Skip processed characters
+                        i += wordToCheck.Length - 1;
                     }
                     else
                     {
@@ -276,6 +293,10 @@ namespace 课件帮PPT助手
                         string pinyin = GetCorrectedPinyin(text, i);
                         StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
+
+                        // 保存纠正后的拼音到字典
+                        int index = GetCharacterIndex(sp);
+                        correctedPinyinDict[index] = pinyin;
                     }
                 }
                 i++;
@@ -474,29 +495,36 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void TextBoxLeft_KeyDown(object sender, KeyEventArgs e)
+        private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
             {
                 e.Handled = true;
-                int caretIndex = TextBoxLeft.CaretIndex;
-                TextBoxLeft.Text = TextBoxLeft.Text.Insert(caretIndex, "　　");
-                TextBoxLeft.CaretIndex = caretIndex + 2;
+                RichTextBoxLeft.CaretPosition.InsertTextInRun("　　");
             }
             else if (e.Key == Key.Enter)
             {
-                UpdateStackPanelContent(GetPlainTextFromTextBox());
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                SyncAlignmentWithPinyin();
             }
         }
 
-        private void TextBoxLeft_TextChanged(object sender, TextChangedEventArgs e)
+        private void RichTextBoxLeft_TextChanged(object sender, TextChangedEventArgs e)
         {
-            UpdateStackPanelContent(GetPlainTextFromTextBox());
+            if (isTextChangedEventHandlerActive)
+            {
+                isTextChangedEventHandlerActive = false;
+
+                UpdateStackPanelContent(GetPlainTextFromRichTextBox());
+                SyncAlignmentWithPinyin();
+
+                isTextChangedEventHandlerActive = true;
+            }
         }
 
-        private string GetPlainTextFromTextBox()
+        private string GetPlainTextFromRichTextBox()
         {
-            return TextBoxLeft.Text;
+            return new TextRange(RichTextBoxLeft.Document.ContentStart, RichTextBoxLeft.Document.ContentEnd).Text;
         }
 
         private void UpdateStackPanelContent(string text)
@@ -504,8 +532,9 @@ namespace 课件帮PPT助手
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
 
-            foreach (char c in text)
+            for (int i = 0; i < text.Length; i++)
             {
+                char c = text[i];
                 if (c == '\n')
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
@@ -520,11 +549,24 @@ namespace 课件帮PPT助手
                     }
 
                     StackPanel sp = CreateCharacterPanel(c);
+
+                    // 使用纠正后的拼音
+                    if (correctedPinyinDict.ContainsKey(i))
+                    {
+                        (sp.Children[0] as TextBlock).Text = correctedPinyinDict[i];
+                    }
+                    else
+                    {
+                        string pinyin = GetCorrectedPinyin(text, i);
+                        (sp.Children[0] as TextBlock).Text = pinyin;
+                    }
+
                     currentLinePanel.Children.Add(sp);
                 }
             }
 
             StackPanelContent.Children.Add(currentLinePanel);
+            SyncAlignmentWithPinyin();
         }
 
         private StackPanel CreateNewLinePanel()
@@ -546,26 +588,13 @@ namespace 课件帮PPT助手
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
-            if (pinyin != null || hanziPinyinDict.ContainsKey(c.ToString()))
+            sp.Children.Add(new TextBlock
             {
-                sp.Children.Add(new TextBlock
-                {
-                    Text = pinyin ?? hanziPinyinDict[c.ToString()][0],
-                    FontSize = 10,
-                    TextAlignment = TextAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                });
-            }
-            else
-            {
-                sp.Children.Add(new TextBlock
-                {
-                    Text = string.Empty,
-                    FontSize = 10,
-                    TextAlignment = TextAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center
-                });
-            }
+                Text = pinyin ?? string.Empty,
+                FontSize = 10,
+                TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
+            });
 
             sp.Children.Add(new TextBlock
             {
@@ -578,31 +607,94 @@ namespace 课件帮PPT助手
             return sp;
         }
 
+        private int GetCharacterIndex(StackPanel charPanel)
+        {
+            var parentPanel = charPanel.Parent as StackPanel;
+            int parentIndex = StackPanelContent.Children.IndexOf(parentPanel);
+            int charIndex = parentPanel.Children.IndexOf(charPanel);
+            return parentIndex * MaxCharsPerLine + charIndex;
+        }
+
+        private void AlignText(TextAlignment alignment)
+        {
+            TextSelection selection = RichTextBoxLeft.Selection;
+            if (selection.IsEmpty)
+            {
+                foreach (Paragraph paragraph in RichTextBoxLeft.Document.Blocks.OfType<Paragraph>())
+                {
+                    paragraph.TextAlignment = alignment;
+                }
+                foreach (StackPanel linePanel in StackPanelContent.Children)
+                {
+                    linePanel.HorizontalAlignment = ConvertToHorizontalAlignment(alignment);
+                }
+            }
+            else
+            {
+                ApplyAlignmentToParagraphs(alignment);
+            }
+            SyncAlignmentWithPinyin();
+        }
+
+        private void ApplyAlignmentToParagraphs(TextAlignment alignment)
+        {
+            TextPointer start = RichTextBoxLeft.Selection.Start;
+            TextPointer end = RichTextBoxLeft.Selection.End;
+
+            while (start.CompareTo(end) < 0)
+            {
+                Paragraph paragraph = start.Paragraph;
+                if (paragraph != null)
+                {
+                    paragraph.TextAlignment = alignment;
+                }
+                start = start.GetNextContextPosition(LogicalDirection.Forward);
+            }
+        }
+
+        private HorizontalAlignment ConvertToHorizontalAlignment(TextAlignment alignment)
+        {
+            switch (alignment)
+            {
+                case TextAlignment.Left:
+                    return HorizontalAlignment.Left;
+                case TextAlignment.Center:
+                    return HorizontalAlignment.Center;
+                case TextAlignment.Right:
+                    return HorizontalAlignment.Right;
+                case TextAlignment.Justify:
+                    return HorizontalAlignment.Stretch;
+                default:
+                    return HorizontalAlignment.Left;
+            }
+        }
+
+        private void SyncAlignmentWithPinyin()
+        {
+            // 根据左侧RichTextBox的段落对齐方式，同步右侧拼音区的对齐方式
+            var leftParagraphs = RichTextBoxLeft.Document.Blocks.OfType<Paragraph>().ToList();
+            var rightPanels = StackPanelContent.Children.OfType<StackPanel>().ToList();
+
+            for (int i = 0; i < leftParagraphs.Count && i < rightPanels.Count; i++)
+            {
+                var alignment = leftParagraphs[i].TextAlignment;
+                rightPanels[i].HorizontalAlignment = ConvertToHorizontalAlignment(alignment);
+            }
+        }
+
         private void BtnAlignLeft_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxLeft.TextAlignment = TextAlignment.Left;
-            foreach (StackPanel linePanel in StackPanelContent.Children)
-            {
-                linePanel.HorizontalAlignment = HorizontalAlignment.Left;
-            }
+            AlignText(TextAlignment.Left);
         }
 
         private void BtnAlignCenter_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxLeft.TextAlignment = TextAlignment.Center;
-            foreach (StackPanel linePanel in StackPanelContent.Children)
-            {
-                linePanel.HorizontalAlignment = HorizontalAlignment.Center;
-            }
+            AlignText(TextAlignment.Center);
         }
 
         private void BtnAlignJustify_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxLeft.TextAlignment = TextAlignment.Justify;
-            foreach (StackPanel linePanel in StackPanelContent.Children)
-            {
-                linePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
-            }
+            AlignText(TextAlignment.Justify);
         }
     }
 }

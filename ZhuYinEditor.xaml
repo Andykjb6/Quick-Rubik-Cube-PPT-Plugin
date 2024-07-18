@@ -40,9 +40,9 @@
             </Button>
         </StackPanel>
 
-        <!-- 左侧TextBox -->
-        <TextBox Name="TextBoxLeft" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                 AcceptsReturn="True" TextWrapping="Wrap" Margin="10,10,10,10" TextChanged="TextBoxLeft_TextChanged" FontSize="20" TextAlignment="Justify"/>
+        <!-- 左侧RichTextBox -->
+        <RichTextBox Name="RichTextBoxLeft" Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                     AcceptsReturn="True" Margin="10,10,10,10" TextChanged="RichTextBoxLeft_TextChanged" FontSize="20"/>
 
         <!-- 右侧包含RichTextBox的StackPanel -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10,10,10,10" BorderBrush="#FF0F43F6" Background="#FFF9FAFD" BorderThickness="1,1,1,1" Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto">

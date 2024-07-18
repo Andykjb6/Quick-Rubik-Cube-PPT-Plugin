@@ -5203,5 +5203,75 @@ End Sub
                 }
             }
         }
+
+        private void 文本居中_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var shape = selection.ShapeRange[1];
+                if (shape.HasTable == Office.MsoTriState.msoTrue)
+                {
+                    PowerPoint.Table table = shape.Table;
+
+                    // 遍历所有行
+                    for (int i = 1; i <= table.Rows.Count; i++)
+                    {
+                        bool rowSelected = false;
+
+                        // 检查当前行是否被选中
+                        for (int j = 1; j <= table.Columns.Count; j++)
+                        {
+                            if ((bool)table.Cell(i, j).Selected)
+                            {
+                                rowSelected = true;
+                                break;
+                            }
+                        }
+
+                        if (rowSelected)
+                        {
+                            // 读取选中行第一个单元格的文本格式
+                            var firstCellFormat = table.Cell(i, 1).Shape.TextFrame.TextRange.Font;
+
+                            // 读取选中行的内容
+                            var contents = new System.Collections.Generic.List<string>();
+                            for (int j = 1; j <= table.Columns.Count; j++)
+                            {
+                                var cell = table.Cell(i, j);
+                                if (!string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text))
+                                {
+                                    contents.Add(cell.Shape.TextFrame.TextRange.Text);
+                                    cell.Shape.TextFrame.TextRange.Text = string.Empty; // 清空单元格内容
+                                }
+                            }
+
+                            if (contents.Count > 0)
+                            {
+                                // 计算中间位置
+                                int totalCells = table.Columns.Count;
+                                int emptyCells = totalCells - contents.Count;
+                                int startCol = (emptyCells / 2) + 1;
+
+                                // 将内容写入到中间位置，并应用格式
+                                for (int j = 0; j < contents.Count; j++)
+                                {
+                                    var targetCell = table.Cell(i, startCol + j);
+                                    targetCell.Shape.TextFrame.TextRange.Text = contents[j];
+                                    // 应用格式
+                                    targetCell.Shape.TextFrame.TextRange.Font.Name = firstCellFormat.Name;
+                                    targetCell.Shape.TextFrame.TextRange.Font.Size = firstCellFormat.Size;
+                                    targetCell.Shape.TextFrame.TextRange.Font.Bold = firstCellFormat.Bold;
+                                    targetCell.Shape.TextFrame.TextRange.Font.Italic = firstCellFormat.Italic;
+                                    targetCell.Shape.TextFrame.TextRange.Font.Underline = firstCellFormat.Underline;
+                                    targetCell.Shape.TextFrame.TextRange.Font.Color.RGB = firstCellFormat.Color.RGB;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

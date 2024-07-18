@@ -152,6 +152,7 @@ namespace 课件帮PPT助手
             this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
+            this.文本居中 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -811,6 +812,7 @@ namespace 课件帮PPT助手
             this.文本.Items.Add(this.拆分段落);
             this.文本.Items.Add(this.批量改字);
             this.文本.Items.Add(this.文本矢量化);
+            this.文本.Items.Add(this.文本居中);
             this.文本.Items.Add(this.部首描红);
             this.文本.Items.Add(this.分解笔顺);
             this.文本.Label = "文本";
@@ -1296,6 +1298,14 @@ namespace 课件帮PPT助手
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
             // 
+            // 文本居中
+            // 
+            this.文本居中.Image = ((System.Drawing.Image)(resources.GetObject("文本居中.Image")));
+            this.文本居中.Label = "文本居中";
+            this.文本居中.Name = "文本居中";
+            this.文本居中.ShowImage = true;
+            this.文本居中.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本居中_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -1441,6 +1451,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 检查更新;
         internal RibbonButton 汉字注意;
         internal RibbonButton 形转路径;
+        internal RibbonButton 文本居中;
     }
 
     partial class ThisRibbonCollection
