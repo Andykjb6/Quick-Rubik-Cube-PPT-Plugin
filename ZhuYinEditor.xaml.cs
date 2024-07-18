@@ -11,6 +11,7 @@ using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 using System.Drawing;
 using Microsoft.Office.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace 课件帮PPT助手
 {
@@ -233,9 +234,9 @@ namespace 课件帮PPT助手
             }
         }
 
-        private void BtnExport_Click(object sender, RoutedEventArgs e)
+        private async void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-            ExportToTable();
+            await ExportToTableAsync();
         }
 
         private void BtnCorrectPronunciations_Click(object sender, RoutedEventArgs e)
@@ -363,7 +364,7 @@ namespace 课件帮PPT助手
             return text[startIndex].ToString();
         }
 
-        private void ExportToTable()
+        private async Task ExportToTableAsync()
         {
             var pptApp = Globals.ThisAddIn.Application;
             PowerPoint.Slide activeSlide = pptApp.ActiveWindow.View.Slide as PowerPoint.Slide;
@@ -414,6 +415,11 @@ namespace 课件帮PPT助手
                 }
             }
 
+            ProgressBarExport.Visibility = Visibility.Visible;
+            TextBlockProgress.Visibility = Visibility.Visible;
+            ProgressBarExport.Value = 0;
+            TextBlockProgress.Text = "正在导出...";
+
             for (int row = 0; row < rowCount; row++)
             {
                 for (int col = 0; col < columnCount; col++)
@@ -428,6 +434,12 @@ namespace 课件帮PPT助手
                             cell.Shape.TextFrame.TextRange.Font.Color.RGB = ColorTranslator.ToOle(System.Drawing.Color.Black);
                         }
                     }
+
+                    // Update progress
+                    double progress = ((double)(row * columnCount + col) / (rowCount * columnCount)) * 100;
+                    ProgressBarExport.Value = progress;
+                    TextBlockProgress.Text = $"导出进度: {progress:F2}%";
+                    await Task.Delay(10); // Simulate some delay to visualize progress
                 }
             }
 
@@ -493,6 +505,12 @@ namespace 课件帮PPT助手
                     }
                 }
             }
+
+            ProgressBarExport.Value = 100;
+            TextBlockProgress.Text = "导出完成!";
+            await Task.Delay(2000); // Show completion for 2 seconds
+            ProgressBarExport.Visibility = Visibility.Collapsed;
+            TextBlockProgress.Visibility = Visibility.Collapsed;
         }
 
         private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)

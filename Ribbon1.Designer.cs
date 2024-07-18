@@ -47,6 +47,7 @@ namespace 课件帮PPT助手
             this.button5 = this.Factory.CreateRibbonButton();
             this.笔顺图解 = this.Factory.CreateRibbonButton();
             this.生字赋格 = this.Factory.CreateRibbonButton();
+            this.注音编辑 = this.Factory.CreateRibbonSplitButton();
             this.常用格子 = this.Factory.CreateRibbonSplitButton();
             this.生字格子 = this.Factory.CreateRibbonButton();
             this.四线三格 = this.Factory.CreateRibbonButton();
@@ -54,7 +55,6 @@ namespace 课件帮PPT助手
             this.button3 = this.Factory.CreateRibbonButton();
             this.便捷注音 = this.Factory.CreateRibbonButton();
             this.一键注音 = this.Factory.CreateRibbonButton();
-            this.汉字注意 = this.Factory.CreateRibbonButton();
             this.提取拼音 = this.Factory.CreateRibbonButton();
             this.精准注音 = this.Factory.CreateRibbonButton();
             this.拓展应用 = this.Factory.CreateRibbonSplitButton();
@@ -112,6 +112,8 @@ namespace 课件帮PPT助手
             this.拆分段落 = this.Factory.CreateRibbonButton();
             this.批量改字 = this.Factory.CreateRibbonButton();
             this.文本矢量化 = this.Factory.CreateRibbonButton();
+            this.自动补齐 = this.Factory.CreateRibbonButton();
+            this.文本居中 = this.Factory.CreateRibbonButton();
             this.部首描红 = this.Factory.CreateRibbonButton();
             this.分解笔顺 = this.Factory.CreateRibbonButton();
             this.更多便捷 = this.Factory.CreateRibbonMenu();
@@ -152,7 +154,6 @@ namespace 课件帮PPT助手
             this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
-            this.文本居中 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -219,6 +220,7 @@ namespace 课件帮PPT助手
             this.group2.Items.Add(this.button5);
             this.group2.Items.Add(this.笔顺图解);
             this.group2.Items.Add(this.生字赋格);
+            this.group2.Items.Add(this.注音编辑);
             this.group2.Items.Add(this.常用格子);
             this.group2.Items.Add(this.注音工具);
             this.group2.Items.Add(this.拓展应用);
@@ -255,6 +257,16 @@ namespace 课件帮PPT助手
             this.生字赋格.SuperTip = "选中一个或多个对象，为其添加田字格。默认按照行列排列对齐。按住Ctrl键单击“生成”可强制原位添加田字格。";
             this.生字赋格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.生字赋格_Click);
             // 
+            // 注音编辑
+            // 
+            this.注音编辑.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
+            this.注音编辑.Image = ((System.Drawing.Image)(resources.GetObject("注音编辑.Image")));
+            this.注音编辑.Items.Add(this.文本居中);
+            this.注音编辑.Items.Add(this.自动补齐);
+            this.注音编辑.Label = "注音编辑";
+            this.注音编辑.Name = "注音编辑";
+            this.注音编辑.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.注音编辑_Click);
+            // 
             // 常用格子
             // 
             this.常用格子.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -289,7 +301,6 @@ namespace 课件帮PPT助手
             this.注音工具.Items.Add(this.button3);
             this.注音工具.Items.Add(this.便捷注音);
             this.注音工具.Items.Add(this.一键注音);
-            this.注音工具.Items.Add(this.汉字注意);
             this.注音工具.Items.Add(this.提取拼音);
             this.注音工具.Items.Add(this.精准注音);
             this.注音工具.Label = "注音工具";
@@ -323,14 +334,6 @@ namespace 课件帮PPT助手
             this.一键注音.ShowImage = true;
             this.一键注音.SuperTip = "（源：简易字典）";
             this.一键注音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.一键注音_Click);
-            // 
-            // 汉字注意
-            // 
-            this.汉字注意.Image = ((System.Drawing.Image)(resources.GetObject("汉字注意.Image")));
-            this.汉字注意.Label = "长文注音";
-            this.汉字注意.Name = "汉字注意";
-            this.汉字注意.ShowImage = true;
-            this.汉字注意.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.汉字注意_Click);
             // 
             // 提取拼音
             // 
@@ -812,7 +815,6 @@ namespace 课件帮PPT助手
             this.文本.Items.Add(this.拆分段落);
             this.文本.Items.Add(this.批量改字);
             this.文本.Items.Add(this.文本矢量化);
-            this.文本.Items.Add(this.文本居中);
             this.文本.Items.Add(this.部首描红);
             this.文本.Items.Add(this.分解笔顺);
             this.文本.Label = "文本";
@@ -878,6 +880,22 @@ namespace 课件帮PPT助手
             this.文本矢量化.ShowImage = true;
             this.文本矢量化.SuperTip = "使用本功能，可将所选的文本转换为矢量形状。";
             this.文本矢量化.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本矢量化_Click);
+            // 
+            // 自动补齐
+            // 
+            this.自动补齐.Image = ((System.Drawing.Image)(resources.GetObject("自动补齐.Image")));
+            this.自动补齐.Label = "自动补齐";
+            this.自动补齐.Name = "自动补齐";
+            this.自动补齐.ShowImage = true;
+            this.自动补齐.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.自动补齐_Click);
+            // 
+            // 文本居中
+            // 
+            this.文本居中.Image = ((System.Drawing.Image)(resources.GetObject("文本居中.Image")));
+            this.文本居中.Label = "行内居中";
+            this.文本居中.Name = "文本居中";
+            this.文本居中.ShowImage = true;
+            this.文本居中.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本居中_Click);
             // 
             // 部首描红
             // 
@@ -1298,14 +1316,6 @@ namespace 课件帮PPT助手
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
             // 
-            // 文本居中
-            // 
-            this.文本居中.Image = ((System.Drawing.Image)(resources.GetObject("文本居中.Image")));
-            this.文本居中.Label = "文本居中";
-            this.文本居中.Name = "文本居中";
-            this.文本居中.ShowImage = true;
-            this.文本居中.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文本居中_Click);
-            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -1449,9 +1459,10 @@ namespace 课件帮PPT助手
         internal RibbonButton 分解笔顺;
         internal RibbonSplitButton 关于我;
         internal RibbonButton 检查更新;
-        internal RibbonButton 汉字注意;
         internal RibbonButton 形转路径;
         internal RibbonButton 文本居中;
+        internal RibbonButton 自动补齐;
+        internal RibbonSplitButton 注音编辑;
     }
 
     partial class ThisRibbonCollection

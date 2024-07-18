@@ -51,9 +51,10 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- 底部按钮（保留以防未来需要） -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="0" Width="0">
-            <!-- 如果不需要底部按钮可以将此部分删除 -->
+        <!-- 底部进度条和状态文本 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ProgressBar Name="ProgressBarExport" Height="20" Width="400" Margin="10" Visibility="Collapsed" />
+            <TextBlock Name="TextBlockProgress" Height="20" Margin="10,0,0,0" Visibility="Collapsed" TextAlignment="Center"/>
         </StackPanel>
     </Grid>
 </Window>

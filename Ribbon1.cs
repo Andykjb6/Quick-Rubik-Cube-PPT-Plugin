@@ -5170,11 +5170,7 @@ End Sub
         }
 
 
-        private void 汉字注意_Click(object sender, RibbonControlEventArgs e)
-        {
-            ZhuYinEditor editor = new ZhuYinEditor();
-            editor.Show();
-        }
+       
 
         private void 形转路径_Click(object sender, RibbonControlEventArgs e)
         {
@@ -5272,6 +5268,135 @@ End Sub
                     }
                 }
             }
+        }
+
+        private void 自动补齐_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var shape = selection.ShapeRange[1];
+                if (shape.HasTable == Office.MsoTriState.msoTrue)
+                {
+                    PowerPoint.Table table = shape.Table;
+
+                    // 获取选中的行
+                    int[] selectedRows = GetSelectedRows(table);
+
+                    foreach (int rowIndex in selectedRows)
+                    {
+                        PowerPoint.Row row = table.Rows[rowIndex];
+
+                        // 找到第一个有内容的单元格，用于复制文字格式
+                        PowerPoint.TextRange firstNonEmptyTextRange = null;
+                        foreach (PowerPoint.Cell cell in row.Cells)
+                        {
+                            if (!string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text.Trim()))
+                            {
+                                firstNonEmptyTextRange = cell.Shape.TextFrame.TextRange;
+                                break;
+                            }
+                        }
+
+                        if (firstNonEmptyTextRange != null)
+                        {
+                            // 计算前面连续空白单元格数量
+                            int consecutiveEmptyCells = 0;
+                            foreach (PowerPoint.Cell cell in row.Cells)
+                            {
+                                if (string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text.Trim()))
+                                {
+                                    consecutiveEmptyCells++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            // 为非前几个连续空白格子添加零宽度空格符，并复制文字格式
+                            bool inNonLeadingEmptyCells = false;
+                            foreach (PowerPoint.Cell cell in row.Cells)
+                            {
+                                if (string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text))
+                                {
+                                    if (consecutiveEmptyCells > 0)
+                                    {
+                                        consecutiveEmptyCells--;
+                                    }
+                                    else
+                                    {
+                                        inNonLeadingEmptyCells = true;
+                                    }
+
+                                    if (inNonLeadingEmptyCells)
+                                    {
+                                        cell.Shape.TextFrame.TextRange.Text = "\u200B"; // 添加零宽度空格符
+                                        cell.Shape.TextFrame.TextRange.Font.Name = firstNonEmptyTextRange.Font.Name;
+                                        cell.Shape.TextFrame.TextRange.Font.Size = firstNonEmptyTextRange.Font.Size;
+                                        cell.Shape.TextFrame.TextRange.Font.Bold = firstNonEmptyTextRange.Font.Bold;
+                                        cell.Shape.TextFrame.TextRange.Font.Italic = firstNonEmptyTextRange.Font.Italic;
+                                        cell.Shape.TextFrame.TextRange.Font.Underline = firstNonEmptyTextRange.Font.Underline;
+                                    }
+                                }
+                            }
+
+                            // 查找行最前面的第一个空单元格
+                            int firstEmptyCell = -1;
+                            for (int j = 1; j <= table.Columns.Count; j++)
+                            {
+                                if (string.IsNullOrEmpty(row.Cells[j].Shape.TextFrame.TextRange.Text.Trim()))
+                                {
+                                    firstEmptyCell = j;
+                                    break;
+                                }
+                            }
+
+                            if (firstEmptyCell != -1)
+                            {
+                                // 将内容整体前移，填补空白格子，但保留有内容格子之间的空白格子
+                                int currentIndex = firstEmptyCell;
+                                for (int j = firstEmptyCell; j <= table.Columns.Count; j++)
+                                {
+                                    if (!string.IsNullOrEmpty(row.Cells[j].Shape.TextFrame.TextRange.Text.Trim()))
+                                    {
+                                        row.Cells[currentIndex].Shape.TextFrame.TextRange.Text = row.Cells[j].Shape.TextFrame.TextRange.Text;
+                                        if (currentIndex != j)
+                                        {
+                                            row.Cells[j].Shape.TextFrame.TextRange.Text = string.Empty;
+                                        }
+                                        currentIndex++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private int[] GetSelectedRows(PowerPoint.Table table)
+        {
+            var selectedRows = new System.Collections.Generic.List<int>();
+            for (int i = 1; i <= table.Rows.Count; i++)
+            {
+                for (int j = 1; j <= table.Columns.Count; j++)
+                {
+                    if ((bool)table.Cell(i, j).Selected)
+                    {
+                        selectedRows.Add(i);
+                        break;
+                    }
+                }
+            }
+            return selectedRows.Distinct().ToArray();
+        }
+
+        private void 注音编辑_Click(object sender, RibbonControlEventArgs e)
+        {
+            ZhuYinEditor editor = new ZhuYinEditor();
+            editor.Show();
         }
     }
 }
