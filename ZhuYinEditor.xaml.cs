@@ -190,6 +190,20 @@ namespace 课件帮PPT助手
                         menuItem.Click += MenuItem_Click;
                         menu.Items.Add(menuItem);
                     }
+
+                    // 添加儿化音选项
+                    if (hanziPinyinDict[hanzi][0].Last() != 'r')
+                    {
+                        var erPinyin = hanziPinyinDict[hanzi][0] + "r";
+                        var erMenuItem = new MenuItem
+                        {
+                            Header = erPinyin,
+                            Tag = hanziBlock
+                        };
+                        erMenuItem.Click += MenuItem_Click;
+                        menu.Items.Add(erMenuItem);
+                    }
+
                     hanziBlock.ContextMenu = menu;
                     hanziBlock.ContextMenu.IsOpen = true;
                 }
@@ -214,6 +228,36 @@ namespace 课件帮PPT助手
                         {
                             correctedPinyinDict[index] = pinyinBlock.Text;
                         }
+
+                        // 如果选择了儿化音，则清空"儿"字的拼音
+                        if (pinyinBlock.Text.EndsWith("r") && charPanel.Parent is StackPanel linePanel)
+                        {
+                            int charPanelIndex = linePanel.Children.IndexOf(charPanel);
+                            if (charPanelIndex + 1 < linePanel.Children.Count)
+                            {
+                                var nextCharPanel = linePanel.Children[charPanelIndex + 1] as StackPanel;
+                                var nextPinyinBlock = nextCharPanel.Children[0] as TextBlock;
+                                var nextHanziBlock = nextCharPanel.Children[1] as TextBlock;
+                                if (nextHanziBlock.Text == "儿")
+                                {
+                                    nextPinyinBlock.Text = string.Empty;
+                                }
+                            }
+                        }
+                        else if (!pinyinBlock.Text.EndsWith("r") && charPanel.Parent is StackPanel linePanelForEr)
+                        {
+                            int charPanelIndex = linePanelForEr.Children.IndexOf(charPanel);
+                            if (charPanelIndex + 1 < linePanelForEr.Children.Count)
+                            {
+                                var nextCharPanel = linePanelForEr.Children[charPanelIndex + 1] as StackPanel;
+                                var nextPinyinBlock = nextCharPanel.Children[0] as TextBlock;
+                                var nextHanziBlock = nextCharPanel.Children[1] as TextBlock;
+                                if (nextHanziBlock.Text == "儿")
+                                {
+                                    nextPinyinBlock.Text = "ér"; // 恢复"儿"字的拼音
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -234,9 +278,9 @@ namespace 课件帮PPT助手
             }
         }
 
-        private async void BtnExport_Click(object sender, RoutedEventArgs e)
+        private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-            await ExportToTableAsync();
+            ExportToTable();
         }
 
         private void BtnCorrectPronunciations_Click(object sender, RoutedEventArgs e)
@@ -250,6 +294,7 @@ namespace 课件帮PPT助手
             string text = GetPlainTextFromRichTextBox();
             UpdateStackPanelContentWithCorrection(text);
             SyncAlignmentWithPinyin();
+            HighlightErhuaHanzi();
         }
 
         private void UpdateStackPanelContentWithCorrection(string text)
@@ -291,7 +336,14 @@ namespace 课件帮PPT助手
                     else
                     {
                         char currentChar = text[i];
-                        string pinyin = GetCorrectedPinyin(text, i);
+                        string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
+
+                        if (correctedPinyinDict.ContainsKey(i))
+                        {
+                            // 使用纠正后的拼音
+                            pinyin = correctedPinyinDict[i];
+                        }
+
                         StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
 
@@ -306,7 +358,7 @@ namespace 课件帮PPT助手
             StackPanelContent.Children.Add(currentLinePanel);
         }
 
-        private string GetCorrectedPinyin(string text, int index)
+        private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
             char currentChar = text[index];
 
@@ -344,6 +396,7 @@ namespace 课件帮PPT助手
                 }
             }
 
+            // 默认处理其他汉字
             return hanziPinyinDict.ContainsKey(currentChar.ToString()) ? hanziPinyinDict[currentChar.ToString()][0] : string.Empty;
         }
 
@@ -364,7 +417,29 @@ namespace 课件帮PPT助手
             return text[startIndex].ToString();
         }
 
-        private async Task ExportToTableAsync()
+        private void HighlightErhuaHanzi()
+        {
+            foreach (var child in StackPanelContent.Children)
+            {
+                if (child is StackPanel sp)
+                {
+                    for (int i = 1; i < sp.Children.Count; i++)
+                    {
+                        var charPanel = sp.Children[i] as StackPanel;
+                        var hanziBlock = charPanel.Children[1] as TextBlock;
+                        if (hanziBlock.Text == "儿")
+                        {
+                            var prevCharPanel = sp.Children[i - 1] as StackPanel;
+                            var prevHanziBlock = prevCharPanel.Children[1] as TextBlock;
+                            prevHanziBlock.Background = System.Windows.Media.Brushes.LightGreen;
+                            prevHanziBlock.MouseLeftButtonUp += HanziBlock_MouseLeftButtonUp;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void ExportToTable()
         {
             var pptApp = Globals.ThisAddIn.Application;
             PowerPoint.Slide activeSlide = pptApp.ActiveWindow.View.Slide as PowerPoint.Slide;
@@ -412,6 +487,11 @@ namespace 课件帮PPT助手
                 {
                     content[i * 2, j] = pinyinLines[i][j];
                     content[i * 2 + 1, j] = hanziLines[i][j];
+
+                    if (j > 0 && hanziLines[i][j] == "儿" && !string.IsNullOrEmpty(content[i * 2, j - 1]) && content[i * 2, j - 1].EndsWith("r"))
+                    {
+                        content[i * 2, j] = string.Empty; // "儿"字不添加拼音
+                    }
                 }
             }
 
@@ -419,7 +499,6 @@ namespace 课件帮PPT助手
             TextBlockProgress.Visibility = Visibility.Visible;
             ProgressBarExport.Value = 0;
             TextBlockProgress.Text = "正在导出...";
-
             for (int row = 0; row < rowCount; row++)
             {
                 for (int col = 0; col < columnCount; col++)
@@ -434,7 +513,6 @@ namespace 课件帮PPT助手
                             cell.Shape.TextFrame.TextRange.Font.Color.RGB = ColorTranslator.ToOle(System.Drawing.Color.Black);
                         }
                     }
-
                     // Update progress
                     double progress = ((double)(row * columnCount + col) / (rowCount * columnCount)) * 100;
                     ProgressBarExport.Value = progress;
@@ -512,7 +590,6 @@ namespace 课件帮PPT助手
             ProgressBarExport.Visibility = Visibility.Collapsed;
             TextBlockProgress.Visibility = Visibility.Collapsed;
         }
-
         private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -533,6 +610,7 @@ namespace 课件帮PPT助手
             {
                 isTextChangedEventHandlerActive = false;
 
+                correctedPinyinDict.Clear(); // 清空纠正的拼音字典
                 UpdateStackPanelContent(GetPlainTextFromRichTextBox());
                 SyncAlignmentWithPinyin();
 
@@ -575,7 +653,7 @@ namespace 课件帮PPT助手
                     }
                     else
                     {
-                        string pinyin = GetCorrectedPinyin(text, i);
+                        string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
                         (sp.Children[0] as TextBlock).Text = pinyin;
                     }
 
@@ -585,6 +663,7 @@ namespace 课件帮PPT助手
 
             StackPanelContent.Children.Add(currentLinePanel);
             SyncAlignmentWithPinyin();
+            HighlightErhuaHanzi();
         }
 
         private StackPanel CreateNewLinePanel()
