@@ -192,16 +192,25 @@ namespace 课件帮PPT助手
                     }
 
                     // 添加儿化音选项
-                    if (hanziPinyinDict[hanzi][0].Last() != 'r')
+                    if (hanziBlock.Parent is StackPanel charPanel && charPanel.Parent is StackPanel linePanel)
                     {
-                        var erPinyin = hanziPinyinDict[hanzi][0] + "r";
-                        var erMenuItem = new MenuItem
+                        int charPanelIndex = linePanel.Children.IndexOf(charPanel);
+                        if (charPanelIndex + 1 < linePanel.Children.Count)
                         {
-                            Header = erPinyin,
-                            Tag = hanziBlock
-                        };
-                        erMenuItem.Click += MenuItem_Click;
-                        menu.Items.Add(erMenuItem);
+                            var nextCharPanel = linePanel.Children[charPanelIndex + 1] as StackPanel;
+                            var nextHanziBlock = nextCharPanel.Children[1] as TextBlock;
+                            if (nextHanziBlock.Text == "儿")
+                            {
+                                var erPinyin = hanziPinyinDict[hanzi][0] + "r";
+                                var erMenuItem = new MenuItem
+                                {
+                                    Header = erPinyin,
+                                    Tag = hanziBlock
+                                };
+                                erMenuItem.Click += MenuItem_Click;
+                                menu.Items.Add(erMenuItem);
+                            }
+                        }
                     }
 
                     hanziBlock.ContextMenu = menu;
