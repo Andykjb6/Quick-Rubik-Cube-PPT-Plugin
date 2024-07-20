@@ -5272,25 +5272,25 @@ End Sub
 
         private void 自动补齐_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = app.ActiveWindow.Selection;
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            Application app = Globals.ThisAddIn.Application;
+            Selection selection = app.ActiveWindow.Selection;
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
             {
                 var shape = selection.ShapeRange[1];
-                if (shape.HasTable == Office.MsoTriState.msoTrue)
+                if (shape.HasTable == MsoTriState.msoTrue)
                 {
-                    PowerPoint.Table table = shape.Table;
+                    Table table = shape.Table;
 
                     // 获取选中的行
                     int[] selectedRows = GetSelectedRows(table);
 
                     foreach (int rowIndex in selectedRows)
                     {
-                        PowerPoint.Row row = table.Rows[rowIndex];
+                        Row row = table.Rows[rowIndex];
 
                         // 找到第一个有内容的单元格，用于复制文字格式
-                        PowerPoint.TextRange firstNonEmptyTextRange = null;
-                        foreach (PowerPoint.Cell cell in row.Cells)
+                        TextRange firstNonEmptyTextRange = null;
+                        foreach (Cell cell in row.Cells)
                         {
                             if (!string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text.Trim()))
                             {
@@ -5303,7 +5303,7 @@ End Sub
                         {
                             // 计算前面连续空白单元格数量
                             int consecutiveEmptyCells = 0;
-                            foreach (PowerPoint.Cell cell in row.Cells)
+                            foreach (Cell cell in row.Cells)
                             {
                                 if (string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text.Trim()))
                                 {
@@ -5317,7 +5317,7 @@ End Sub
 
                             // 为非前几个连续空白格子添加零宽度空格符，并复制文字格式
                             bool inNonLeadingEmptyCells = false;
-                            foreach (PowerPoint.Cell cell in row.Cells)
+                            foreach (Cell cell in row.Cells)
                             {
                                 if (string.IsNullOrEmpty(cell.Shape.TextFrame.TextRange.Text))
                                 {
@@ -5370,20 +5370,37 @@ End Sub
                                     }
                                 }
                             }
+
+                            // 设置行对齐方式和文字格式
+                            for (int j = 1; j <= table.Columns.Count; j++)
+                            {
+                                TextRange textRange = row.Cells[j].Shape.TextFrame.TextRange;
+
+                                textRange.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter; // 设置居中对齐
+
+                                if (rowIndex % 2 == 1) // 奇数行
+                                {
+                                    row.Cells[j].Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
+                                }
+
+                                textRange.Font.Name = firstNonEmptyTextRange.Font.Name;
+                                textRange.Font.Size = firstNonEmptyTextRange.Font.Size;
+                                textRange.Font.Bold = firstNonEmptyTextRange.Font.Bold;
+                            }
                         }
                     }
                 }
             }
         }
 
-        private int[] GetSelectedRows(PowerPoint.Table table)
+        private int[] GetSelectedRows(Table table)
         {
-            var selectedRows = new System.Collections.Generic.List<int>();
+            var selectedRows = new List<int>();
             for (int i = 1; i <= table.Rows.Count; i++)
             {
                 for (int j = 1; j <= table.Columns.Count; j++)
                 {
-                    if ((bool)table.Cell(i, j).Selected)
+                    if (table.Cell(i, j).Selected)
                     {
                         selectedRows.Add(i);
                         break;
@@ -5393,10 +5410,244 @@ End Sub
             return selectedRows.Distinct().ToArray();
         }
 
+
         private void 注音编辑_Click(object sender, RibbonControlEventArgs e)
         {
             ZhuYinEditor editor = new ZhuYinEditor();
             editor.Show();
+        }
+
+        private void 删列补行_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取当前激活的PPT应用程序实例
+            Application application = Globals.ThisAddIn.Application;
+
+            // 获取当前选中的对象
+            Selection selection = application.ActiveWindow.Selection;
+
+            // 检查是否按下Ctrl键
+            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+            int columnsToDelete = 1;
+
+            // 如果按下Ctrl键，显示输入窗口
+            if (isCtrlPressed)
+            {
+                using (FormInputColumns form = new FormInputColumns())
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        columnsToDelete = form.ColumnsToDelete;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // 确保选中的是表格
+            if (selection.Type == PpSelectionType.ppSelectionShapes &&
+                selection.ShapeRange.Count == 1 &&
+                selection.ShapeRange[1].HasTable == MsoTriState.msoTrue)
+            {
+                PowerPoint.Table table = selection.ShapeRange[1].Table;
+
+                // 获取表格的当前行数和列数
+                int rowCount = table.Rows.Count;
+                int colCount = table.Columns.Count;
+
+                // 确保表格至少有两列且待删除列数不超过现有列数
+                if (colCount > columnsToDelete)
+                {
+                    // 创建两个临时列表来存储拼音和汉字内容及其样式
+                    List<(string text, float fontSize, string fontName, MsoTriState bold)> pinyinList = new List<(string, float, string, MsoTriState)>();
+                    List<(string text, float fontSize, string fontName, MsoTriState bold)> hanziList = new List<(string, float, string, MsoTriState)>();
+
+                    // 将表格中的拼音和汉字内容及其样式分别存储到临时列表中
+                    for (int i = 1; i <= rowCount; i += 2)
+                    {
+                        for (int j = 1; j <= colCount; j++)
+                        {
+                            var pinyinCell = table.Cell(i, j).Shape.TextFrame.TextRange;
+                            var hanziCell = table.Cell(i + 1, j).Shape.TextFrame.TextRange;
+
+                            pinyinList.Add((pinyinCell.Text, pinyinCell.Font.Size, pinyinCell.Font.Name, pinyinCell.Font.Bold));
+                            hanziList.Add((hanziCell.Text, hanziCell.Font.Size, hanziCell.Font.Name, hanziCell.Font.Bold));
+                        }
+                    }
+
+                    // 删除指定数量的列
+                    for (int k = 0; k < columnsToDelete; k++)
+                    {
+                        table.Columns[colCount - k].Delete();
+                    }
+                    colCount -= columnsToDelete;
+
+                    // 计算新的行数
+                    int newRowCount = (pinyinList.Count + colCount - 1) / colCount;
+
+                    // 确保表格有足够的行（两倍于新的行数以存储拼音和汉字）
+                    while (table.Rows.Count < newRowCount * 2)
+                    {
+                        table.Rows.Add();
+                    }
+
+                    // 清空所有单元格内容
+                    for (int i = 1; i <= table.Rows.Count; i++)
+                    {
+                        for (int j = 1; j <= table.Columns.Count; j++)
+                        {
+                            table.Cell(i, j).Shape.TextFrame.TextRange.Text = string.Empty;
+                        }
+                    }
+
+                    // 重新排列表格内容并应用样式
+                    int index = 0;
+                    for (int i = 1; i <= newRowCount * 2; i += 2)
+                    {
+                        for (int j = 1; j <= colCount; j++)
+                        {
+                            if (index < pinyinList.Count)
+                            {
+                                var pinyinCell = table.Cell(i, j).Shape.TextFrame.TextRange;
+                                var hanziCell = table.Cell(i + 1, j).Shape.TextFrame.TextRange;
+
+                                pinyinCell.Text = pinyinList[index].text;
+                                pinyinCell.Font.Size = pinyinList[index].fontSize;
+                                pinyinCell.Font.Name = pinyinList[index].fontName;
+                                pinyinCell.Font.Bold = pinyinList[index].bold;
+                                table.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
+
+                                hanziCell.Text = hanziList[index].text;
+                                hanziCell.Font.Size = hanziList[index].fontSize;
+                                hanziCell.Font.Name = hanziList[index].fontName;
+                                hanziCell.Font.Bold = hanziList[index].bold;
+
+                                index++;
+                            }
+                        }
+                    }
+
+                    // 删除多余的空行
+                    for (int i = table.Rows.Count; i > 0; i--)
+                    {
+                        bool isEmpty = true;
+                        for (int j = 1; j <= table.Columns.Count; j++)
+                        {
+                            if (!string.IsNullOrEmpty(table.Cell(i, j).Shape.TextFrame.TextRange.Text))
+                            {
+                                isEmpty = false;
+                                break;
+                            }
+                        }
+                        if (isEmpty)
+                        {
+                            table.Rows[i].Delete();
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("表格必须至少包含更多列。", "重排表格", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个包含表格的形状。", "重排表格", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void 合并段落_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取当前激活的PPT应用程序实例
+            Application application = Globals.ThisAddIn.Application;
+
+            // 获取当前选中的对象
+            Selection selection = application.ActiveWindow.Selection;
+
+            // 确保选中的是多个表格
+            if (selection.Type == PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 1)
+            {
+                List<Table> tables = new List<Table>();
+                Table mainTable = null;
+
+                foreach (Shape shape in selection.ShapeRange)
+                {
+                    if (shape.HasTable == MsoTriState.msoTrue)
+                    {
+                        if (mainTable == null)
+                        {
+                            mainTable = shape.Table;
+                        }
+                        else
+                        {
+                            tables.Add(shape.Table);
+                        }
+                    }
+                }
+
+                if (mainTable != null && tables.Count > 0)
+                {
+                    foreach (var table in tables)
+                    {
+                        int rowCount = table.Rows.Count;
+
+                        // 在主表格末尾插入新行
+                        for (int i = 1; i <= rowCount; i++)
+                        {
+                            mainTable.Rows.Add();
+                        }
+
+                        // 计算主表格新行的起始行索引
+                        int startRow = mainTable.Rows.Count - rowCount + 1;
+                        int colCount = Math.Min(mainTable.Columns.Count, table.Columns.Count);
+
+                        // 将内容从次表格剪切到主表格
+                        for (int i = 1; i <= rowCount; i++)
+                        {
+                            for (int j = 1; j <= colCount; j++)
+                            {
+                                var sourceCell = table.Cell(i, j).Shape.TextFrame.TextRange;
+                                var targetCell = mainTable.Cell(startRow + i - 1, j).Shape.TextFrame.TextRange;
+
+                                targetCell.Text = sourceCell.Text;
+                            }
+                        }
+
+                        // 删除次表格
+                        table.Parent.Delete();
+                    }
+
+                    // 应用奇数行字号大小为偶数行字号大小的50%
+                    for (int i = 1; i <= mainTable.Rows.Count; i++)
+                    {
+                        for (int j = 1; j <= mainTable.Columns.Count; j++)
+                        {
+                            var cell = mainTable.Cell(i, j).Shape.TextFrame.TextRange;
+                            if (i % 2 == 1)
+                            {
+                                cell.Font.Size = mainTable.Cell(i + 1, j).Shape.TextFrame.TextRange.Font.Size * 0.5f;
+                                mainTable.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
+                            }
+                            cell.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请选择多个表格进行合并。", "合并段落", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择多个表格进行合并。", "合并段落", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void 拆分表格_Click(object sender, RibbonControlEventArgs e)
+        {
+          
         }
     }
 }

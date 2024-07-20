@@ -416,6 +416,12 @@
     <Compile Include="FontDetectionForm.Designer.cs">
       <DependentUpon>FontDetectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormInputColumns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInputColumns.Designer.cs">
+      <DependentUpon>FormInputColumns.cs</DependentUpon>
+    </Compile>
     <Compile Include="HanziDictionaryForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -564,6 +570,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FontDetectionForm.resx">
       <DependentUpon>FontDetectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInputColumns.resx">
+      <DependentUpon>FormInputColumns.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HanziDictionaryForm.resx">
       <DependentUpon>HanziDictionaryForm.cs</DependentUpon>
