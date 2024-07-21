@@ -52,7 +52,6 @@ namespace 课件帮PPT助手
             this.删列补行 = this.Factory.CreateRibbonButton();
             this.自动补齐 = this.Factory.CreateRibbonButton();
             this.合并段落 = this.Factory.CreateRibbonButton();
-            this.拆分表格 = this.Factory.CreateRibbonButton();
             this.常用格子 = this.Factory.CreateRibbonSplitButton();
             this.生字格子 = this.Factory.CreateRibbonButton();
             this.四线三格 = this.Factory.CreateRibbonButton();
@@ -268,7 +267,6 @@ namespace 课件帮PPT助手
             this.注音编辑.Items.Add(this.删列补行);
             this.注音编辑.Items.Add(this.自动补齐);
             this.注音编辑.Items.Add(this.合并段落);
-            this.注音编辑.Items.Add(this.拆分表格);
             this.注音编辑.Label = "注音编辑";
             this.注音编辑.Name = "注音编辑";
             this.注音编辑.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.注音编辑_Click);
@@ -304,14 +302,6 @@ namespace 课件帮PPT助手
             this.合并段落.Name = "合并段落";
             this.合并段落.ShowImage = true;
             this.合并段落.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.合并段落_Click);
-            // 
-            // 拆分表格
-            // 
-            this.拆分表格.Image = ((System.Drawing.Image)(resources.GetObject("拆分表格.Image")));
-            this.拆分表格.Label = "拆分段落";
-            this.拆分表格.Name = "拆分表格";
-            this.拆分表格.ShowImage = true;
-            this.拆分表格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.拆分表格_Click);
             // 
             // 常用格子
             // 
@@ -1495,7 +1485,6 @@ namespace 课件帮PPT助手
         internal RibbonSplitButton 注音编辑;
         internal RibbonButton 删列补行;
         internal RibbonButton 合并段落;
-        internal RibbonButton 拆分表格;
     }
 
     partial class ThisRibbonCollection

@@ -5485,10 +5485,10 @@ End Sub
                     colCount -= columnsToDelete;
 
                     // 计算新的行数
-                    int newRowCount = (pinyinList.Count + colCount - 1) / colCount;
+                    int newRowCount = (pinyinList.Count + colCount - 1) / colCount * 2;
 
                     // 确保表格有足够的行（两倍于新的行数以存储拼音和汉字）
-                    while (table.Rows.Count < newRowCount * 2)
+                    while (table.Rows.Count < newRowCount)
                     {
                         table.Rows.Add();
                     }
@@ -5504,7 +5504,7 @@ End Sub
 
                     // 重新排列表格内容并应用样式
                     int index = 0;
-                    for (int i = 1; i <= newRowCount * 2; i += 2)
+                    for (int i = 1; i <= newRowCount; i += 2)
                     {
                         for (int j = 1; j <= colCount; j++)
                         {
@@ -5643,11 +5643,6 @@ End Sub
             {
                 MessageBox.Show("请选择多个表格进行合并。", "合并段落", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        private void 拆分表格_Click(object sender, RibbonControlEventArgs e)
-        {
-          
         }
     }
 }
