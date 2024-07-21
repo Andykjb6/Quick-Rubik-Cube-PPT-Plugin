@@ -4123,9 +4123,9 @@ End Sub
             }
         }
 
-        private List<PowerPoint.Shape> GetShapesFromSelectionForSameColor(PowerPoint.Selection selection)
+        private List<Shape> GetShapesFromSelectionForSameColor(Selection selection)
         {
-            List<PowerPoint.Shape> shapes = new List<PowerPoint.Shape>();
+            List<Shape> shapes = new List<Shape>();
             for (int i = 1; i <= selection.ShapeRange.Count; i++)
             {
                 shapes.Add(selection.ShapeRange[i]);
@@ -4133,9 +4133,9 @@ End Sub
             return shapes;
         }
 
-        private Dictionary<int, List<PowerPoint.Shape>> GroupShapesByFillColor(List<PowerPoint.Shape> shapes)
+        private Dictionary<int, List<Shape>> GroupShapesByFillColor(List<Shape> shapes)
         {
-            Dictionary<int, List<PowerPoint.Shape>> colorGroups = new Dictionary<int, List<PowerPoint.Shape>>();
+            Dictionary<int, List<Shape>> colorGroups = new Dictionary<int, List<Shape>>();
 
             foreach (var shape in shapes)
             {
@@ -4143,7 +4143,7 @@ End Sub
 
                 if (!colorGroups.ContainsKey(color))
                 {
-                    colorGroups[color] = new List<PowerPoint.Shape>();
+                    colorGroups[color] = new List<Shape>();
                 }
                 colorGroups[color].Add(shape);
             }
@@ -4156,12 +4156,12 @@ End Sub
             var application = Globals.ThisAddIn.Application;
             var selection = application.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 1)
+            if (selection.Type == PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 1)
             {
                 var lineShape = selection.ShapeRange[1];
                 if (lineShape.Type == MsoShapeType.msoLine || lineShape.Type == MsoShapeType.msoFreeform)
                 {
-                    List<PowerPoint.Shape> shapesToDistribute = new List<PowerPoint.Shape>();
+                    List<Shape> shapesToDistribute = new List<Shape>();
                     for (int i = 2; i <= selection.ShapeRange.Count; i++)
                     {
                         var shape = selection.ShapeRange[i];
@@ -4191,7 +4191,7 @@ End Sub
             }
         }
 
-        private void DistributeShapesAlongLine(PowerPoint.Shape lineShape, List<PowerPoint.Shape> shapesToDistribute)
+        private void DistributeShapesAlongLine(Shape lineShape, List<Shape> shapesToDistribute)
         {
             var nodes = lineShape.Nodes;
             if (nodes.Count < 2)
