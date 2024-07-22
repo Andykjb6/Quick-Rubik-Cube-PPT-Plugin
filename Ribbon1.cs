@@ -5315,36 +5315,6 @@ End Sub
         }
 
 
-       
-
-        private void 形转路径_Click(object sender, RibbonControlEventArgs e)
-        {
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
-            PowerPoint.ShapeRange shapeRange = app.ActiveWindow.Selection.ShapeRange;
-
-            foreach (PowerPoint.Shape shape in shapeRange)
-            {
-                float shapeLeft = shape.Left;
-                float shapeTop = shape.Top;
-                float shapeWidth = shape.Width;
-                float shapeHeight = shape.Height;
-
-                if (shapeWidth > shapeHeight)
-                {
-                    // 横向线条
-                    slide.Shapes.AddLine(shapeLeft, shapeTop + shapeHeight / 2, shapeLeft + shapeWidth, shapeTop + shapeHeight / 2)
-                        .Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
-                }
-                else
-                {
-                    // 竖向线条
-                    slide.Shapes.AddLine(shapeLeft + shapeWidth / 2, shapeTop, shapeLeft + shapeWidth / 2, shapeTop + shapeHeight)
-                        .Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
-                }
-            }
-        }
-
         private void 文本居中_Click(object sender, RibbonControlEventArgs e)
         {
             PowerPoint.Application app = Globals.ThisAddIn.Application;
@@ -5674,8 +5644,8 @@ End Sub
                         }
                     }
 
-                    // 删除多余的空行
-                    for (int i = table.Rows.Count; i > 0; i--)
+                    // 删除多余的空行，保留非空行上方的空行
+                    for (int i = table.Rows.Count; i > 1; i--)
                     {
                         bool isEmpty = true;
                         for (int j = 1; j <= table.Columns.Count; j++)
@@ -5686,7 +5656,21 @@ End Sub
                                 break;
                             }
                         }
-                        if (isEmpty)
+
+                        bool isNextRowEmpty = true;
+                        if (i < table.Rows.Count)
+                        {
+                            for (int j = 1; j <= table.Columns.Count; j++)
+                            {
+                                if (!string.IsNullOrEmpty(table.Cell(i + 1, j).Shape.TextFrame.TextRange.Text))
+                                {
+                                    isNextRowEmpty = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isEmpty && isNextRowEmpty)
                         {
                             table.Rows[i].Delete();
                         }
@@ -5879,9 +5863,248 @@ End Sub
             }
         }
 
-        private void 文转表格_Click(object sender, RibbonControlEventArgs e)
+        private async void 文转表格_Click(object sender, RibbonControlEventArgs e)
         {
+            try
+            {
+                Application pptApp = Globals.ThisAddIn.Application;
+                Presentation presentation = pptApp.ActivePresentation;
+                Slide slide = presentation.Slides[presentation.Slides.Count];
 
+                slide.Shapes.PasteSpecial(PpPasteDataType.ppPasteHTML);
+                DeleteEmptyRectangles(slide);
+                var tableContents = ExtractHtmlTablesContent(slide);
+                DeleteHtmlTables(slide);
+
+                using (ProgressForm progressForm = new ProgressForm())
+                {
+                    progressForm.Show();
+
+                    foreach (var tableContent in tableContents)
+                    {
+                        var formattedContent = await Task.Run(() => FormatTableContent(pptApp, tableContent, progressForm));
+                        InsertFormattedTable(slide, formattedContent, pptApp);
+                    }
+
+                    progressForm.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("粘贴网页表格时发生错误: " + ex.Message);
+            }
+        }
+
+        private void DeleteEmptyRectangles(Slide slide)
+        {
+            for (int i = slide.Shapes.Count; i >= 1; i--)
+            {
+                Shape shape = slide.Shapes[i];
+                if (shape.Name.StartsWith("Rectangle"))
+                {
+                    shape.Delete();
+                }
+            }
+        }
+
+        private List<string[,]> ExtractHtmlTablesContent(Slide slide)
+        {
+            List<string[,]> tableContents = new List<string[,]>();
+
+            for (int i = slide.Shapes.Count; i >= 1; i--)
+            {
+                Shape shape = slide.Shapes[i];
+                if (shape.Type == Office.MsoShapeType.msoTable)
+                {
+                    Table htmlTable = shape.Table;
+                    int rows = htmlTable.Rows.Count;
+                    int cols = htmlTable.Columns.Count;
+                    string[,] content = new string[rows, cols];
+
+                    for (int r = 1; r <= rows; r++)
+                    {
+                        for (int c = 1; c <= cols; c++)
+                        {
+                            content[r - 1, c - 1] = htmlTable.Cell(r, c).Shape.TextFrame.TextRange.Text;
+                        }
+                    }
+
+                    tableContents.Add(content);
+                }
+            }
+
+            return tableContents;
+        }
+
+        private void DeleteHtmlTables(Slide slide)
+        {
+            for (int i = slide.Shapes.Count; i >= 1; i--)
+            {
+                Shape shape = slide.Shapes[i];
+                if (shape.Type == Office.MsoShapeType.msoTable)
+                {
+                    shape.Delete();
+                }
+            }
+        }
+
+        private string[,] FormatTableContent(Application pptApp, string[,] content, ProgressForm progressForm)
+        {
+            int rows = content.GetLength(0);
+            int cols = content.GetLength(1);
+            int maxCols = 20;
+            int totalRows = (cols / maxCols + 1) * rows;
+            string[,] formattedContent = new string[totalRows, maxCols];
+
+            int totalCells = rows * cols;
+            int processedCells = 0;
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    int targetRow = (j / maxCols) * rows + i;
+                    int targetCol = j % maxCols;
+                    formattedContent[targetRow, targetCol] = content[i, j];
+
+                    processedCells++;
+                    int progress = (int)((double)processedCells / totalCells * 100);
+                    progressForm.Invoke(new Action(() =>
+                    {
+                        progressForm.ProgressBar.Value = progress;
+                        progressForm.ProgressBar.Refresh();
+                        progressForm.ProgressLabel.Text = $"表格写入... {progress}%";
+                    }));
+
+                    System.Threading.Thread.Sleep(30);
+                }
+            }
+
+            return formattedContent;
+        }
+
+        private void InsertFormattedTable(Slide slide, string[,] content, Application pptApp)
+        {
+            int rows = content.GetLength(0);
+            int cols = content.GetLength(1);
+            Shape pptTableShape = slide.Shapes.AddTable(rows, cols);
+            Table pptTable = pptTableShape.Table;
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    pptTable.Cell(i + 1, j + 1).Shape.TextFrame.TextRange.Text = content[i, j];
+                    FormatDoubleQuotes(pptTable.Cell(i + 1, j + 1));
+                }
+            }
+
+            ResetTableFormat(pptApp, pptTable);
+        }
+
+        private void ResetTableFormat(Application pptApp, Table table)
+        {
+            int rowCount = table.Rows.Count;
+            int columnCount = table.Columns.Count;
+            float pinyinFontSize = 20;
+            float hanziFontSize = 10;
+
+            for (int row = 1; row <= rowCount; row++)
+            {
+                for (int col = 1; col <= columnCount; col++)
+                {
+                    var cell = table.Cell(row, col);
+                    PowerPoint.TextFrame textFrame = cell.Shape.TextFrame;
+
+                    textFrame.MarginBottom = 0;
+                    textFrame.MarginTop = row % 2 == 0 ? 0.5f : 0;
+                    textFrame.MarginLeft = 0;
+                    textFrame.MarginRight = 0;
+
+                    textFrame.TextRange.ParagraphFormat.Alignment = (PpParagraphAlignment)Office.MsoParagraphAlignment.msoAlignCenter;
+                    textFrame.TextRange.Font.Color.RGB = ColorTranslator.ToOle(System.Drawing.Color.Black);
+                    textFrame.TextRange.Font.Bold = Office.MsoTriState.msoFalse;
+                    cell.Shape.Fill.Transparency = 1;
+
+                    cell.Borders[PowerPoint.PpBorderType.ppBorderTop].Weight = 0;
+                    cell.Borders[PowerPoint.PpBorderType.ppBorderBottom].Weight = 0;
+                    cell.Borders[PowerPoint.PpBorderType.ppBorderLeft].Weight = 0;
+                    cell.Borders[PowerPoint.PpBorderType.ppBorderRight].Weight = 0;
+
+                    textFrame.VerticalAnchor = row % 2 == 0 ? Office.MsoVerticalAnchor.msoAnchorTop : Office.MsoVerticalAnchor.msoAnchorBottom;
+
+                    textFrame.TextRange.Font.Size = row % 2 == 0 ? pinyinFontSize : hanziFontSize;
+                }
+            }
+
+            AdjustTableDimensions(table);
+        }
+
+        private void AdjustTableDimensions(Table table)
+        {
+            float[] colMaxWidths = new float[table.Columns.Count];
+
+            for (int j = 1; j <= table.Columns.Count; j++)
+            {
+                colMaxWidths[j - 1] = 0;
+                for (int i = 1; i <= table.Rows.Count; i++)
+                {
+                    Cell cell = table.Cell(i, j);
+                    float width = cell.Shape.TextFrame.TextRange.BoundWidth;
+                    if (width > colMaxWidths[j - 1])
+                    {
+                        colMaxWidths[j - 1] = width;
+                    }
+                }
+            }
+
+            for (int j = 1; j <= table.Columns.Count; j++)
+            {
+                table.Columns[j].Width = colMaxWidths[j - 1] + 2;
+            }
+
+            for (int i = 1; i <= table.Rows.Count; i++)
+            {
+                float maxHeight = 0;
+                for (int j = 1; j <= table.Columns.Count; j++)
+                {
+                    Cell cell = table.Cell(i, j);
+                    float height = cell.Shape.TextFrame.TextRange.BoundHeight;
+                    if (height > maxHeight)
+                    {
+                        maxHeight = height;
+                    }
+                }
+                table.Rows[i].Height = maxHeight + 2;
+            }
+        }
+
+        private void FormatDoubleQuotes(Cell cell)
+        {
+            PowerPoint.TextRange textRange = cell.Shape.TextFrame.TextRange;
+            int startPos = 0;
+            while ((startPos = textRange.Text.IndexOf('“', startPos)) != -1)
+            {
+                if (startPos + 1 < textRange.Text.Length)
+                {
+                    textRange.Characters(startPos + 1, 1).Font.Superscript = Office.MsoTriState.msoTrue;
+                }
+                startPos++;
+            }
+            startPos = 0;
+            while ((startPos = textRange.Text.IndexOf('”', startPos)) != -1)
+            {
+                if (startPos + 1 < textRange.Text.Length)
+                {
+                    textRange.Characters(startPos + 1, 1).Font.Superscript = Office.MsoTriState.msoTrue;
+                }
+                startPos++;
+            }
+        }
+
+        private void 在线注音编辑器_Click(object sender, RibbonControlEventArgs e)
+        {
+            OpenWebPage("https://toneoz.com/ime/?fnt=1");
         }
     }
 }

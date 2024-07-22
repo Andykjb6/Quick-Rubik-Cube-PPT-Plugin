@@ -508,6 +508,7 @@ namespace 课件帮PPT助手
             TextBlockProgress.Visibility = Visibility.Visible;
             ProgressBarExport.Value = 0;
             TextBlockProgress.Text = "正在导出...";
+
             for (int row = 0; row < rowCount; row++)
             {
                 for (int col = 0; col < columnCount; col++)
@@ -529,6 +530,8 @@ namespace 课件帮PPT助手
                     await Task.Delay(10); // Simulate some delay to visualize progress
                 }
             }
+
+            AdjustTableSize(table);
 
             for (int col = columnCount; col >= 1; col--)
             {
@@ -598,6 +601,37 @@ namespace 课件帮PPT助手
             await Task.Delay(2000); // Show completion for 2 seconds
             ProgressBarExport.Visibility = Visibility.Collapsed;
             TextBlockProgress.Visibility = Visibility.Collapsed;
+        }
+
+        private void AdjustTableSize(PowerPoint.Table table)
+        {
+            float maxWidth = 0;
+
+            for (int i = 1; i <= table.Rows.Count; i++)
+            {
+                float maxHeight = 0;
+                for (int j = 1; j <= table.Columns.Count; j++)
+                {
+                    PowerPoint.Cell cell = table.Cell(i, j);
+                    float height = cell.Shape.TextFrame2.TextRange.BoundHeight;
+                    float width = cell.Shape.TextFrame2.TextRange.BoundWidth;
+                    if (height > maxHeight)
+                    {
+                        maxHeight = height;
+                    }
+                    if (width > maxWidth)
+                    {
+                        maxWidth = width;
+                    }
+                }
+                table.Rows[i].Height = maxHeight + 2; // 增加一点高度防止拥挤
+            }
+
+            // 设置所有列的宽度为最大宽度
+            for (int j = 1; j <= table.Columns.Count; j++)
+            {
+                table.Columns[j].Width = maxWidth + 2; // 增加一点宽度防止拥挤
+            }
         }
         private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
