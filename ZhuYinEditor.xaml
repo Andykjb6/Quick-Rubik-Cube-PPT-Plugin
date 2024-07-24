@@ -38,6 +38,7 @@
             <Button Name="BtnAlignJustify" Width="28" Height="28" Click="BtnAlignJustify_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/两端对齐.png" Stretch="Uniform" ToolTip="两端对齐"/>
             </Button>
+            <!-- 新增历史记录按钮 -->
         </StackPanel>
 
         <!-- 左侧RichTextBox -->

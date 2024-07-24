@@ -310,62 +310,92 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
+            int currentCharCount = 0; // 当前行字符计数
             int i = 0;
 
             while (i < text.Length)
             {
-                if (text[i] == '\n')
+                if (text[i] == '\n' || currentCharCount >= MaxCharsPerLine)
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
+                    currentCharCount = 0; // 重置当前行字符计数
+                    if (text[i] == '\n')
+                    {
+                        i++;
+                        continue; // 跳过换行符
+                    }
                 }
-                else
+
+                string wordToCheck = GetWordToCheck(text, i);
+                if (multiPronunciationDict.ContainsKey(wordToCheck))
                 {
-                    if (currentLinePanel.Children.Count >= MaxCharsPerLine)
+                    string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
+                    for (int j = 0; j < wordToCheck.Length; j++)
                     {
-                        StackPanelContent.Children.Add(currentLinePanel);
-                        currentLinePanel = CreateNewLinePanel();
-                    }
-
-                    string wordToCheck = GetWordToCheck(text, i);
-                    if (multiPronunciationDict.ContainsKey(wordToCheck))
-                    {
-                        string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
-                        for (int j = 0; j < wordToCheck.Length; j++)
+                        if (currentCharCount >= MaxCharsPerLine)
                         {
-                            StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
-                            currentLinePanel.Children.Add(sp);
-
-                            // 保存纠正后的拼音到字典
-                            int index = GetCharacterIndex(sp);
-                            correctedPinyinDict[index] = pinyinArray[j];
-                        }
-                        i += wordToCheck.Length - 1;
-                    }
-                    else
-                    {
-                        char currentChar = text[i];
-                        string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
-
-                        if (correctedPinyinDict.ContainsKey(i))
-                        {
-                            // 使用纠正后的拼音
-                            pinyin = correctedPinyinDict[i];
+                            StackPanelContent.Children.Add(currentLinePanel);
+                            currentLinePanel = CreateNewLinePanel();
+                            currentCharCount = 0;
                         }
 
-                        StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
+                        StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                         currentLinePanel.Children.Add(sp);
 
                         // 保存纠正后的拼音到字典
                         int index = GetCharacterIndex(sp);
-                        correctedPinyinDict[index] = pinyin;
+                        correctedPinyinDict[index] = pinyinArray[j];
+                        currentCharCount++; // 更新当前行字符计数
+                    }
+                    i += wordToCheck.Length - 1;
+                }
+                else
+                {
+                    char currentChar = text[i];
+                    string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
+
+                    if (correctedPinyinDict.ContainsKey(i))
+                    {
+                        // 使用纠正后的拼音
+                        pinyin = correctedPinyinDict[i];
+                    }
+
+                    if (currentCharCount >= MaxCharsPerLine)
+                    {
+                        StackPanelContent.Children.Add(currentLinePanel);
+                        currentLinePanel = CreateNewLinePanel();
+                        currentCharCount = 0;
+                    }
+
+                    StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
+                    currentLinePanel.Children.Add(sp);
+                    currentCharCount++; // 更新当前行字符计数
+
+                    // 保存纠正后的拼音到字典
+                    int index = GetCharacterIndex(sp);
+                    correctedPinyinDict[index] = pinyin;
+
+                    // 如果当前汉字为“儿”，且前一个汉字的拼音末尾包含字符“r”，则将当前汉字拼音留空
+                    if (currentChar == '儿' && i > 0)
+                    {
+                        var prevCharPanel = currentLinePanel.Children[currentLinePanel.Children.Count - 2] as StackPanel;
+                        var prevPinyinBlock = prevCharPanel.Children[0] as TextBlock;
+                        if (prevPinyinBlock.Text.EndsWith("r"))
+                        {
+                            (sp.Children[0] as TextBlock).Text = string.Empty;
+                        }
                     }
                 }
                 i++;
             }
 
-            StackPanelContent.Children.Add(currentLinePanel);
+            if (currentLinePanel.Children.Count > 0)
+            {
+                StackPanelContent.Children.Add(currentLinePanel);
+            }
         }
+
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
@@ -475,13 +505,20 @@ namespace 课件帮PPT助手
                         }
                     }
 
+                    // 补足每行的单元格数量
+                    while (pinyinList.Count < MaxCharsPerLine)
+                    {
+                        pinyinList.Add(string.Empty);
+                        hanziList.Add(string.Empty);
+                    }
+
                     pinyinLines.Add(pinyinList);
                     hanziLines.Add(hanziList);
                 }
             }
 
             int rowCount = pinyinLines.Count * 2;
-            int columnCount = pinyinLines.Max(line => line.Count);
+            int columnCount = MaxCharsPerLine;
 
             PowerPoint.Table table = activeSlide.Shapes.AddTable(rowCount, columnCount).Table;
 
@@ -492,7 +529,7 @@ namespace 课件帮PPT助手
 
             for (int i = 0; i < pinyinLines.Count; i++)
             {
-                for (int j = 0; j < pinyinLines[i].Count; j++)
+                for (int j = 0; j < MaxCharsPerLine; j++)
                 {
                     content[i * 2, j] = pinyinLines[i][j];
                     content[i * 2 + 1, j] = hanziLines[i][j];
@@ -633,6 +670,7 @@ namespace 课件帮PPT助手
                 table.Columns[j].Width = maxWidth + 2; // 增加一点宽度防止拥挤
             }
         }
+
         private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -670,41 +708,45 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
+            int currentCharCount = 0; // 当前行字符计数
 
             for (int i = 0; i < text.Length; i++)
             {
                 char c = text[i];
-                if (c == '\n')
+                if (c == '\n' || currentCharCount >= MaxCharsPerLine)
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
+                    currentCharCount = 0; // 重置当前行字符计数
+
+                    if (c == '\n')
+                    {
+                        continue; // 跳过换行符
+                    }
+                }
+
+                StackPanel sp = CreateCharacterPanel(c);
+
+                // 使用纠正后的拼音
+                if (correctedPinyinDict.ContainsKey(i))
+                {
+                    (sp.Children[0] as TextBlock).Text = correctedPinyinDict[i];
                 }
                 else
                 {
-                    if (currentLinePanel.Children.Count >= MaxCharsPerLine)
-                    {
-                        StackPanelContent.Children.Add(currentLinePanel);
-                        currentLinePanel = CreateNewLinePanel();
-                    }
-
-                    StackPanel sp = CreateCharacterPanel(c);
-
-                    // 使用纠正后的拼音
-                    if (correctedPinyinDict.ContainsKey(i))
-                    {
-                        (sp.Children[0] as TextBlock).Text = correctedPinyinDict[i];
-                    }
-                    else
-                    {
-                        string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
-                        (sp.Children[0] as TextBlock).Text = pinyin;
-                    }
-
-                    currentLinePanel.Children.Add(sp);
+                    string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
+                    (sp.Children[0] as TextBlock).Text = pinyin;
                 }
+
+                currentLinePanel.Children.Add(sp);
+                currentCharCount++; // 更新当前行字符计数
             }
 
-            StackPanelContent.Children.Add(currentLinePanel);
+            if (currentLinePanel.Children.Count > 0)
+            {
+                StackPanelContent.Children.Add(currentLinePanel);
+            }
+
             SyncAlignmentWithPinyin();
             HighlightErhuaHanzi();
         }
