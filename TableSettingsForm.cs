@@ -171,10 +171,5 @@ namespace 课件帮PPT助手
         {
             return (color.B << 16) | (color.G << 8) | color.R;
         }
-
-        private void TableSettingsForm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

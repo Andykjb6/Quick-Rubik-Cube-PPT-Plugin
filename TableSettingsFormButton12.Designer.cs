@@ -72,12 +72,13 @@
             // 
             // buttonChooseColor
             // 
+            this.buttonChooseColor.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.buttonChooseColor.Font = new System.Drawing.Font("宋体", 9F);
             this.buttonChooseColor.Location = new System.Drawing.Point(192, 97);
             this.buttonChooseColor.Name = "buttonChooseColor";
             this.buttonChooseColor.Size = new System.Drawing.Size(216, 40);
             this.buttonChooseColor.TabIndex = 3;
-            this.buttonChooseColor.Text = "自定义";
+            this.buttonChooseColor.UseVisualStyleBackColor = false;
             this.buttonChooseColor.Click += new System.EventHandler(this.ButtonChooseColor_Click);
             // 
             // buttonOK
@@ -85,9 +86,9 @@
             this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(89)))), ((int)(((byte)(239)))));
             this.buttonOK.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.buttonOK.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.buttonOK.Location = new System.Drawing.Point(117, 230);
+            this.buttonOK.Location = new System.Drawing.Point(45, 230);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(100, 55);
+            this.buttonOK.Size = new System.Drawing.Size(173, 55);
             this.buttonOK.TabIndex = 4;
             this.buttonOK.Text = "生成";
             this.buttonOK.UseVisualStyleBackColor = false;
@@ -98,9 +99,9 @@
             this.buttonApply.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(89)))), ((int)(((byte)(239)))));
             this.buttonApply.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.buttonApply.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.buttonApply.Location = new System.Drawing.Point(242, 230);
+            this.buttonApply.Location = new System.Drawing.Point(235, 230);
             this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(100, 55);
+            this.buttonApply.Size = new System.Drawing.Size(173, 55);
             this.buttonApply.TabIndex = 5;
             this.buttonApply.Text = "应用";
             this.buttonApply.UseVisualStyleBackColor = false;
@@ -110,7 +111,7 @@
             // 
             this.checkBoxTable.AutoSize = true;
             this.checkBoxTable.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.checkBoxTable.Location = new System.Drawing.Point(44, 157);
+            this.checkBoxTable.Location = new System.Drawing.Point(192, 157);
             this.checkBoxTable.Name = "checkBoxTable";
             this.checkBoxTable.Size = new System.Drawing.Size(107, 42);
             this.checkBoxTable.TabIndex = 6;
@@ -122,7 +123,7 @@
             // 
             this.checkBoxShape.AutoSize = true;
             this.checkBoxShape.Font = new System.Drawing.Font("微软雅黑", 10.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.checkBoxShape.Location = new System.Drawing.Point(192, 157);
+            this.checkBoxShape.Location = new System.Drawing.Point(45, 157);
             this.checkBoxShape.Name = "checkBoxShape";
             this.checkBoxShape.Size = new System.Drawing.Size(107, 42);
             this.checkBoxShape.TabIndex = 7;

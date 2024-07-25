@@ -14,7 +14,7 @@ namespace 课件帮PPT助手
         public TableSettingsFormButton12()
         {
             InitializeComponent();
-            checkBoxTable.Checked = true; // 默认勾选表格
+            checkBoxShape.Checked = true; // 默认勾选表格
         }
 
         private void ButtonChooseColor_Click(object sender, EventArgs e)
@@ -24,6 +24,7 @@ namespace 课件帮PPT助手
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
                     borderColor = colorDialog.Color;
+                    buttonChooseColor.BackColor = borderColor; // 设置按钮的背景颜色为用户选择的颜色
                 }
             }
         }

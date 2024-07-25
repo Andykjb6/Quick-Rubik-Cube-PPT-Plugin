@@ -59,10 +59,10 @@ namespace 课件帮PPT助手
             this.删列补行 = this.Factory.CreateRibbonButton();
             this.自动补齐 = this.Factory.CreateRibbonButton();
             this.合并段落 = this.Factory.CreateRibbonButton();
-            this.重设表格 = this.Factory.CreateRibbonButton();
             this.晓声通在线注音 = this.Factory.CreateRibbonSplitButton();
             this.在线注音编辑器 = this.Factory.CreateRibbonButton();
             this.文转表格 = this.Factory.CreateRibbonButton();
+            this.重设表格 = this.Factory.CreateRibbonButton();
             this.常用格子 = this.Factory.CreateRibbonSplitButton();
             this.生字格子 = this.Factory.CreateRibbonButton();
             this.四线三格 = this.Factory.CreateRibbonButton();
@@ -364,6 +364,8 @@ namespace 课件帮PPT助手
             this.注音编辑.Items.Add(this.晓声通在线注音);
             this.注音编辑.Label = "注音编辑";
             this.注音编辑.Name = "注音编辑";
+            this.注音编辑.ScreenTip = "使用说明：";
+            this.注音编辑.SuperTip = "单击进入“注音编辑器”。";
             this.注音编辑.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.注音编辑_Click);
             // 
             // 文本居中
@@ -406,16 +408,6 @@ namespace 课件帮PPT助手
             this.合并段落.SuperTip = "选中两个表格（一个段落一个表格），可合并两者。";
             this.合并段落.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.合并段落_Click);
             // 
-            // 重设表格
-            // 
-            this.重设表格.Image = ((System.Drawing.Image)(resources.GetObject("重设表格.Image")));
-            this.重设表格.Label = "重设格式（晓声通专用）";
-            this.重设表格.Name = "重设表格";
-            this.重设表格.ScreenTip = "使用说明：";
-            this.重设表格.ShowImage = true;
-            this.重设表格.SuperTip = "若直接从晓声通粘贴HTML表格到PPT中，可选中表格，可按Andy预设格式重设表格。";
-            this.重设表格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.重设表格_Click);
-            // 
             // 晓声通在线注音
             // 
             this.晓声通在线注音.Image = ((System.Drawing.Image)(resources.GetObject("晓声通在线注音.Image")));
@@ -442,6 +434,16 @@ namespace 课件帮PPT助手
             this.文转表格.ShowImage = true;
             this.文转表格.SuperTip = "专为“晓声通编辑器”而设的表格导入功能。";
             this.文转表格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.文转表格_Click);
+            // 
+            // 重设表格
+            // 
+            this.重设表格.Image = ((System.Drawing.Image)(resources.GetObject("重设表格.Image")));
+            this.重设表格.Label = "重设格式（晓声通专用）";
+            this.重设表格.Name = "重设表格";
+            this.重设表格.ScreenTip = "使用说明：";
+            this.重设表格.ShowImage = true;
+            this.重设表格.SuperTip = "若直接从晓声通粘贴HTML表格到PPT中，可选中表格，可按Andy预设格式重设表格。";
+            this.重设表格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.重设表格_Click);
             // 
             // 常用格子
             // 
