@@ -699,9 +699,14 @@ namespace 课件帮PPT助手
                         textRange.Text = $"({spaces})";
                         textRange.Font.Underline = MsoTriState.msoFalse; // 取消下划线
 
-                        // Shift键按下的微调参数
-                        newLeft = originalLeft - 0;
-                        newTop = originalTop - 3;
+                        // 计算括号的位置和宽度
+                        float leftBracketWidth = MeasureTextWidth("(", textRange.Font.Size, textRange.Font.Name);
+                        float rightBracketWidth = MeasureTextWidth(")", textRange.Font.Size, textRange.Font.Name);
+                        float totalWidth = leftBracketWidth + textWidth + rightBracketWidth;
+
+                        // 设置新文本框的位置，使其在括号中间
+                        newLeft = originalLeft + (totalWidth - textWidth) / 2 - leftBracketWidth;
+                        newTop = originalTop;
                     }
                     else
                     {
@@ -741,8 +746,6 @@ namespace 课件帮PPT助手
                 }
             }
         }
-
-
 
         public void 笔画拆分_Click(object sender, EventArgs e)
         {

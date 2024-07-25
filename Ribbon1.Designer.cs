@@ -1067,7 +1067,7 @@ namespace 课件帮PPT助手
             this.统一大小.Name = "统一大小";
             this.统一大小.ScreenTip = "使用说明：";
             this.统一大小.ShowImage = true;
-            this.统一大小.SuperTip = "使用本功能，将以第一个被选中的对象的大小为基准，统一所选对象的大小。";
+            this.统一大小.SuperTip = "使用本功能，默认单击，将以第一个被选中的对象的大小为基准，统一所选对象的大小。按住Ctrl单击，则统一高度；按住Shift单击，则统一宽度。";
             this.统一大小.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.统一大小_Click);
             // 
             // 统一格式
