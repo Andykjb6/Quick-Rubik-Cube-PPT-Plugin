@@ -19,7 +19,6 @@ using Application = Microsoft.Office.Interop.PowerPoint.Application;
 using NStandard;
 using OfficeOpenXml;
 using System.Collections.Concurrent;
-using System.Net;
 using System.Reflection;
 
 
@@ -1224,7 +1223,6 @@ namespace 课件帮PPT助手
         }
 
 
-       
 
         private void 板贴辅助_Click(object sender, RibbonControlEventArgs e)
         {
