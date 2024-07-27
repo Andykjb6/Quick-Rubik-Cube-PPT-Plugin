@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
@@ -31,13 +30,29 @@ namespace 课件帮PPT助手
 
         private void ButtonOK_Click(object sender, EventArgs e)
         {
+            bool ctrlPressed = (ModifierKeys & Keys.Control) == Keys.Control;
+
             if (checkBoxTable.Checked)
             {
-                GenerateTable();
+                if (ctrlPressed)
+                {
+                    GenerateTableWithoutLayout();
+                }
+                else
+                {
+                    GenerateTable();
+                }
             }
             else if (checkBoxShape.Checked)
             {
-                GenerateShape();
+                if (ctrlPressed)
+                {
+                    GenerateShapeWithoutLayout();
+                }
+                else
+                {
+                    GenerateShape();
+                }
             }
         }
 
@@ -97,6 +112,47 @@ namespace 课件帮PPT助手
 
                     // 更新当前 left 位置以紧挨着放置下一个田字格
                     currentLeft += selectedSize;
+
+                    // 确保田字格在选中对象的后面
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 将田字格置于当前选中对象的底层
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
+                }
+            }
+        }
+
+        private void GenerateTableWithoutLayout()
+        {
+            float borderWidth = (float)numericUpDownBorderWidth.Value;
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
+
+            if (app.ActiveWindow.Selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
+
+                foreach (PowerPoint.Shape selectedShape in selectedShapes)
+                {
+                    float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + 18;
+
+                    float left = selectedShape.Left;
+                    float top = selectedShape.Top;
+
+                    PowerPoint.Shape tableShape = activeSlide.Shapes.AddTable(2, 2, left, top, selectedSize, selectedSize);
+                    tableShape.LockAspectRatio = Office.MsoTriState.msoTrue; // 锁定纵横比
+
+                    PowerPoint.Table table = tableShape.Table;
+
+                    SetTableProperties(table, borderWidth, borderColor);
+
+                    // 将表格置于选中对象的底层
+                    tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 调整选中对象的位置以居中
+                    selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
+                    selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
 
                     // 确保田字格在选中对象的后面
                     tableShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
@@ -175,6 +231,63 @@ namespace 课件帮PPT助手
 
                     // 更新当前 left 位置以紧挨着放置下一个田字格
                     currentLeft += selectedSize;
+
+                    // 确保田字格在选中对象的后面
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 将田字格置于当前选中对象的底层
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
+                }
+            }
+        }
+
+        private void GenerateShapeWithoutLayout()
+        {
+            float borderWidth = (float)numericUpDownBorderWidth.Value;
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Slide activeSlide = app.ActiveWindow.View.Slide as PowerPoint.Slide;
+
+            if (app.ActiveWindow.Selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
+
+                foreach (PowerPoint.Shape selectedShape in selectedShapes)
+                {
+                    float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + 18;
+
+                    float left = selectedShape.Left;
+                    float top = selectedShape.Top;
+
+                    // 创建正方形
+                    PowerPoint.Shape squareShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, top, selectedSize, selectedSize);
+                    squareShape.Line.Weight = borderWidth;
+                    squareShape.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    squareShape.Fill.Transparency = 1; // 确保填充透明度
+
+                    // 创建两条虚线
+                    float halfSize = selectedSize / 2;
+                    PowerPoint.Shape verticalLine = activeSlide.Shapes.AddLine(left + halfSize, top, left + halfSize, top + selectedSize);
+                    PowerPoint.Shape horizontalLine = activeSlide.Shapes.AddLine(left, top + halfSize, left + selectedSize, top + halfSize);
+
+                    verticalLine.Line.Weight = borderWidth;
+                    verticalLine.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    verticalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
+
+                    horizontalLine.Line.Weight = borderWidth;
+                    horizontalLine.Line.ForeColor.RGB = ConvertColor(borderColor);
+                    horizontalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
+
+                    // 编组形状
+                    PowerPoint.ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
+                    PowerPoint.Shape groupShape = shapeRange.Group();
+
+                    // 将形状置于选中对象的底层
+                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 调整选中对象的位置以居中
+                    selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
+                    selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
 
                     // 确保田字格在选中对象的后面
                     groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);

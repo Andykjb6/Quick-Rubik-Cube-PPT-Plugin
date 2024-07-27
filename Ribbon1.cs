@@ -784,8 +784,8 @@ namespace 课件帮PPT助手
                     rectangle.Fill.GradientStops[2].Color.RGB = 0x000000; // 黑色
                     rectangle.Fill.GradientStops[2].Transparency = 0.0f; // 透明度0%
 
-                    // 将矩形置于选中对象的顶层
-                    rectangle.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
+                    // 将矩形置于选中对象的顶部
+                    rectangle.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
                 }
                 else
                 {
@@ -1364,16 +1364,16 @@ namespace 课件帮PPT助手
 
         private void 单字拆分_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            Application app = Globals.ThisAddIn.Application;
+            Selection selection = app.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
             {
                 PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
-                if (shapeRange.Count == 1)
+
+                foreach (PowerPoint.Shape shape in shapeRange)
                 {
-                    PowerPoint.Shape shape = shapeRange[1] as PowerPoint.Shape;
-                    if (shape != null && shape.HasTextFrame == Office.MsoTriState.msoTrue && shape.TextFrame.HasText == Office.MsoTriState.msoTrue)
+                    if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == Office.MsoTriState.msoTrue)
                     {
                         string text = shape.TextFrame.TextRange.Text;
                         float left = shape.Left;
@@ -1396,17 +1396,13 @@ namespace 课件帮PPT助手
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show("请选择一个包含文本的文本框。");
+                        MessageBox.Show("请选择包含文本的文本框。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
-                }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
                 }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("请选择一个文本框。");
+                MessageBox.Show("请选择一个或多个文本框。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
