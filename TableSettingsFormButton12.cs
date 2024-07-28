@@ -9,6 +9,7 @@ namespace 课件帮PPT助手
     public partial class TableSettingsFormButton12 : Form
     {
         private Color borderColor = Color.Black;
+        private int tianZiGeCounter = 1;
 
         public TableSettingsFormButton12()
         {
@@ -222,6 +223,9 @@ namespace 课件帮PPT助手
                     PowerPoint.ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
                     PowerPoint.Shape groupShape = shapeRange.Group();
 
+                    // 设置田字格名称
+                    groupShape.Name = $"田字格{tianZiGeCounter++}";
+
                     // 将形状置于选中对象的底层
                     groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
 
@@ -281,6 +285,9 @@ namespace 课件帮PPT助手
                     // 编组形状
                     PowerPoint.ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
                     PowerPoint.Shape groupShape = shapeRange.Group();
+
+                    // 设置田字格名称
+                    groupShape.Name = $"田字格{tianZiGeCounter++}";
 
                     // 将形状置于选中对象的底层
                     groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);

@@ -744,7 +744,7 @@ namespace 课件帮PPT助手
             this.指定对齐.Name = "指定对齐";
             this.指定对齐.ScreenTip = "使用说明：";
             this.指定对齐.ShowImage = true;
-            this.指定对齐.SuperTip = "像做连线题一样指定某两个对象就行对齐（可在连选的状态下进行）。";
+            this.指定对齐.SuperTip = "像做连线题一样指定某两个对象进行对齐（可在连选的状态下进行）。";
             this.指定对齐.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.指定对齐_Click);
             // 
             // 分布
