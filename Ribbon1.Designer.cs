@@ -163,6 +163,7 @@ namespace 课件帮PPT助手
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
             this.splitButton2 = this.Factory.CreateRibbonSplitButton();
+            this.分解拼音 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -449,6 +450,7 @@ namespace 课件帮PPT助手
             this.拓展应用.Image = ((System.Drawing.Image)(resources.GetObject("拓展应用.Image")));
             this.拓展应用.Items.Add(this.Zici);
             this.拓展应用.Items.Add(this.WritePinyin);
+            this.拓展应用.Items.Add(this.分解拼音);
             this.拓展应用.Label = "拓展应用";
             this.拓展应用.Name = "拓展应用";
             // 
@@ -1412,6 +1414,14 @@ namespace 课件帮PPT助手
             this.splitButton2.Label = "splitButton2";
             this.splitButton2.Name = "splitButton2";
             // 
+            // 分解拼音
+            // 
+            this.分解拼音.Image = ((System.Drawing.Image)(resources.GetObject("分解拼音.Image")));
+            this.分解拼音.Label = "分解拼音";
+            this.分解拼音.Name = "分解拼音";
+            this.分解拼音.ShowImage = true;
+            this.分解拼音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.分解拼音_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -1568,6 +1578,7 @@ namespace 课件帮PPT助手
         internal RibbonSplitButton splitButton2;
         internal RibbonSplitButton 复制;
         internal RibbonButton 上下镜像;
+        internal RibbonButton 分解拼音;
     }
 
     partial class ThisRibbonCollection

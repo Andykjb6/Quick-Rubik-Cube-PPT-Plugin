@@ -6169,5 +6169,133 @@ End Sub
                 MessageBox.Show("请选择一个或多个形状进行镜像操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
+
+        private void 分解拼音_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+            string pinyinFilePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.拆分拼音.txt");
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText || selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.TextRange textRange = null;
+
+                if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
+                {
+                    textRange = selection.TextRange;
+                }
+                else if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+                {
+                    PowerPoint.Shape shape = selection.ShapeRange[1];
+                    if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
+                    {
+                        textRange = shape.TextFrame.TextRange;
+                        shape.TextFrame.WordWrap = Office.MsoTriState.msoFalse; // 取消自动换行
+                    }
+                }
+
+                if (textRange != null)
+                {
+                    string originalText = textRange.Text.Replace(" ", ""); // 移除空格
+                    string pinyinWithoutTone = RemoveTone(originalText);
+                    Dictionary<string, string> pinyinMap = LoadPinyinMap(pinyinFilePath);
+
+                    if (pinyinMap.TryGetValue(pinyinWithoutTone, out string splitPinyin))
+                    {
+                        string splitPinyinWithTone = AssignTone(originalText, splitPinyin);
+                        string formattedText = $"{splitPinyinWithTone.Replace("+", "–")}→{originalText}";
+                        textRange.Text = formattedText;
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("无法在拼音文件中找到匹配项。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("请选择一个包含文本的文本框进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选择一个文本框或文本进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
+
+        private string PinyinResource(string resourceName)
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        private string RemoveTone(string pinyin)
+        {
+            Dictionary<char, char> toneMap = new Dictionary<char, char>
+            {
+                {'ā', 'a'}, {'á', 'a'}, {'ǎ', 'a'}, {'à', 'a'},
+                {'ē', 'e'}, {'é', 'e'}, {'ě', 'e'}, {'è', 'e'},
+                {'ī', 'i'}, {'í', 'i'}, {'ǐ', 'i'}, {'ì', 'i'},
+                {'ō', 'o'}, {'ó', 'o'}, {'ǒ', 'o'}, {'ò', 'o'},
+                {'ū', 'u'}, {'ú', 'u'}, {'ǔ', 'u'}, {'ù', 'u'},
+                {'ǖ', 'ü'}, {'ǘ', 'ü'}, {'ǚ', 'ü'}, {'ǜ', 'ü'}
+            };
+
+            char[] result = pinyin.Select(c => toneMap.ContainsKey(c) ? toneMap[c] : c).ToArray();
+            return new string(result);
+        }
+
+        private string AssignTone(string original, string splitPinyin)
+        {
+            Dictionary<char, char> toneMap = new Dictionary<char, char>
+            {
+                {'ā', 'a'}, {'á', 'a'}, {'ǎ', 'a'}, {'à', 'a'},
+                {'ē', 'e'}, {'é', 'e'}, {'ě', 'e'}, {'è', 'e'},
+                {'ī', 'i'}, {'í', 'i'}, {'ǐ', 'i'}, {'ì', 'i'},
+                {'ō', 'o'}, {'ó', 'o'}, {'ǒ', 'o'}, {'ò', 'o'},
+                {'ū', 'u'}, {'ú', 'u'}, {'ǔ', 'u'}, {'ù', 'u'},
+                {'ǖ', 'ü'}, {'ǘ', 'ü'}, {'ǚ', 'ü'}, {'ǜ', 'ü'}
+            };
+
+            char[] result = splitPinyin.ToCharArray();
+            foreach (char c in original)
+            {
+                if (toneMap.ContainsKey(c))
+                {
+                    char toneChar = toneMap[c];
+                    for (int i = 0; i < result.Length; i++)
+                    {
+                        if (result[i] == toneChar)
+                        {
+                            result[i] = c;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            return new string(result);
+        }
+
+        private Dictionary<string, string> LoadPinyinMap(string filePath)
+        {
+            var map = new Dictionary<string, string>();
+            string[] lines = File.ReadAllLines(filePath);
+
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split('=');
+                if (parts.Length == 2)
+                {
+                    map[parts[0]] = parts[1];
+                }
+            }
+
+            return map;
+        }
     }
 }

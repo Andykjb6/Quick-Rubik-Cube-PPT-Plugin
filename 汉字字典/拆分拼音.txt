@@ -13,7 +13,7 @@ bang=b+ang
 beng=b+eng	
 bing=b+ing			
 bian=b+i+an		
-biao	=b+i+ao						
+biao=b+i+ao						
 pa=p+a	
 po=p+o		
 pi=p+i	
@@ -29,8 +29,8 @@ pin=p+in
 pang=p+ang	
 peng=p+eng	
 ping=p+ing			
-pian	=p+i+an	
-piao	=p+i+ao
+pian=p+i+an	
+piao=p+i+ao
 ma=m+a	
 mo=m+o	
 me=m+e	
@@ -79,7 +79,7 @@ ding=d+ing
 dong=d+ong	
 dia=d+i+a	
 dian=d+i+an		
-diao	=d+i+ao			
+diao=d+i+ao			
 duan=d+u+an		
 duo=d+u+o
 ta=t+a		
@@ -122,7 +122,7 @@ ning=n+ing
 nong=n+ong		
 nian=n+i+an	
 niang=n+i+ang	
-niao	=n+i+ao			
+niao=n+i+ao			
 nuan=n+u+an		
 nuo=n+u+o
 la=l+a	
@@ -140,7 +140,8 @@ lie=l+ie
 lüe=l+üe		
 lan=l+an		
 lin=l+in	
-lun=l+un		
+lun=l+un
+luan=l+u+an
 lang=l+ang
 leng=l+eng	
 ling=l+ing	
@@ -149,7 +150,7 @@ lia=l+i+a
 lian=l+i+an	
 liang=l+i+ang	
 liao=l+i+ao				
-luan	=l+u+an	
+luan=l+u+an	
 luo=l+u+o	
 ga=g+a		
 ge=g+e		
@@ -245,7 +246,7 @@ xin=x+in
 xun=x+un			
 xing=x+ing		
 xia=x+i+a	
-xian	=x+i+an
+xian=x+i+an
 xiang=x+i+ang	
 xiao=x+i+ao	
 xiong=x+i+ong						
@@ -256,7 +257,7 @@ zhi=zh+i
 zhu=zh+u		
 zhai=zh+ai	
 zhei=zh+ei	
-zhui	=zh+ui
+zhui=zh+ui
 zhao=zh+ao	
 zhou=zh+ou					
 zhan=zh+an	
@@ -295,7 +296,7 @@ shi=sh+i
 shu=sh+u		
 shai=sh+ai	
 shei=sh+ei	
-shui	=sh+ui
+shui=sh+ui
 shao=sh+ao	
 shou=sh+ou					
 shan=sh+an	
@@ -355,20 +356,4 @@ cang=c+ang
 ceng=c+eng		
 cong=c+ong								
 cuan=c+u+an		
-cuo=c+u+o	
-	
-	
-	
-	
-	
-
-
-	
-	
-	
-	
-	
-	
-													
-							
-						
+cuo=c+u+o						
