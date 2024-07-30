@@ -6100,5 +6100,74 @@ End Sub
         {
             OpenWebPage("https://toneoz.com/ime/?fnt=1");
         }
+
+
+        private void 左右镜像_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application app = Globals.ThisAddIn.Application;
+            _ = app.ActiveWindow.View.Slide;
+            Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+
+                foreach (Shape shape in shapeRange)
+                {
+                    float originalLeft = shape.Left;
+                    float originalTop = shape.Top;
+                    float originalWidth = shape.Width;
+
+                    // 创建镜像副本
+                   Shape mirroredShape = shape.Duplicate()[1];
+
+                    // 水平翻转副本
+                    mirroredShape.Flip(MsoFlipCmd.msoFlipHorizontal);
+
+                    // 计算镜像位置
+                    float mirroredLeft = originalLeft + originalWidth;
+                    mirroredShape.Left = mirroredLeft;
+                    mirroredShape.Top = originalTop;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个或多个形状进行镜像操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
+
+        private void 上下镜像_Click(object sender, RibbonControlEventArgs e)
+        {
+            Application app = Globals.ThisAddIn.Application;
+            _ = app.ActiveWindow.View.Slide;
+           Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+
+                foreach (Shape shape in shapeRange)
+                {
+                    float originalLeft = shape.Left;
+                    float originalTop = shape.Top;
+                    float originalHeight = shape.Height;
+
+                    // 创建镜像副本
+                    Shape mirroredShape = shape.Duplicate()[1];
+
+                    // 垂直翻转副本
+                    mirroredShape.Flip(MsoFlipCmd.msoFlipVertical);
+
+                    // 计算镜像位置
+                    float mirroredTop = originalTop + originalHeight;
+                    mirroredShape.Left = originalLeft;
+                    mirroredShape.Top = mirroredTop;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个或多个形状进行镜像操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
     }
 }
