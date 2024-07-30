@@ -6178,23 +6178,25 @@ End Sub
 
             if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText || selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
             {
-                PowerPoint.TextRange textRange = null;
+                List<PowerPoint.TextRange> textRanges = new List<PowerPoint.TextRange>();
 
                 if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
                 {
-                    textRange = selection.TextRange;
+                    textRanges.Add(selection.TextRange);
                 }
                 else if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
                 {
-                    PowerPoint.Shape shape = selection.ShapeRange[1];
-                    if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
+                    foreach (PowerPoint.Shape shape in selection.ShapeRange)
                     {
-                        textRange = shape.TextFrame.TextRange;
-                        shape.TextFrame.WordWrap = Office.MsoTriState.msoFalse; // 取消自动换行
+                        if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
+                        {
+                            shape.TextFrame.WordWrap = Office.MsoTriState.msoFalse; // 取消自动换行
+                            textRanges.Add(shape.TextFrame.TextRange);
+                        }
                     }
                 }
 
-                if (textRange != null)
+                foreach (PowerPoint.TextRange textRange in textRanges)
                 {
                     string originalText = textRange.Text.Replace(" ", ""); // 移除空格
                     string pinyinWithoutTone = RemoveTone(originalText);
@@ -6211,14 +6213,10 @@ End Sub
                         System.Windows.Forms.MessageBox.Show("无法在拼音文件中找到匹配项。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                     }
                 }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("请选择一个包含文本的文本框进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("请选择一个文本框或文本进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show("请选择一个或多个文本框进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
         }
 
