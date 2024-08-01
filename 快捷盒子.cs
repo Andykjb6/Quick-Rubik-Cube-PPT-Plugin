@@ -388,7 +388,7 @@ namespace 课件帮PPT助手
 
         private string GetPinyinResult(string filePath, string character)
         {
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
                 foreach (var worksheet in package.Workbook.Worksheets)
@@ -421,7 +421,7 @@ namespace 课件帮PPT助手
         {
             var info = new HanziInfo();
 
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
                 foreach (var worksheet in package.Workbook.Worksheets)
@@ -529,7 +529,15 @@ namespace 课件帮PPT助手
                 PowerPoint.Shape copiedShape = shape.Duplicate()[1];
                 copiedShape.Left = shape.Left;
                 copiedShape.Top = shape.Top;
-                copiedShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward); // 确保复制出来的对象是所选对象的上一层
+
+                // 获取所选对象的图层位置
+                int selectedShapeZOrder = shape.ZOrderPosition;
+
+                // 将新复制的形状置于所选对象的后一个图层
+                while (copiedShape.ZOrderPosition > selectedShapeZOrder + 1)
+                {
+                    copiedShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                }
             }
         }
 

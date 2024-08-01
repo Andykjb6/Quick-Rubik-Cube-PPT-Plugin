@@ -718,99 +718,95 @@ namespace 课件帮PPT助手
             presentation.PageSetup.SlideHeight = height;
         }
 
-      
+
 
         private void Gradientrectangle_Click(object sender, RibbonControlEventArgs e)
         {
             // 获取当前的PowerPoint应用程序实例
-            PowerPoint.Application application = Globals.ThisAddIn.Application;
+            Application application = Globals.ThisAddIn.Application;
 
             // 检查当前视图是否支持选择操作
-            if (application.ActiveWindow.ViewType == PowerPoint.PpViewType.ppViewNormal)
+            if (application.ActiveWindow.ViewType == PpViewType.ppViewNormal)
             {
                 // 获取当前的演示文稿
-                PowerPoint.Presentation presentation = application.ActivePresentation;
+                Presentation presentation = application.ActivePresentation;
 
                 // 检查是否有选中的对象
-                if (application.ActiveWindow.Selection.Type != PowerPoint.PpSelectionType.ppSelectionNone)
+                if (application.ActiveWindow.Selection.Type != PpSelectionType.ppSelectionNone)
                 {
-                    PowerPoint.Shape selectedShape = application.ActiveWindow.Selection.ShapeRange[1];
+                    Shape selectedShape = application.ActiveWindow.Selection.ShapeRange[1];
 
                     // 创建渐变透明矩形
-                    PowerPoint.Shape rectangle = null;
+                    Shape rectangle = null;
+                    Slide slide = selectedShape.Parent as Slide;
 
-                    if (selectedShape.Type == Office.MsoShapeType.msoPlaceholder)
+                    if (slide != null)
                     {
-                        // 如果选中的是幻灯片
-                        PowerPoint.Slide slide = selectedShape.Parent as PowerPoint.Slide;
-                        if (slide != null)
+                        // 插入一个与选中对象等大的矩形
+                        rectangle = slide.Shapes.AddShape(
+                            MsoAutoShapeType.msoShapeRectangle,
+                            selectedShape.Left, selectedShape.Top, selectedShape.Width, selectedShape.Height);
+
+                        // 设置边框为不可见
+                        rectangle.Line.Visible = MsoTriState.msoFalse;
+
+                        // 设置填充为渐变
+                        rectangle.Fill.OneColorGradient(MsoGradientStyle.msoGradientHorizontal, 1, 1);
+
+                        // 设置渐变方向
+                        if (Control.ModifierKeys == Keys.Control) // 如果按下了Ctrl键
                         {
-                            rectangle = slide.Shapes.AddShape(
-                                Office.MsoAutoShapeType.msoShapeRectangle,
-                                0, 0, slide.Master.Width, slide.Master.Height);
+                            rectangle.Fill.GradientAngle = 90; // 从上往下
+                        }
+                        else if (Control.ModifierKeys == Keys.Shift) // 如果按下了Shift键
+                        {
+                            rectangle.Fill.GradientAngle = 45; // 对角线方向
+                        }
+                        else
+                        {
+                            rectangle.Fill.GradientAngle = 0; // 默认从左到右
+                        }
+
+                        // 设置渐变色标
+                        rectangle.Fill.GradientStops[1].Color.RGB = 0x000000; // 黑色
+                        rectangle.Fill.GradientStops[1].Transparency = 1.0f; // 透明度100%
+                        rectangle.Fill.GradientStops[2].Color.RGB = 0x000000; // 黑色
+                        rectangle.Fill.GradientStops[2].Transparency = 0.0f; // 透明度0%
+
+                        // 获取所选对象的图层位置
+                        int selectedShapeZOrder = selectedShape.ZOrderPosition;
+
+                        // 将矩形置于所选对象的后一个图层
+                        while (rectangle.ZOrderPosition > selectedShapeZOrder + 1)
+                        {
+                            rectangle.ZOrder(MsoZOrderCmd.msoSendBackward);
                         }
                     }
-                    else
-                    {
-                        // 如果选中的是其他对象
-                        rectangle = presentation.Slides[selectedShape.Parent.SlideIndex].Shapes.AddShape(
-                            Office.MsoAutoShapeType.msoShapeRectangle,
-                            selectedShape.Left, selectedShape.Top, selectedShape.Width, selectedShape.Height);
-                    }
-
-                    // 设置边框为不可见
-                    rectangle.Line.Visible = Office.MsoTriState.msoFalse;
-
-                    // 设置填充为渐变
-                    rectangle.Fill.OneColorGradient(Office.MsoGradientStyle.msoGradientHorizontal, 1, 1);
-
-                    // 设置渐变方向
-                    if (Control.ModifierKeys == System.Windows.Forms.Keys.Control) // 如果按下了Ctrl键
-                    {
-                        rectangle.Fill.GradientAngle = 90; // 从上往下
-                    }
-                    else if (Control.ModifierKeys == System.Windows.Forms.Keys.Shift) // 如果按下了Shift键
-                    {
-                        rectangle.Fill.GradientAngle = 45; // 对角线方向
-                    }
-                    else
-                    {
-                        rectangle.Fill.GradientAngle = 0; // 默认从左到右
-                    }
-
-                    // 设置渐变色标
-                    rectangle.Fill.GradientStops[1].Color.RGB = 0x000000; // 黑色
-                    rectangle.Fill.GradientStops[1].Transparency = 1.0f; // 透明度100%
-                    rectangle.Fill.GradientStops[2].Color.RGB = 0x000000; // 黑色
-                    rectangle.Fill.GradientStops[2].Transparency = 0.0f; // 透明度0%
-
-                    // 将矩形置于选中对象的顶部
-                    rectangle.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
                 }
                 else
                 {
                     // 当没有选中对象时，默认在当前幻灯片上插入与幻灯片等大的渐变透明矩形
-                    PowerPoint.Slide slide = application.ActiveWindow.View.Slide as PowerPoint.Slide;
+                    Slide slide = application.ActiveWindow.View.Slide as Slide;
 
                     if (slide != null)
                     {
                         // 插入一个与幻灯片等大的矩形
-                        PowerPoint.Shape rectangle = slide.Shapes.AddShape(
-                            Office.MsoAutoShapeType.msoShapeRectangle,
+                        Shape rectangle = slide.Shapes.AddShape(
+                            MsoAutoShapeType.msoShapeRectangle,
                             0, 0, slide.Master.Width, slide.Master.Height);
 
                         // 设置边框为不可见
-                        rectangle.Line.Visible = Office.MsoTriState.msoFalse;
+                        rectangle.Line.Visible = MsoTriState.msoFalse;
 
                         // 设置填充为渐变
-                        rectangle.Fill.OneColorGradient(Office.MsoGradientStyle.msoGradientHorizontal, 1, 1);
+                        rectangle.Fill.OneColorGradient(MsoGradientStyle.msoGradientHorizontal, 1, 1);
 
                         // 设置渐变方向
-                        if (Control.ModifierKeys == System.Windows.Forms.Keys.Control) // 如果按下了Ctrl键
+                        if (Control.ModifierKeys == Keys.Control) // 如果按下了Ctrl键
                         {
                             rectangle.Fill.GradientAngle = 90; // 从上往下
                         }
-                        else if (Control.ModifierKeys == System.Windows.Forms.Keys.Shift) // 如果按下了Shift键
+                        else if (Control.ModifierKeys == Keys.Shift) // 如果按下了Shift键
                         {
                             rectangle.Fill.GradientAngle = 45; // 对角线方向
                         }
@@ -826,7 +822,7 @@ namespace 课件帮PPT助手
                         rectangle.Fill.GradientStops[2].Transparency = 0.0f; // 透明度0%
 
                         // 将矩形置于幻灯片的底层
-                        rectangle.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+                        rectangle.ZOrder(MsoZOrderCmd.msoSendToBack);
                     }
                     else
                     {
@@ -839,6 +835,7 @@ namespace 课件帮PPT助手
                 MessageBox.Show("请切换到Normal视图以进行选择操作。");
             }
         }
+
 
         private void Pagecentered_Click(object sender, RibbonControlEventArgs e)
         {
@@ -1578,301 +1575,7 @@ End Sub
             vbaProject.VBComponents.Remove(vbaModule);
         }
 
-        private List<PowerPoint.Shape> copiedShapes = new List<PowerPoint.Shape>();
-        private Dictionary<int, (float Width, float Height)> initialSizes = new Dictionary<int, (float Width, float Height)>();
-
-        private void 环形分布_Click(object sender, RibbonControlEventArgs e)
-        {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-            PowerPoint.ShapeRange selectedShapes = selection.ShapeRange;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selectedShapes.Count >= 1)
-            {
-                float radius = 100;
-                float initialRotation = 0;
-                float finalRotation = 0;
-                float sizeIncrement = 0;
-                int copyCount = 0;
-
-                if (selectedShapes.Count == 1)
-                {
-                    ShowSingleObjectForm(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
-                }
-                else
-                {
-                    PerformCircularDistribution(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement, false);
-                    ShowMultipleObjectsForm(pptApp, selectedShapes, radius, initialRotation, finalRotation, sizeIncrement);
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选择至少一个对象。");
-            }
-        }
-
-        private void PerformCircularDistribution(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, bool isCopyMode, int copyCount = 0)
-        {
-            if (isCopyMode)
-            {
-                foreach (PowerPoint.Shape shape in copiedShapes)
-                {
-                    shape.Delete();
-                }
-                copiedShapes.Clear();
-            }
-
-            int count = isCopyMode ? copyCount + 1 : shapes.Count; // 确保选中的对象也被包含
-            float angleStep = 360.0f / count;
-            float angleIncrement = (finalRotation - initialRotation) / count;
-
-            float currentRadius = radius;
-
-            for (int i = 0; i < count; i++)
-            {
-                float angle = initialRotation + i * angleStep;
-                float radians = angle * (float)(Math.PI / 180.0);
-                float newX = (float)(currentRadius * Math.Cos(radians));
-                float newY = (float)(currentRadius * Math.Sin(radians));
-
-                PowerPoint.Shape shape;
-                if (isCopyMode)
-                {
-                    if (i == 0)
-                    {
-                        shape = shapes[1]; // 第一个形状是选中的对象
-                    }
-                    else
-                    {
-                        shape = shapes[1].Duplicate()[1];
-                        copiedShapes.Add(shape);
-                    }
-                }
-                else
-                {
-                    shape = shapes[i + 1];
-                }
-
-                shape.Left = newX + (pptApp.ActivePresentation.PageSetup.SlideWidth / 2) - (shape.Width / 2);
-                shape.Top = newY + (pptApp.ActivePresentation.PageSetup.SlideHeight / 2) - (shape.Height / 2);
-                shape.Rotation = initialRotation + i * angleIncrement;
-
-                if (!initialSizes.ContainsKey(shape.Id))
-                {
-                    initialSizes[shape.Id] = (shape.Width, shape.Height);
-                }
-
-                if (sizeIncrement != 0)
-                {
-                    float newSize = initialSizes[shape.Id].Width * (1 + i * sizeIncrement / 100.0f);
-                    shape.Width = newSize;
-                    shape.Height = newSize;
-
-                    // 增加当前半径以保持间距相等
-                    currentRadius += sizeIncrement / 2.0f;
-                }
-            }
-        }
-
-        private void ShowSingleObjectForm(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement, int copyCount)
-        {
-            SingleObjectForm form = new SingleObjectForm(pptApp, shapes, radius, initialRotation, finalRotation, sizeIncrement, copyCount);
-            form.ShowDialog();
-        }
-
-        private void ShowMultipleObjectsForm(PowerPoint.Application pptApp, PowerPoint.ShapeRange shapes, float radius, float initialRotation, float finalRotation, float sizeIncrement)
-        {
-            MultipleObjectsForm form = new MultipleObjectsForm(pptApp, shapes, radius, initialRotation, finalRotation, sizeIncrement);
-            form.ShowDialog();
-        }
-
-
-
-        private PowerPoint.ShapeRange selectedShapes;
-        private MatrixDistributionForm matrixForm;
-
-        // 保持原始尺寸和当前缩放比例
-        private float[] originalWidths;
-        private float[] originalHeights;
-        private float currentScale = 100.0f;
-
-        private void 矩阵分布_Click(object sender, RibbonControlEventArgs e)
-        {
-            // 获取选中的对象
-            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-
-            // 检查选择是否有效
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 0)
-            {
-                selectedShapes = selection.ShapeRange;
-
-                // 保存原始尺寸
-                originalWidths = new float[selectedShapes.Count];
-                originalHeights = new float[selectedShapes.Count];
-                for (int i = 0; i < selectedShapes.Count; i++)
-                {
-                    originalWidths[i] = selectedShapes[i + 1].Width;
-                    originalHeights[i] = selectedShapes[i + 1].Height;
-                }
-
-                // 初始化当前缩放比例
-                currentScale = 100.0f;
-
-                // 显示矩阵分布设置窗体
-                if (matrixForm == null || matrixForm.IsDisposed)
-                {
-                    matrixForm = new MatrixDistributionForm();
-                    matrixForm.ParametersChanged += Form_ParametersChanged;
-                    matrixForm.FormClosed += Form_FormClosed;
-                }
-
-                if (selectedShapes.Count > 1)
-                {
-                    matrixForm.SetTotalCount(selectedShapes.Count);
-                }
-                else
-                {
-                    matrixForm.EnableTotalCountAdjustment();
-                }
-
-                matrixForm.Show();
-                matrixForm.TopMost = true;  // 设置为顶层窗体
-            }
-            else
-            {
-                MessageBox.Show("请选择一个或多个对象");
-            }
-        }
-
-        private void Form_ParametersChanged(object sender, EventArgs e)
-        {
-            var form = sender as MatrixDistributionForm;
-            int totalCount = form.TotalCount;
-            int horizontalCount = form.HorizontalCount;
-            int rowSpacing = form.RowSpacing;
-            int columnSpacing = form.ColumnSpacing;
-            int scale = form.Scale;
-
-            if (selectedShapes != null && selectedShapes.Count > 0)
-            {
-                var slide = selectedShapes[1].Parent;
-
-                // 删除现有的复制对象
-                DeleteExistingCopies(slide);
-
-                if (selectedShapes.Count > 1)
-                {
-                    // 对多个对象进行排列
-                    ArrangeShapes(selectedShapes, horizontalCount, rowSpacing, columnSpacing, scale);
-                }
-                else
-                {
-                    // 对单个对象进行复制和排列
-                    var baseShape = selectedShapes[1];
-                    CreateMatrix(baseShape, totalCount, horizontalCount, rowSpacing, columnSpacing, scale);
-                }
-            }
-        }
-
-        private void Form_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            var form = sender as MatrixDistributionForm;
-            form.ParametersChanged -= Form_ParametersChanged;
-        }
-
-        private void ArrangeShapes(PowerPoint.ShapeRange shapes, int horizontalCount, int rowSpacing, int columnSpacing, int scale)
-        {
-            // 计算每个形状的初始位置
-            float initialLeft = shapes[1].Left;
-            float initialTop = shapes[1].Top;
-
-            // 计算缩放比例的变化
-            float scaleFactor = scale / currentScale;
-
-            // 更新 currentScale
-            currentScale = scale;
-
-            // 排列选中的对象
-            for (int i = 0; i < shapes.Count; i++)
-            {
-                int row = i / horizontalCount;
-                int column = i % horizontalCount;
-
-                float left = initialLeft + column * (originalWidths[i] * scaleFactor + columnSpacing);
-                float top = initialTop + row * (originalHeights[i] * scaleFactor + rowSpacing);
-
-                var shape = shapes[i + 1];
-                shape.Left = left;
-                shape.Top = top;
-                shape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
-                shape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
-
-                // 更新原始尺寸为当前尺寸
-                originalWidths[i] = shape.Width;
-                originalHeights[i] = shape.Height;
-            }
-        }
-
-        private void CreateMatrix(PowerPoint.Shape baseShape, int totalCount, int horizontalCount, int rowSpacing, int columnSpacing, int scale)
-        {
-            // 计算每个形状的初始位置
-            float initialLeft = baseShape.Left;
-            float initialTop = baseShape.Top;
-
-            // 保存原始尺寸
-            float originalWidth = baseShape.Width;
-            float originalHeight = baseShape.Height;
-
-            // 计算缩放比例的变化
-            float scaleFactor = scale / currentScale;
-
-            // 更新 currentScale
-            currentScale = scale;
-
-            // 创建矩阵
-            for (int i = 0; i < totalCount; i++)
-            {
-                int row = i / horizontalCount;
-                int column = i % horizontalCount;
-
-                float left = initialLeft + column * (originalWidth * scaleFactor + columnSpacing);
-                float top = initialTop + row * (originalHeight * scaleFactor + rowSpacing);
-
-                // 只有在i大于0时才复制原始对象
-                if (i > 0)
-                {
-                    var newShape = baseShape.Duplicate();
-                    newShape.Left = left;
-                    newShape.Top = top;
-                    newShape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
-                    newShape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
-                    newShape.Name = "Copy_of_" + baseShape.Name + "_" + i;
-                }
-                else
-                {
-                    baseShape.Left = left;
-                    baseShape.Top = top;
-                    baseShape.Width *= scaleFactor; // 基于当前尺寸计算新的宽度
-                    baseShape.Height *= scaleFactor; // 基于当前尺寸计算新的高度
-
-                    // 更新原始尺寸为当前尺寸
-                    originalWidths[0] = baseShape.Width;
-                    originalHeights[0] = baseShape.Height;
-                }
-            }
-        }
-
-        private void DeleteExistingCopies(PowerPoint.Slide slide)
-        {
-            for (int i = slide.Shapes.Count; i >= 1; i--)
-            {
-                var shape = slide.Shapes[i];
-                if (shape.Name.StartsWith("Copy_of_"))
-                {
-                    shape.Delete();
-                }
-            }
-        }
+       
 
         private void Experte抠图_Click(object sender, RibbonControlEventArgs e)
         {
@@ -1973,7 +1676,7 @@ End Sub
 
         private void 位图转矢量图_Click(object sender, RibbonControlEventArgs e)
         {
-            string url = "https://svg.tmttool.com/";
+            string url = "https://www.pngtosvg.com/";
             try
             {
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -2008,29 +1711,33 @@ End Sub
         //原位复制一个对象
         private void LCopy_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection selection = pptApp.ActiveWindow.Selection;
 
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (selection.Type == PpSelectionType.ppSelectionShapes)
             {
-                foreach (PowerPoint.Shape shape in selection.ShapeRange)
+                foreach (Shape shape in selection.ShapeRange)
                 {
-                    PowerPoint.Shape newShape = shape.Duplicate()[1]; // 复制形状
+                    Shape newShape = shape.Duplicate()[1]; // 复制形状
                     newShape.Left = shape.Left; // 保持原位
                     newShape.Top = shape.Top;   // 保持原位
-                    newShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+
+                    // 获取所选对象的图层位置
+                    int selectedShapeZOrder = shape.ZOrderPosition;
+
+                    // 将新复制的形状置于所选对象的后一个图层
+                    while (newShape.ZOrderPosition > selectedShapeZOrder + 1)
+                    {
+                        newShape.ZOrder(MsoZOrderCmd.msoSendBackward);
+                    }
                 }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("请选择一个或多个对象进行复制。", "提示", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                MessageBox.Show("请选择一个或多个对象进行复制。", "提示", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
             }
         }
-
-
-       
-      
-
+    
         private void 生成样机_Click(object sender, RibbonControlEventArgs e)
         {
             using (var form = new SampleGenerationForm())
@@ -2968,29 +2675,29 @@ End Sub
             }
         }
 
-        private PowerPoint.Shape InsertFourLineThreeGrid(PowerPoint.Slide slide, float width, float height)
+        private Shape InsertFourLineThreeGrid(Slide slide, float width, float height)
         {
             float lineSpacing = height / 3.0f;
             PowerPoint.Shapes shapes = slide.Shapes;
-            PowerPoint.Shape line1 = shapes.AddLine(0, 0, width, 0);
-            PowerPoint.Shape line2 = shapes.AddLine(0, lineSpacing, width, lineSpacing);
-            PowerPoint.Shape line3 = shapes.AddLine(0, lineSpacing * 2, width, lineSpacing * 2);
-            PowerPoint.Shape line4 = shapes.AddLine(0, height, width, height);
+            Shape line1 = shapes.AddLine(0, 0, width, 0);
+            Shape line2 = shapes.AddLine(0, lineSpacing, width, lineSpacing);
+            Shape line3 = shapes.AddLine(0, lineSpacing * 2, width, lineSpacing * 2);
+            Shape line4 = shapes.AddLine(0, height, width, height);
 
-            line1.Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+            line1.Line.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
             line1.Line.Weight = 1.5f;
-            line4.Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+            line4.Line.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
             line4.Line.Weight = 1.5f;
-            line2.Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Gray);
+            line2.Line.ForeColor.RGB = ColorTranslator.ToOle(Color.Gray);
             line2.Line.Weight = 1.0f;
-            line3.Line.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+            line3.Line.ForeColor.RGB = ColorTranslator.ToOle(Color.Red);
             line3.Line.Weight = 1.0f;
 
             PowerPoint.ShapeRange shapeRange = slide.Shapes.Range(new string[] { line1.Name, line2.Name, line3.Name, line4.Name });
             return shapeRange.Group();
         }
 
-        private PowerPoint.Shape AdjustFourLineThreeGrid(PowerPoint.Shape gridGroup, float newSpacing)
+        private Shape AdjustFourLineThreeGrid(Shape gridGroup, float newSpacing)
         {
             PowerPoint.ShapeRange shapes = gridGroup.Ungroup();
             shapes[1].Top = newSpacing;
@@ -2999,9 +2706,9 @@ End Sub
             return shapes.Group();
         }
 
-        private float GetMinCharacterHeight(PowerPoint.Shape textBox)
+        private float GetMinCharacterHeight(Shape textBox)
         {
-            PowerPoint.TextRange textRange = textBox.TextFrame.TextRange;
+            TextRange textRange = textBox.TextFrame.TextRange;
             float minHeight = float.MaxValue;
             for (int i = 1; i <= textRange.Length; i++)
             {
@@ -3017,7 +2724,7 @@ End Sub
 
         private void 移动对齐_Click(object sender, RibbonControlEventArgs e)
         {
-            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            Application app = Globals.ThisAddIn.Application;
             MovingAlignmentForm form = new MovingAlignmentForm(app);
             form.Show();
         }
@@ -3044,14 +2751,14 @@ End Sub
             Dictionary<string, string> duoyinziDictionary = LoadDuoyinziDictionary(duoyinziFilePath);
 
             // 获取当前PPT应用和选中的文本框或文本
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection pptSelection = pptApp.ActiveWindow.Selection;
+            Application pptApp = Globals.ThisAddIn.Application;
+            Selection pptSelection = pptApp.ActiveWindow.Selection;
 
-            if (pptSelection.Type == PowerPoint.PpSelectionType.ppSelectionText || pptSelection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (pptSelection.Type == PpSelectionType.ppSelectionText || pptSelection.Type == PpSelectionType.ppSelectionShapes)
             {
-                foreach (PowerPoint.Shape selectedShape in pptSelection.ShapeRange)
+                foreach (Shape selectedShape in pptSelection.ShapeRange)
                 {
-                    PowerPoint.TextRange textRange = selectedShape.TextFrame.TextRange;
+                    TextRange textRange = selectedShape.TextFrame.TextRange;
                     string selectedText = textRange.Text;
                     string annotatedText = GetPinyinForText(selectedText, hanziPinyinDictionary, duoyinziDictionary);
 
@@ -3062,8 +2769,8 @@ End Sub
                     float newFontSize = textRange.Font.Size / 2;
 
                     // 创建新的文本框并插入注音后的文本
-                    PowerPoint.Shape newShape = pptSelection.SlideRange[1].Shapes.AddTextbox(
-                        Office.MsoTextOrientation.msoTextOrientationHorizontal,
+                    Shape newShape = pptSelection.SlideRange[1].Shapes.AddTextbox(
+                        MsoTextOrientation.msoTextOrientationHorizontal,
                         left, top, width, selectedShape.Height / 2);
                     newShape.TextFrame.TextRange.Text = annotatedText;
 
@@ -3074,7 +2781,7 @@ End Sub
                     newShape.TextFrame.TextRange.ParagraphFormat.Alignment = textRange.ParagraphFormat.Alignment;
 
                     // 确保新文本框不自动换行
-                    newShape.TextFrame.WordWrap = Office.MsoTriState.msoFalse;
+                    newShape.TextFrame.WordWrap = MsoTriState.msoFalse;
                 }
             }
             else
@@ -3650,14 +3357,14 @@ End Sub
 
         private void Selectsize_Click(object sender, RibbonControlEventArgs e)
         {
-            Microsoft.Office.Interop.PowerPoint.Selection sel = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-            if (sel.Type != PowerPoint.PpSelectionType.ppSelectionShapes)
+            Selection sel = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+            if (sel.Type != PpSelectionType.ppSelectionShapes)
             {
                 MessageBox.Show("本功能可同时选中当前页面中与所选形状相同尺寸大小的形状");
                 return;
             }
 
-            PowerPoint.Slide slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+            Slide slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
             PowerPoint.ShapeRange range = sel.ShapeRange;
 
             bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
@@ -3665,48 +3372,48 @@ End Sub
 
             if (sel.HasChildShapeRange)
             {
-                PowerPoint.Shape shape = sel.ChildShapeRange[1];
+                Shape shape = sel.ChildShapeRange[1];
 
                 for (int i = 1; i <= range[1].GroupItems.Count; i++)
                 {
-                    PowerPoint.Shape item = range[1].GroupItems[i];
-                    if (item.Type != Office.MsoShapeType.msoGroup && item.Visible == Office.MsoTriState.msoTrue)
+                    Shape item = range[1].GroupItems[i];
+                    if (item.Type != MsoShapeType.msoGroup && item.Visible == MsoTriState.msoTrue)
                     {
                         if (isCtrlPressed && item.Width == shape.Width)
                         {
-                            item.Select(Office.MsoTriState.msoFalse);
+                            item.Select(MsoTriState.msoFalse);
                         }
                         else if (isShiftPressed && item.Height == shape.Height)
                         {
-                            item.Select(Office.MsoTriState.msoFalse);
+                            item.Select(MsoTriState.msoFalse);
                         }
                         else if (!isCtrlPressed && !isShiftPressed && item.Width == shape.Width && item.Height == shape.Height)
                         {
-                            item.Select(Office.MsoTriState.msoFalse);
+                            item.Select(MsoTriState.msoFalse);
                         }
                     }
                 }
             }
             else
             {
-                PowerPoint.Shape shape2 = range[1];
+                Shape shape2 = range[1];
 
                 for (int j = 1; j <= slide.Shapes.Count; j++)
                 {
                     PowerPoint.Shape item2 = slide.Shapes[j];
-                    if (item2.Type != Office.MsoShapeType.msoGroup && item2.Visible == Office.MsoTriState.msoTrue)
+                    if (item2.Type != MsoShapeType.msoGroup && item2.Visible == MsoTriState.msoTrue)
                     {
                         if (isCtrlPressed && item2.Width == shape2.Width)
                         {
-                            item2.Select(Office.MsoTriState.msoFalse);
+                            item2.Select(MsoTriState.msoFalse);
                         }
                         else if (isShiftPressed && item2.Height == shape2.Height)
                         {
-                            item2.Select(Office.MsoTriState.msoFalse);
+                            item2.Select(MsoTriState.msoFalse);
                         }
                         else if (!isCtrlPressed && !isShiftPressed && item2.Width == shape2.Width && item2.Height == shape2.Height)
                         {
-                            item2.Select(Office.MsoTriState.msoFalse);
+                            item2.Select(MsoTriState.msoFalse);
                         }
                     }
                 }
@@ -3715,14 +3422,14 @@ End Sub
 
         private void SelectedColor_Click(object sender, RibbonControlEventArgs e)
         {
-            Microsoft.Office.Interop.PowerPoint.Selection sel = Globals.ThisAddIn.Application.ActiveWindow.Selection;
-            if (sel.Type != PowerPoint.PpSelectionType.ppSelectionShapes)
+            Selection sel = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+            if (sel.Type != PpSelectionType.ppSelectionShapes)
             {
                 MessageBox.Show("本功能可同时选中当前页面中与所选形状相同填充颜色的形状");
                 return;
             }
 
-            PowerPoint.Slide slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+            Slide slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
             PowerPoint.ShapeRange range = sel.ShapeRange;
 
             if (sel.HasChildShapeRange)
@@ -6140,7 +5847,7 @@ End Sub
         {
             Application app = Globals.ThisAddIn.Application;
             _ = app.ActiveWindow.View.Slide;
-           Selection selection = app.ActiveWindow.Selection;
+            Selection selection = app.ActiveWindow.Selection;
 
             if (selection.Type == PpSelectionType.ppSelectionShapes)
             {
@@ -6198,7 +5905,7 @@ End Sub
 
                 foreach (PowerPoint.TextRange textRange in textRanges)
                 {
-                    string originalText = textRange.Text.Replace(" ", ""); // 移除空格
+                    string originalText = RemoveAllWhitespace(textRange.Text); // 移除所有空白字符
                     string pinyinWithoutTone = RemoveTone(originalText);
                     Dictionary<string, string> pinyinMap = LoadPinyinMap(pinyinFilePath);
 
@@ -6206,7 +5913,7 @@ End Sub
                     {
                         string splitPinyinWithTone = AssignTone(originalText, splitPinyin);
                         string formattedText = $"{splitPinyinWithTone.Replace("+", "–")}→{originalText}";
-                        textRange.Text = formattedText;
+                        textRange.Text = RemoveAllWhitespace(formattedText); // 移除结果中的所有空白字符
                     }
                     else
                     {
@@ -6214,10 +5921,16 @@ End Sub
                     }
                 }
             }
+
             else
-            {
+                {
                 System.Windows.Forms.MessageBox.Show("请选择一个或多个文本框进行拼音分解操作。", "错误", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
+        }
+
+        private string RemoveAllWhitespace(string input)
+        {
+            return new string(input.Where(c => !char.IsWhiteSpace(c)).ToArray());
         }
 
         private string PinyinResource(string resourceName)
@@ -6294,6 +6007,57 @@ End Sub
             }
 
             return map;
+        }
+
+        private void 环形分布_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var selection = application.ActiveWindow.Selection;
+
+            // 检查是否至少选中了一个对象
+            if (selection.Type == PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 0)
+            {
+                RingDistribution distribution = new RingDistribution();
+                distribution.Show();
+            }
+            else
+            {
+                MessageBox.Show("请至少选中一个对象！");
+            }
+        }
+
+        private void 矩阵分布_Click(object sender, RibbonControlEventArgs e)
+        {
+            var application = Globals.ThisAddIn.Application;
+            var selection = application.ActiveWindow.Selection;
+
+            // 检查是否至少选中了一个对象
+            if (selection.Type == PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count > 0)
+            {
+                if (selection.ShapeRange.Count == 1)
+                {
+                    // 选择了一个对象，弹出“矩阵复制”窗体
+                    MatrixCopy copyWindow = new MatrixCopy();
+                    copyWindow.Show();
+                }
+                else
+                {
+                    // 选择了多个对象，弹出“矩阵分布”窗体
+                    MatrixDistribution distributionWindow = new MatrixDistribution();
+                    distributionWindow.Show();
+                }
+            }
+            else
+            {
+                MessageBox.Show("请至少选中一个对象！");
+            }
+        }
+
+        private void 计时器_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 创建并显示计时器WPF窗体
+            TimerWindow timerWindow = new TimerWindow();
+            timerWindow.ShowDialog();
         }
     }
 }

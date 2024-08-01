@@ -447,62 +447,19 @@ namespace 课件帮PPT助手
 
                 Slide slide = app.ActiveWindow.View.Slide;
 
-                // 重命名所有现有形状以避免名称冲突
-                foreach (PowerPoint.Shape shape in slide.Shapes)
-                {
-                    if (!shape.Name.StartsWith("*"))
-                    {
-                        shape.Name = "*" + shape.Name;
-                    }
-                }
-
                 // 调用笔画拆分的点击事件
                 笔画拆分_Click(sender, e);
 
-                // 收集所有前缀名与所选文本相同且填充颜色为“0,112,192”的形状
+                // 收集由“笔画拆分”事件产生的形状
                 List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
-                Dictionary<string, PowerPoint.Shape> uniqueShapes = new Dictionary<string, PowerPoint.Shape>();
-                List<PowerPoint.Shape> duplicateShapes = new List<PowerPoint.Shape>();
-
                 foreach (PowerPoint.Shape shape in slide.Shapes)
                 {
-                    if (shape.Name.StartsWith(selectedText) && shape.Fill.ForeColor.RGB == ColorTranslator.ToOle(Color.FromArgb(0, 112, 192)))
+                    if (shape.Name.StartsWith($"{selectedText}-笔画"))
                     {
-                        string baseName = shape.Name;
-                        int suffixIndex = baseName.LastIndexOf('_');
-                        if (suffixIndex != -1)
-                        {
-                            baseName = baseName.Substring(0, suffixIndex);
-                        }
-
-                        if (!uniqueShapes.ContainsKey(baseName))
-                        {
-                            uniqueShapes[baseName] = shape;
-                        }
-                        else
-                        {
-                            PowerPoint.Shape existingShape = uniqueShapes[baseName];
-                            if ((existingShape.Top == shape.Top && existingShape.Left == shape.Left && existingShape.Width == shape.Width && existingShape.Height == shape.Height) ||
-                                existingShape.Name == shape.Name)
-                            {
-                                // 如果形状的位置和大小都相同或名称相同，则认为是重复的
-                                duplicateShapes.Add(shape);
-                            }
-                            else
-                            {
-                                uniqueShapes[baseName] = shape;
-                            }
-                        }
+                        shape.Name = "※" + shape.Name;
+                        shapesToGroup.Add(shape);
                     }
                 }
-
-                // 重命名重复的对象
-                foreach (var shape in duplicateShapes)
-                {
-                    shape.Name = shape.Name + "_dup" + Guid.NewGuid().ToString("N");
-                }
-
-                shapesToGroup.AddRange(uniqueShapes.Values);
 
                 // 对这些形状进行组合
                 if (shapesToGroup.Count > 0)
@@ -518,6 +475,15 @@ namespace 课件帮PPT助手
                     {
                         MessageBox.Show("请勿重复分解同一汉字笔顺，如需继续请删除当前已创建的分解笔顺");
                         return;
+                    }
+
+                    // 删除组合中子形状图层名称的字符“※”
+                    foreach (PowerPoint.Shape shape in groupShape.GroupItems)
+                    {
+                        if (shape.Name.StartsWith("※"))
+                        {
+                            shape.Name = shape.Name.Substring(1);
+                        }
                     }
 
                     // 手动缩放编组后的形状
@@ -668,16 +634,41 @@ namespace 课件帮PPT助手
 
                     // 设置新文本框不自动换行
                     newTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
-
-                    float newLeft = originalLeft;
+                    float newLeft;
                     float newTop = originalTop;
 
+                    // 基准字号大小
+                    const int baseFontSize = 18;
+                    const int fontSizeStep = 4;
+                    const float adjustmentPerStep = 3.0f;
+
+                    // 计算偏移量调整值
+                    float adjustmentValue = 0;
+
+                    // 根据文本框的对齐方式计算偏移量
+                    if (originalShape.TextFrame.TextRange.ParagraphFormat.Alignment == PpParagraphAlignment.ppAlignCenter)
+                    {
+                        if (textRange.Font.Size > baseFontSize)
+                        {
+                            int steps = (int)((textRange.Font.Size - baseFontSize) / fontSizeStep);
+                            adjustmentValue = steps * adjustmentPerStep;
+                        }
+                    }
+                    else if (originalShape.TextFrame.TextRange.ParagraphFormat.Alignment == PpParagraphAlignment.ppAlignLeft)
+                    {
+                        if (textRange.Font.Size > baseFontSize)
+                        {
+                            int steps = (int)((textRange.Font.Size - baseFontSize) / fontSizeStep);
+                            adjustmentValue = -steps * adjustmentPerStep;
+                        }
+                    }
+
                     // 检查是否按住Ctrl键或Shift键
-                    if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+                    if ((ModifierKeys & Keys.Control) == Keys.Control)
                     {
                         // 动态计算需要的空格字符数量
                         float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
-                        int numSpaces = (int)Math.Ceiling((textWidth * 1.1) / spaceWidth); // 1.1倍宽度以确保足够长
+                        int numSpaces = (int)Math.Ceiling((textWidth * 0.95) / spaceWidth); // 0.95倍宽度以确保足够长
                         string underlineText = new string(' ', numSpaces);
 
                         // 确保下划线长度适中
@@ -688,7 +679,7 @@ namespace 课件帮PPT助手
                         newLeft = originalLeft - 7;
                         newTop = originalTop - 6;
                     }
-                    else if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+                    else if ((ModifierKeys & Keys.Shift) == Keys.Shift)
                     {
                         // 动态计算需要的空格字符数量
                         float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
@@ -704,14 +695,14 @@ namespace 课件帮PPT助手
                         float rightBracketWidth = MeasureTextWidth(")", textRange.Font.Size, textRange.Font.Name);
                         float totalWidth = leftBracketWidth + textWidth + rightBracketWidth;
 
-                        // 设置新文本框的位置，使其在括号中间
-                        newLeft = originalLeft + (totalWidth - textWidth) / 2 - leftBracketWidth;
-                        newTop = originalTop;
+                        // 设置新文本框的位置，使其在括号中间，并应用调整值
+                        newLeft = originalLeft + (totalWidth - textWidth) / 2 - leftBracketWidth - adjustmentValue;
+                        newTop = originalTop - 3;
                     }
                     else
                     {
                         // 使用“_”字符替换选中的文本
-                        string underline = new string('_', (int)(selectedText.Length * 2.5)); // 动态生成下划线
+                        string underline = new string('_', (int)(selectedText.Length * 2.2)); // 动态生成下划线
                         textRange.Text = underline;
 
                         // 无键按下的微调参数

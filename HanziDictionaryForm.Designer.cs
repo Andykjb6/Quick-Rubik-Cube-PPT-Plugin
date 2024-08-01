@@ -53,6 +53,7 @@ namespace 课件帮PPT助手
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.Size = new System.Drawing.Size(424, 50);
             this.searchTextBox.TabIndex = 0;
+            this.searchTextBox.WordWrap = false;
             // 
             // searchButton
             // 

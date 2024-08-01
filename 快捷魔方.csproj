@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.62</ApplicationVersion>
+    <ApplicationVersion>1.0.0.67</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -142,6 +142,9 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="ControlzEx, Version=4.0.0.0, Culture=neutral, PublicKeyToken=69f1c32f803d307e, processorArchitecture=MSIL">
+      <HintPath>packages\ControlzEx.4.4.0\lib\net462\ControlzEx.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="EPPlus, Version=7.2.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>packages\EPPlus.7.2.0\lib\net462\EPPlus.dll</HintPath>
@@ -160,6 +163,9 @@
     </Reference>
     <Reference Include="HtmlRenderer.WinForms, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\HtmlRenderer.WinForms.1.5.0.6\lib\net45\HtmlRenderer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=2.0.0.0, Culture=neutral, PublicKeyToken=51482d6f650b2b3f, processorArchitecture=MSIL">
+      <HintPath>packages\MahApps.Metro.2.4.10\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -214,6 +220,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -298,6 +307,7 @@
       <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -434,23 +444,17 @@
     <Compile Include="InputForm.Designer.cs">
       <DependentUpon>InputForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MatrixDistributionForm.cs">
-      <SubType>Form</SubType>
+    <Compile Include="MatrixcopyForm.xaml.cs">
+      <DependentUpon>MatrixcopyForm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MatrixDistributionForm.Designer.cs">
-      <DependentUpon>MatrixDistributionForm.cs</DependentUpon>
+    <Compile Include="MatrixDistribution.xaml.cs">
+      <DependentUpon>MatrixDistribution.xaml</DependentUpon>
     </Compile>
     <Compile Include="MovingAlignmentForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MovingAlignmentForm.Designer.cs">
       <DependentUpon>MovingAlignmentForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MultipleObjectsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MultipleObjectsForm.Designer.cs">
-      <DependentUpon>MultipleObjectsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="PinYinForm.cs">
       <SubType>Form</SubType>
@@ -463,6 +467,9 @@
     </Compile>
     <Compile Include="PinyinSelectorForm.Designer.cs">
       <DependentUpon>PinyinSelectorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TimerWindow.xaml.cs">
+      <DependentUpon>TimerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProgressForm.cs">
       <SubType>Form</SubType>
@@ -478,6 +485,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RingDistribution.xaml.cs">
+      <DependentUpon>RingDistribution.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SampleGenerationForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -489,12 +499,6 @@
     </Compile>
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SingleObjectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SingleObjectForm.Designer.cs">
-      <DependentUpon>SingleObjectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Smartscaling.cs">
       <SubType>Form</SubType>
@@ -586,14 +590,8 @@
     <EmbeddedResource Include="InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MatrixDistributionForm.resx">
-      <DependentUpon>MatrixDistributionForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="MovingAlignmentForm.resx">
       <DependentUpon>MovingAlignmentForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MultipleObjectsForm.resx">
-      <DependentUpon>MultipleObjectsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PinYinForm.resx">
       <DependentUpon>PinYinForm.cs</DependentUpon>
@@ -657,9 +655,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SingleObjectForm.resx">
-      <DependentUpon>SingleObjectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Smartscaling.resx">
       <DependentUpon>Smartscaling.cs</DependentUpon>
@@ -725,7 +720,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="1错别字纠正.png" />
     <Content Include="icon\search_icon.png" />
     <Content Include="icon\中心对齐.png" />
     <Content Include="icon\右对齐.png" />
@@ -738,7 +732,6 @@
     <Content Include="icon\顶部对齐.png" />
     <Resource Include="Resources\汉字转拼音.ico" />
     <EmbeddedResource Include="汉字字典\多音字词语.txt" />
-    <EmbeddedResource Include="检测结果查询.png" />
     <Resource Include="Resources\多音字检测.png" />
     <Resource Include="Resources\导入.png" />
     <Resource Include="Resources\智能纠正.png" />
@@ -748,6 +741,11 @@
     <Resource Include="Resources\左对齐.png" />
     <Resource Include="Resources\历史记录.png" />
     <EmbeddedResource Include="汉字字典\拆分拼音.txt" />
+    <Resource Include="Resources\开始.png" />
+    <Resource Include="Resources\暂停.png" />
+    <Resource Include="Resources\浅色模式.png" />
+    <Resource Include="Resources\深色模式.png" />
+    <Resource Include="Resources\重置.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
@@ -769,6 +767,22 @@
     <Folder Include="Microsoft\Office\Interop\PowerPoint\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="MatrixcopyForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MatrixDistribution.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TimerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RingDistribution.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ZhuYinEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,0 +1,31 @@
+﻿<Window x:Class="课件帮PPT助手.TimerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="计时器" Height="200" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True">
+    <Grid>
+        <!-- 时间输入 -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBox x:Name="HourBox" Width="80" FontSize="48" TextAlignment="Center" MaxLength="2" PreviewTextInput="TimeBox_PreviewTextInput" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <TextBlock Text=":" FontSize="48" VerticalAlignment="Center" FontFamily="Microsoft Sans Serif"/>
+            <TextBox x:Name="MinuteBox" Width="80" FontSize="48" TextAlignment="Center" MaxLength="2" PreviewTextInput="TimeBox_PreviewTextInput" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <TextBlock Text=":" FontSize="48" VerticalAlignment="Center" FontFamily="Microsoft Sans Serif"/>
+            <TextBox x:Name="SecondBox" Width="78" FontSize="48" TextAlignment="Center" MaxLength="2" PreviewTextInput="TimeBox_PreviewTextInput" BorderBrush="{x:Null}" Background="{x:Null}"/>
+        </StackPanel>
+
+        <!-- ComboBox用于选择计时模式 -->
+        <ComboBox x:Name="TimerModeComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Width="100">
+            <ComboBoxItem Content="倒计时" IsSelected="True"/>
+            <ComboBoxItem Content="顺计时"/>
+        </ComboBox>
+
+        <!-- 控制按钮 -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
+            <Button x:Name="StartPauseButton" Content="开始" Width="60" Margin="5,0"/>
+            <Button x:Name="ResetButton" Content="重置" Width="60" Margin="5,0"/>
+            <Button x:Name="ThemeToggleButton" Content="🌙" Width="60" Margin="5,0"/>
+        </StackPanel>
+
+        <!-- 关闭按钮 -->
+        <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0" Width="25" Height="21" Click="CloseButton_Click"/>
+    </Grid>
+</Window>
