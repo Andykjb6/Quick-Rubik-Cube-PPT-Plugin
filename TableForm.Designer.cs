@@ -1,6 +1,6 @@
 ﻿namespace 课件帮PPT助手
 {
-    partial class TableSettingsForm
+    partial class TableForm
     {
         private System.Windows.Forms.Label labelRows;
         private System.Windows.Forms.NumericUpDown numericUpDownRows;
@@ -20,7 +20,7 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TableSettingsForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TableForm));
             this.labelRows = new System.Windows.Forms.Label();
             this.numericUpDownRows = new System.Windows.Forms.NumericUpDown();
             this.labelColumns = new System.Windows.Forms.Label();

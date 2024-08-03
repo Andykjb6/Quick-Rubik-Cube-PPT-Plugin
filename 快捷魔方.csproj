@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.67</ApplicationVersion>
+    <ApplicationVersion>1.0.0.69</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -444,6 +444,12 @@
     <Compile Include="InputForm.Designer.cs">
       <DependentUpon>InputForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="LayoutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LayoutForm.Designer.cs">
+      <DependentUpon>LayoutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MatrixcopyForm.xaml.cs">
       <DependentUpon>MatrixcopyForm.xaml</DependentUpon>
     </Compile>
@@ -467,9 +473,6 @@
     </Compile>
     <Compile Include="PinyinSelectorForm.Designer.cs">
       <DependentUpon>PinyinSelectorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimerWindow.xaml.cs">
-      <DependentUpon>TimerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProgressForm.cs">
       <SubType>Form</SubType>
@@ -524,11 +527,11 @@
     <Compile Include="SVGSettingsForm.Designer.cs">
       <DependentUpon>SVGSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TableSettingsForm.cs">
+    <Compile Include="TableForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TableSettingsForm.Designer.cs">
-      <DependentUpon>TableSettingsForm.cs</DependentUpon>
+    <Compile Include="TableForm.Designer.cs">
+      <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TableSettingsFormButton12.cs">
       <SubType>Form</SubType>
@@ -589,6 +592,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LayoutForm.resx">
+      <DependentUpon>LayoutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MovingAlignmentForm.resx">
       <DependentUpon>MovingAlignmentForm.cs</DependentUpon>
@@ -668,8 +674,8 @@
     <EmbeddedResource Include="SVGSettingsForm.resx">
       <DependentUpon>SVGSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TableSettingsForm.resx">
-      <DependentUpon>TableSettingsForm.cs</DependentUpon>
+    <EmbeddedResource Include="TableForm.resx">
+      <DependentUpon>TableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TableSettingsFormButton12.resx">
       <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
@@ -741,11 +747,6 @@
     <Resource Include="Resources\左对齐.png" />
     <Resource Include="Resources\历史记录.png" />
     <EmbeddedResource Include="汉字字典\拆分拼音.txt" />
-    <Resource Include="Resources\开始.png" />
-    <Resource Include="Resources\暂停.png" />
-    <Resource Include="Resources\浅色模式.png" />
-    <Resource Include="Resources\深色模式.png" />
-    <Resource Include="Resources\重置.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
@@ -772,10 +773,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MatrixDistribution.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TimerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

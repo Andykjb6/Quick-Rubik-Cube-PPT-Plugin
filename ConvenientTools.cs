@@ -85,9 +85,9 @@ namespace 课件帮PPT助手
             string 分解笔顺ToolTipText = "选中文本可分解该字笔顺，默认按一行排列；\n按住Ctrl键单击，可按两行排列。";
             toolTip1.SetToolTip(this.分解笔顺, 分解笔顺ToolTipText);
 
-            string 挖词填空ToolTipText = "①默认单击，使用字符充当下划线并挖空。\n" +
-                                    "②按住Ctrl键单击则使用字体自带的下划线并挖空。\n" +
-                                    "③按住Shift单击则使用括号挖空。";
+            string 挖词填空ToolTipText = "①默认单击，使用划线挖空。\n" +
+                                    "②按住Shift单击则使用括号挖空。";
+                                    
             toolTip1.SetToolTip(this.挖词填空, 挖词填空ToolTipText);
         }
 
@@ -614,16 +614,14 @@ namespace 课件帮PPT助手
                     var newTextRange = newTextBox.TextFrame.TextRange;
                     newTextRange.Text = selectedText;
 
-                    // 使用格式刷复制字体属性
-                    try
-                    {
-                        originalShape.PickUp();
-                        newTextBox.Apply();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("使用格式刷复制字体属性时出错：" + ex.Message);
-                    }
+                    // 设置新文本框的字体大小与选中文本一致
+                    float originalFontSize = textRange.Font.Size;
+                    newTextRange.Font.Size = originalFontSize;
+
+                    ApplyFormatting(originalShape, newTextBox);
+
+                    // 再次设置新文本框的字体大小，确保不被格式刷覆盖
+                    newTextRange.Font.Size = originalFontSize;
 
                     // 确保新文本框不带有PPT自带的下划线
                     newTextRange.Font.Underline = MsoTriState.msoFalse;
@@ -634,85 +632,34 @@ namespace 课件帮PPT助手
 
                     // 设置新文本框不自动换行
                     newTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
+
+                    // 设置文本框的文本对齐方式为居中
+                    newTextRange.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter;
+
+                    // 初始化 newLeft, newTop 和 newWidth 变量
                     float newLeft;
-                    float newTop = originalTop;
+                    float newTop;
+                    float newWidth;
 
-                    // 基准字号大小
-                    const int baseFontSize = 18;
-                    const int fontSizeStep = 4;
-                    const float adjustmentPerStep = 3.0f;
-
-                    // 计算偏移量调整值
-                    float adjustmentValue = 0;
-
-                    // 根据文本框的对齐方式计算偏移量
-                    if (originalShape.TextFrame.TextRange.ParagraphFormat.Alignment == PpParagraphAlignment.ppAlignCenter)
+                    // 检查是否按住Shift键
+                    PowerPoint.Shape rectangle = null;
+                    if ((ModifierKeys & Keys.Shift) == Keys.Shift)
                     {
-                        if (textRange.Font.Size > baseFontSize)
-                        {
-                            int steps = (int)((textRange.Font.Size - baseFontSize) / fontSizeStep);
-                            adjustmentValue = steps * adjustmentPerStep;
-                        }
-                    }
-                    else if (originalShape.TextFrame.TextRange.ParagraphFormat.Alignment == PpParagraphAlignment.ppAlignLeft)
-                    {
-                        if (textRange.Font.Size > baseFontSize)
-                        {
-                            int steps = (int)((textRange.Font.Size - baseFontSize) / fontSizeStep);
-                            adjustmentValue = -steps * adjustmentPerStep;
-                        }
-                    }
-
-                    // 检查是否按住Ctrl键或Shift键
-                    if ((ModifierKeys & Keys.Control) == Keys.Control)
-                    {
-                        // 动态计算需要的空格字符数量
-                        float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
-                        int numSpaces = (int)Math.Ceiling((textWidth * 0.95) / spaceWidth); // 0.95倍宽度以确保足够长
-                        string underlineText = new string(' ', numSpaces);
-
-                        // 确保下划线长度适中
-                        textRange.Text = underlineText;
-                        textRange.Font.Underline = MsoTriState.msoTrue;
-
-                        // Ctrl键按下的微调参数
-                        newLeft = originalLeft - 7;
-                        newTop = originalTop - 6;
-                    }
-                    else if ((ModifierKeys & Keys.Shift) == Keys.Shift)
-                    {
-                        // 动态计算需要的空格字符数量
-                        float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
-                        int numSpaces = (int)Math.Ceiling(textWidth / spaceWidth);
-                        string spaces = new string(' ', numSpaces);
-
-                        // 使用括号和空格替换选中的文本
-                        textRange.Text = $"({spaces})";
-                        textRange.Font.Underline = MsoTriState.msoFalse; // 取消下划线
-
-                        // 计算括号的位置和宽度
-                        float leftBracketWidth = MeasureTextWidth("(", textRange.Font.Size, textRange.Font.Name);
-                        float rightBracketWidth = MeasureTextWidth(")", textRange.Font.Size, textRange.Font.Name);
-                        float totalWidth = leftBracketWidth + textWidth + rightBracketWidth;
-
-                        // 设置新文本框的位置，使其在括号中间，并应用调整值
-                        newLeft = originalLeft + (totalWidth - textWidth) / 2 - leftBracketWidth - adjustmentValue;
-                        newTop = originalTop - 3;
+                        HandleShiftKeyPress(textRange, textWidth, out newLeft, out newTop, out newWidth, out rectangle);
+                        newTextBox.Width = newWidth; // 设置新文本框的宽度
                     }
                     else
                     {
-                        // 使用“_”字符替换选中的文本
-                        string underline = new string('_', (int)(selectedText.Length * 2.2)); // 动态生成下划线
-                        textRange.Text = underline;
-
-                        // 无键按下的微调参数
-                        newLeft = originalLeft - 7;
-                        newTop = originalTop - 6;
+                        // 默认情况下的文本框位置调整
+                        HandlePress(textRange, textWidth, originalLeft, originalTop, out newLeft, out newTop);
                     }
 
-                    // 设置新文本框的位置与被选中的文本相同，并应用微调参数
+                    // 应用新的位置
                     newTextBox.Left = newLeft;
                     newTextBox.Top = newTop;
+
+                    // 删除辅助矩形
+                    rectangle?.Delete();
                 }
                 else
                 {
@@ -723,6 +670,82 @@ namespace 课件帮PPT助手
             {
                 MessageBox.Show("请选中文本框内的文本！");
             }
+        }
+
+        private void ApplyFormatting(PowerPoint.Shape originalShape, PowerPoint.Shape newTextBox)
+        {
+            try
+            {
+                originalShape.PickUp();
+                newTextBox.Apply();
+
+                // 忽略字号大小的复制，保持新文本框的字号不变
+                // (即：在复制格式后不要再设置字体大小)
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("使用格式刷复制字体属性时出错：" + ex.Message);
+            }
+        }
+
+        private void HandlePress(TextRange textRange, float textWidth, float originalLeft, float originalTop, out float newLeft, out float newTop)
+        {
+            bool containsChinese = textRange.Text.Any(c => c >= 0x4e00 && c <= 0x9fff);
+
+            string underlineText;
+            if (containsChinese)
+            {
+                underlineText = new string('\u3000', textRange.Text.Length);
+            }
+            else
+            {
+                float spaceWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
+                int numSpaces = (int)Math.Ceiling(textWidth / spaceWidth) + 2;
+                underlineText = new string(' ', numSpaces);
+            }
+
+            textRange.Text = underlineText;
+            textRange.Font.Underline = MsoTriState.msoTrue;
+
+            newLeft = originalLeft - 7;
+            newTop = originalTop - 6;
+        }
+
+        private void HandleShiftKeyPress(TextRange textRange, float textWidth, out float newLeft, out float newTop, out float newWidth, out PowerPoint.Shape rectangle)
+        {
+            bool containsChinese = textRange.Text.Any(c => c >= 0x4e00 && c <= 0x9fff);
+
+            string leftBracket = containsChinese ? "（" : "(";
+            string rightBracket = containsChinese ? "）" : ")";
+            string placeholders;
+
+            if (containsChinese)
+            {
+                placeholders = new string('\u3000', textRange.Text.Length);
+            }
+            else
+            {
+                float placeholderWidth = MeasureTextWidth(" ", textRange.Font.Size, textRange.Font.Name);
+                int placeholderCount = (int)Math.Ceiling(textWidth / placeholderWidth) + 2;
+                placeholders = new string('\u0020', placeholderCount);
+            }
+
+            textRange.Text = $"{leftBracket}{placeholders}{rightBracket}";
+
+            float selectionLeft = textRange.BoundLeft;
+            float selectionTop = textRange.BoundTop;
+            float selectionWidth = textRange.BoundWidth;
+            float selectionHeight = textRange.BoundHeight;
+
+            var slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+            rectangle = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, selectionLeft, selectionTop, selectionWidth, selectionHeight);
+
+            rectangle.Line.Visible = MsoTriState.msoFalse;
+            rectangle.Fill.Transparency = 1.0f;
+
+            newLeft = rectangle.Left;
+            newTop = rectangle.Top - 3;
+            newWidth = rectangle.Width;
         }
 
         private float MeasureTextWidth(string text, float fontSize, string fontName)
@@ -738,7 +761,7 @@ namespace 课件帮PPT助手
             }
         }
 
-        public void 笔画拆分_Click(object sender, EventArgs e)
+         public void 笔画拆分_Click(object sender, EventArgs e)
         {
             try
             {

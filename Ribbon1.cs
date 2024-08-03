@@ -1100,16 +1100,16 @@ namespace 课件帮PPT助手
         }
         
         //田字格生成
-        private TableSettingsForm settingsForm;
+        private TableForm Form;
         private void 生字格子_Click(object sender, RibbonControlEventArgs e)
         {
-            if (settingsForm == null || settingsForm.IsDisposed)
+            if (Form == null || Form.IsDisposed)
             {
-                settingsForm = new TableSettingsForm();
+                Form = new TableForm();
             }
 
-            settingsForm.Show();
-            settingsForm.TopMost = true;
+            Form.Show();
+            Form.TopMost = true;
         }
 
         //给生字创建田字格
@@ -2894,6 +2894,7 @@ End Sub
 
 
         private ConcurrentDictionary<string, string> pinyinCache = new ConcurrentDictionary<string, string>();
+     
         private async void 提取拼音_Click(object sender, RibbonControlEventArgs e)
         {
             // 获取当前PPT应用和选中的文本框
@@ -6053,11 +6054,103 @@ End Sub
             }
         }
 
-        private void 计时器_Click(object sender, RibbonControlEventArgs e)
+        private LayoutForm settingsForm;
+        private string currentTag;
+
+        private void 辐射连线_Click(object sender, RibbonControlEventArgs e)
         {
-            // 创建并显示计时器WPF窗体
-            TimerWindow timerWindow = new TimerWindow();
-            timerWindow.ShowDialog();
+            var selection = Globals.ThisAddIn.Application.ActiveWindow.Selection;
+            var slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                PowerPoint.ShapeRange shapes = selection.ShapeRange;
+
+                if (shapes.Count > 1)
+                {
+                    settingsForm = new LayoutForm();
+                    currentTag = Guid.NewGuid().ToString(); // 在窗体初始化时生成一次
+                    settingsForm.LayoutUpdated += (s, args) =>
+                    {
+                        ApplyLayout(shapes, (float)settingsForm.Distance, (int)settingsForm.Compactness, settingsForm.StartAngle);
+                    };
+
+                    // 初始化布局
+                    ApplyLayout(shapes, (float)settingsForm.Distance, (int)settingsForm.Compactness, settingsForm.StartAngle);
+                    settingsForm.Show();
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("请至少选择两个对象。");
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选中要连接的对象。");
+            }
+        }
+
+        private void ApplyLayout(PowerPoint.ShapeRange shapes, float radius, int compactness, int startAngle)
+        {
+            if (shapes == null || shapes.Parent?.Shapes == null)
+            {
+                return; // 安全检查，防止空引用
+            }
+
+            // 在每次布局前清除旧线段
+            DeletePreviousLines(shapes.Parent.Shapes, currentTag);
+
+            PowerPoint.Shape centerShape = shapes[1];
+            float centerX = centerShape.Left + (centerShape.Width / 2);
+            float centerY = centerShape.Top + (centerShape.Height / 2);
+
+            double angleIncrement = (compactness > 0 ? (compactness / 100.0 * 360.0) / (shapes.Count - 1) : 360.0 / (shapes.Count - 1));
+
+            // 根据方向调整角度增量的正负
+            angleIncrement = settingsForm.IsClockwise ? angleIncrement : -angleIncrement;
+
+            for (int i = 2; i <= shapes.Count; i++)
+            {
+                PowerPoint.Shape targetShape = shapes[i];
+                double angle = startAngle + (i - 2) * angleIncrement;
+                float targetX = centerX + (float)(radius * Math.Cos(angle * Math.PI / 180)) - (targetShape.Width / 2);
+                float targetY = centerY + (float)(radius * Math.Sin(angle * Math.PI / 180)) - (targetShape.Height / 2);
+
+                targetShape.Left = targetX;
+                targetShape.Top = targetY;
+
+                // 创建新线段
+                PowerPoint.Shape line = shapes.Parent.Shapes.AddLine(centerX, centerY, targetX + targetShape.Width / 2, targetY + targetShape.Height / 2);
+                line.Line.ForeColor.RGB = centerShape.Fill.ForeColor.RGB;
+                line.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
+                line.Line.Weight = 2;
+                line.Tags.Add("LayoutTag", currentTag);
+            }
+        }
+
+        private void DeletePreviousLines(PowerPoint.Shapes allShapes, string tag)
+        {
+            var shapesToDelete = new List<PowerPoint.Shape>();
+
+            foreach (PowerPoint.Shape shape in allShapes)
+            {
+                try
+                {
+                    if (shape.Tags["LayoutTag"] == tag)
+                    {
+                        shapesToDelete.Add(shape);
+                    }
+                }
+                catch
+                {
+                    // 忽略没有 "LayoutTag" 标签的形状，或其他异常
+                }
+            }
+
+            foreach (var shape in shapesToDelete)
+            {
+                shape.Delete();
+            }
         }
     }
 }

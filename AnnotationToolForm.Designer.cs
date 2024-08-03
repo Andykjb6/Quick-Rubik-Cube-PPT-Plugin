@@ -280,7 +280,6 @@ namespace 课件帮PPT助手
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "文字标注工具";
-            this.Load += new System.EventHandler(this.AnnotationToolForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

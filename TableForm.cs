@@ -7,11 +7,15 @@ using Office = Microsoft.Office.Core;
 
 namespace 课件帮PPT助手
 {
-    public partial class TableSettingsForm : Form
+    public partial class TableForm : Form
     {
         private Color borderColor = Color.Black;
 
-        public TableSettingsForm()
+        public Action<object, object> LayoutUpdated { get; internal set; }
+        public object Distance { get; internal set; }
+        public object Compactness { get; internal set; }
+
+        public TableForm()
         {
             InitializeComponent();
         }

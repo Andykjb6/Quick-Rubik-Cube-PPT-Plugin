@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using PowerPoint = Microsoft.Office.Interop.PowerPoint;
@@ -29,8 +28,8 @@ namespace 课件帮PPT助手
         {
             InitializeComponent();
             SetDefaultValues();
-            this.TopMost = true;
-            this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            TopMost = true;
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             InitializeContextMenu();
             LoadCustomAnnotations();
         }
@@ -99,7 +98,7 @@ namespace 课件帮PPT助手
         {
             if (e.Button == MouseButtons.Right)
             {
-                int index = annotationTypeComboBox.SelectedIndex;
+                _ = annotationTypeComboBox.SelectedIndex;
                 contextMenuStrip.Show(Cursor.Position);
             }
         }
@@ -124,7 +123,7 @@ namespace 课件帮PPT助手
 
         private void CustomizeAnnotationMenuItem_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            Hide();
 
             CustomizeAnnotationForm customizeForm = new CustomizeAnnotationForm();
             customizeForm.AnnotationSaved += (symbol, name, position) =>
@@ -134,7 +133,7 @@ namespace 课件帮PPT助手
 
             customizeForm.FormClosed += (s, args) =>
             {
-                this.Show();
+                Show();
             };
 
             customizeForm.ShowDialog();
@@ -314,11 +313,6 @@ namespace 课件帮PPT助手
                     deleteCustomAnnotationButton.Enabled = false;
                 }
             }
-        }
-
-        private void AnnotationToolForm_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
