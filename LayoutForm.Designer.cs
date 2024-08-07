@@ -43,6 +43,11 @@ namespace 课件帮PPT助手
             // 
             this.numericUpDownDistance.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.numericUpDownDistance.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.numericUpDownDistance.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             this.numericUpDownDistance.Location = new System.Drawing.Point(123, 32);
             this.numericUpDownDistance.Maximum = new decimal(new int[] {
             300,
@@ -135,9 +140,8 @@ namespace 课件帮PPT助手
             this.comboBoxDirection.Location = new System.Drawing.Point(1015, 32);
             this.comboBoxDirection.Name = "comboBoxDirection";
             this.comboBoxDirection.Size = new System.Drawing.Size(150, 44);
+            this.comboBoxDirection.SelectedIndex = 0;
             this.comboBoxDirection.TabIndex = 6;
-            // 设置 ComboBox 的默认选项为 "顺时针"
-            this.comboBoxDirection.SelectedIndex = 0; // 0 对应 "顺时针"
             this.comboBoxDirection.SelectedIndexChanged += new System.EventHandler(this.OnDirectionChanged);
             // 
             // labelDirection

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.PowerPoint;
 using System.Collections.Generic;
 using System.Windows;
+using System.Linq;
 using System;
 
 namespace 课件帮PPT助手
@@ -8,6 +9,7 @@ namespace 课件帮PPT助手
     public partial class MatrixDistribution : Window
     {
         private List<Shape> matrixShapes = new List<Shape>();
+        private bool isUpdating = false;
 
         public MatrixDistribution()
         {
@@ -23,6 +25,14 @@ namespace 课件帮PPT助手
             ColumnSpacingValue.TextChanged += TextBox_ValueChanged;
 
             OrientationComboBox.SelectionChanged += OrientationComboBox_SelectionChanged;
+
+            // 增量和减量按钮事件绑定
+            ColumnsIncrease.Click += ColumnsIncrease_Click;
+            ColumnsDecrease.Click += ColumnsDecrease_Click;
+            RowSpacingIncrease.Click += RowSpacingIncrease_Click;
+            RowSpacingDecrease.Click += RowSpacingDecrease_Click;
+            ColumnSpacingIncrease.Click += ColumnSpacingIncrease_Click;
+            ColumnSpacingDecrease.Click += ColumnSpacingDecrease_Click;
 
             InitializeSlider();
         }
@@ -42,7 +52,6 @@ namespace 课件帮PPT助手
 
                 int shapeCount = matrixShapes.Count;
 
-                // 根据选中的对象数量，计算初始横向数量（假设为大致的平方根）
                 int initialColumnsCount = (int)Math.Ceiling(Math.Sqrt(shapeCount));
                 ColumnsSlider.Maximum = 100; // 设置最大值为100
                 ColumnsSlider.Value = initialColumnsCount; // 动态设置初始横向数量
@@ -56,7 +65,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
         private void SliderOrTextBox_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             UpdateUI();
@@ -64,25 +72,30 @@ namespace 课件帮PPT助手
 
         private void TextBox_ValueChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (sender is System.Windows.Controls.TextBox textBox)
+            if (!isUpdating)
             {
-                if (int.TryParse(textBox.Text, out int value))
+                isUpdating = true;
+                if (sender is System.Windows.Controls.TextBox textBox)
                 {
-                    if (textBox == ColumnsValue && value >= ColumnsSlider.Minimum && value <= ColumnsSlider.Maximum)
+                    if (int.TryParse(textBox.Text, out int value))
                     {
-                        ColumnsSlider.Value = value;
-                    }
-                    else if (textBox == RowSpacingValue && value >= RowSpacingSlider.Minimum && value <= RowSpacingSlider.Maximum)
-                    {
-                        RowSpacingSlider.Value = value;
-                    }
-                    else if (textBox == ColumnSpacingValue && value >= ColumnSpacingSlider.Minimum && value <= ColumnSpacingSlider.Maximum)
-                    {
-                        ColumnSpacingSlider.Value = value;
+                        if (textBox == ColumnsValue && value >= ColumnsSlider.Minimum && value <= ColumnsSlider.Maximum)
+                        {
+                            ColumnsSlider.Value = value;
+                        }
+                        else if (textBox == RowSpacingValue && value >= RowSpacingSlider.Minimum && value <= RowSpacingSlider.Maximum)
+                        {
+                            RowSpacingSlider.Value = value;
+                        }
+                        else if (textBox == ColumnSpacingValue && value >= ColumnSpacingSlider.Minimum && value <= ColumnSpacingSlider.Maximum)
+                        {
+                            ColumnSpacingSlider.Value = value;
+                        }
                     }
                 }
+                UpdateUI();
+                isUpdating = false;
             }
-            UpdateUI();
         }
 
         private void OrientationComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -93,7 +106,6 @@ namespace 课件帮PPT助手
                 ColumnsSlider.Maximum = 100; // 设置最大值为100
                 ColumnsSlider.Value = Math.Min(ColumnsSlider.Value, 100);
                 ColumnsValue.Text = ColumnsSlider.Value.ToString();
-                ColumnsSlider.ToolTip = "调整纵向数量";
             }
             else
             {
@@ -101,10 +113,45 @@ namespace 课件帮PPT助手
                 ColumnsSlider.Maximum = 100; // 设置最大值为100
                 ColumnsSlider.Value = Math.Min(ColumnsSlider.Value, 100);
                 ColumnsValue.Text = ColumnsSlider.Value.ToString();
-                ColumnsSlider.ToolTip = "调整横向数量";
             }
 
             UpdateUI();
+        }
+
+        private void ColumnsIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnsSlider.Value = Math.Min(ColumnsSlider.Value + 1, ColumnsSlider.Maximum);
+            ColumnsValue.Text = ColumnsSlider.Value.ToString();
+        }
+
+        private void ColumnsDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnsSlider.Value = Math.Max(ColumnsSlider.Value - 1, ColumnsSlider.Minimum);
+            ColumnsValue.Text = ColumnsSlider.Value.ToString();
+        }
+
+        private void RowSpacingIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowSpacingSlider.Value = Math.Min(RowSpacingSlider.Value + 1, RowSpacingSlider.Maximum);
+            RowSpacingValue.Text = RowSpacingSlider.Value.ToString();
+        }
+
+        private void RowSpacingDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowSpacingSlider.Value = Math.Max(RowSpacingSlider.Value - 1, RowSpacingSlider.Minimum);
+            RowSpacingValue.Text = RowSpacingSlider.Value.ToString();
+        }
+
+        private void ColumnSpacingIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnSpacingSlider.Value = Math.Min(ColumnSpacingSlider.Value + 1, ColumnSpacingSlider.Maximum);
+            ColumnSpacingValue.Text = ColumnSpacingSlider.Value.ToString();
+        }
+
+        private void ColumnSpacingDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnSpacingSlider.Value = Math.Max(ColumnSpacingSlider.Value - 1, ColumnSpacingSlider.Minimum);
+            ColumnSpacingValue.Text = ColumnSpacingSlider.Value.ToString();
         }
 
         private void UpdateUI()
@@ -126,10 +173,8 @@ namespace 课件帮PPT助手
             int rowSpacing = (int)RowSpacingSlider.Value;
             int columnSpacing = (int)ColumnSpacingSlider.Value;
 
-            // 计算列数
             int columnCount = (int)Math.Ceiling((double)matrixShapes.Count / rowCount);
 
-            // 获取基准形状的位置
             var firstShape = matrixShapes[0];
             double baseX = firstShape.Left;
             double baseY = firstShape.Top;

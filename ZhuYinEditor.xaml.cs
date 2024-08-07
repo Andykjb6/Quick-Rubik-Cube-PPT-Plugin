@@ -35,6 +35,11 @@ namespace 课件帮PPT助手
             RichTextBoxLeft.KeyDown += RichTextBoxLeft_KeyDown;
             RichTextBoxLeft.TextChanged += RichTextBoxLeft_TextChanged;
 
+            InitializeContextMenu();
+        }
+
+        private void InitializeContextMenu()
+        {
             var contextMenu = new ContextMenu();
 
             var setMaxCharsMenuItem = new MenuItem { Header = "设置每行字符数" };
@@ -310,7 +315,7 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            int currentCharCount = 0; // 当前行字符计数
+            int currentCharCount = 0;
             int i = 0;
 
             while (i < text.Length)
@@ -319,11 +324,11 @@ namespace 课件帮PPT助手
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
-                    currentCharCount = 0; // 重置当前行字符计数
+                    currentCharCount = 0;
                     if (text[i] == '\n')
                     {
                         i++;
-                        continue; // 跳过换行符
+                        continue;
                     }
                 }
 
@@ -345,8 +350,11 @@ namespace 课件帮PPT助手
 
                         // 保存纠正后的拼音到字典
                         int index = GetCharacterIndex(sp);
-                        correctedPinyinDict[index] = pinyinArray[j];
-                        currentCharCount++; // 更新当前行字符计数
+                        if (index >= 0) // Ensure index is valid
+                        {
+                            correctedPinyinDict[index] = pinyinArray[j];
+                        }
+                        currentCharCount++;
                     }
                     i += wordToCheck.Length - 1;
                 }
@@ -370,20 +378,29 @@ namespace 课件帮PPT助手
 
                     StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                     currentLinePanel.Children.Add(sp);
-                    currentCharCount++; // 更新当前行字符计数
+                    currentCharCount++;
 
                     // 保存纠正后的拼音到字典
                     int index = GetCharacterIndex(sp);
-                    correctedPinyinDict[index] = pinyin;
+                    if (index >= 0) // Ensure index is valid
+                    {
+                        correctedPinyinDict[index] = pinyin;
+                    }
 
                     // 如果当前汉字为“儿”，且前一个汉字的拼音末尾包含字符“r”，则将当前汉字拼音留空
                     if (currentChar == '儿' && i > 0)
                     {
-                        var prevCharPanel = currentLinePanel.Children[currentLinePanel.Children.Count - 2] as StackPanel;
-                        var prevPinyinBlock = prevCharPanel.Children[0] as TextBlock;
-                        if (prevPinyinBlock.Text.EndsWith("r"))
+                        if (currentLinePanel.Children.Count > 1)
                         {
-                            (sp.Children[0] as TextBlock).Text = string.Empty;
+                            var prevCharPanel = currentLinePanel.Children[currentLinePanel.Children.Count - 2] as StackPanel;
+                            if (prevCharPanel != null)
+                            {
+                                var prevPinyinBlock = prevCharPanel.Children[0] as TextBlock;
+                                if (prevPinyinBlock != null && prevPinyinBlock.Text.EndsWith("r"))
+                                {
+                                    (sp.Children[0] as TextBlock).Text = string.Empty;
+                                }
+                            }
                         }
                     }
                 }
@@ -395,6 +412,7 @@ namespace 课件帮PPT助手
                 StackPanelContent.Children.Add(currentLinePanel);
             }
         }
+
 
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
@@ -534,6 +552,12 @@ namespace 课件帮PPT助手
                     content[i * 2, j] = pinyinLines[i][j];
                     content[i * 2 + 1, j] = hanziLines[i][j];
 
+                    // 如果当前是偶数行（汉字行），并且该单元格是中文标点符号
+                    if (IsChinesePunctuation(hanziLines[i][j]) && string.IsNullOrEmpty(content[i * 2, j]))
+                    {
+                        content[i * 2, j] = "\u3000"; // 在对应的奇数行（拼音行）中使用全角空格符占位
+                    }
+
                     if (j > 0 && hanziLines[i][j] == "儿" && !string.IsNullOrEmpty(content[i * 2, j - 1]) && content[i * 2, j - 1].EndsWith("r"))
                     {
                         content[i * 2, j] = string.Empty; // "儿"字不添加拼音
@@ -640,6 +664,21 @@ namespace 课件帮PPT助手
             TextBlockProgress.Visibility = Visibility.Collapsed;
         }
 
+        private bool IsChinesePunctuation(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return false;
+
+            char[] chinesePunctuation = new char[]
+            {
+        '。', '，', '、', '；', '：', '！', '？', '“', '”', '‘', '’', '（', '）', '【', '】', '《', '》', '…', '—', '『', '』', '「', '」'
+            };
+
+            return text.Length == 1 && chinesePunctuation.Contains(text[0]);
+        }
+
+
+
+
         private void AdjustTableSize(PowerPoint.Table table)
         {
             float maxWidth = 0;
@@ -708,7 +747,7 @@ namespace 课件帮PPT助手
         {
             StackPanelContent.Children.Clear();
             StackPanel currentLinePanel = CreateNewLinePanel();
-            int currentCharCount = 0; // 当前行字符计数
+            int currentCharCount = 0;
 
             for (int i = 0; i < text.Length; i++)
             {
@@ -717,11 +756,11 @@ namespace 课件帮PPT助手
                 {
                     StackPanelContent.Children.Add(currentLinePanel);
                     currentLinePanel = CreateNewLinePanel();
-                    currentCharCount = 0; // 重置当前行字符计数
+                    currentCharCount = 0;
 
                     if (c == '\n')
                     {
-                        continue; // 跳过换行符
+                        continue;
                     }
                 }
 
@@ -739,7 +778,7 @@ namespace 课件帮PPT助手
                 }
 
                 currentLinePanel.Children.Add(sp);
-                currentCharCount++; // 更新当前行字符计数
+                currentCharCount++;
             }
 
             if (currentLinePanel.Children.Count > 0)
@@ -791,11 +830,35 @@ namespace 课件帮PPT助手
 
         private int GetCharacterIndex(StackPanel charPanel)
         {
-            var parentPanel = charPanel.Parent as StackPanel;
-            int parentIndex = StackPanelContent.Children.IndexOf(parentPanel);
-            int charIndex = parentPanel.Children.IndexOf(charPanel);
-            return parentIndex * MaxCharsPerLine + charIndex;
+            if (charPanel.Parent is StackPanel parentPanel)
+            {
+                int parentIndex = StackPanelContent.Children.IndexOf(parentPanel);
+                if (parentIndex >= 0)
+                {
+                    int charIndex = parentPanel.Children.IndexOf(charPanel);
+                    if (charIndex >= 0)
+                    {
+                        return parentIndex * MaxCharsPerLine + charIndex;
+                    }
+                    else
+                    {
+                        // 如果在 parentPanel 中找不到 charPanel
+                        return -1;
+                    }
+                }
+                else
+                {
+                    // 如果在 StackPanelContent.Children 中找不到 parentPanel
+                    return -1;
+                }
+            }
+            else
+            {
+                // charPanel 的 Parent 不是 StackPanel，返回错误值
+                return -1;
+            }
         }
+
 
         private void AlignText(TextAlignment alignment)
         {
@@ -853,7 +916,6 @@ namespace 课件帮PPT助手
 
         private void SyncAlignmentWithPinyin()
         {
-            // 根据左侧RichTextBox的段落对齐方式，同步右侧拼音区的对齐方式
             var leftParagraphs = RichTextBoxLeft.Document.Blocks.OfType<Paragraph>().ToList();
             var rightPanels = StackPanelContent.Children.OfType<StackPanel>().ToList();
 
@@ -863,17 +925,17 @@ namespace 课件帮PPT助手
                 rightPanels[i].HorizontalAlignment = ConvertToHorizontalAlignment(alignment);
             }
         }
-
+        //文本左对齐
         private void BtnAlignLeft_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Left);
         }
-
+        //文本居中对齐
         private void BtnAlignCenter_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Center);
         }
-
+        //文本两端对齐
         private void BtnAlignJustify_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Justify);

@@ -20,22 +20,82 @@
                 <!-- 行数 -->
                 <TextBlock VerticalAlignment="Center" Height="16" Width="64" HorizontalAlignment="Center" FontSize="14" Text="纵向数量：" />
                 <Slider x:Name="RowsSlider" Minimum="1" Maximum="100" Value="1" TickFrequency="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Height="18" />
-                <TextBox x:Name="RowsValue" Text="1" VerticalAlignment="Center" Grid.Column="2" Height="20" Width="35" HorizontalAlignment="Left" FontSize="14" TextChanged="SliderOrTextBox_ValueChanged"/>
+                <Grid Grid.Column="2" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="RowsValue" VerticalAlignment="Center" FontSize="14" Text="1" Width="35" Height="24" 
+                             TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF164DF2"/>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="RowsIncrease" Width="15" Height="12" Padding="0" Click="RowsIncrease_Click" FontStretch="Medium" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▲
+                        </Button>
+                        <Button x:Name="RowsDecrease" Width="15" Height="12" Padding="0" Click="RowsDecrease_Click" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▼
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
                 <!-- 列数 -->
                 <TextBlock VerticalAlignment="Center" Grid.Row="1" Height="16" Width="64" HorizontalAlignment="Center" FontSize="14" Text="横向数量：" />
                 <Slider x:Name="ColumnsSlider" Minimum="1" Maximum="100" Value="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Grid.Row="1" Height="18" />
-                <TextBox x:Name="ColumnsValue" Text="1" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Height="20" Width="35" HorizontalAlignment="Left" FontSize="14" TextChanged="SliderOrTextBox_ValueChanged"/>
+                <Grid Grid.Column="2" Grid.Row="1" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="ColumnsValue" VerticalAlignment="Center" FontSize="14" Text="1" Width="35" Height="24" 
+                             TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF164DF2"/>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="ColumnsIncrease" Width="15" Height="12" Padding="0" Click="ColumnsIncrease_Click" FontStretch="Medium" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▲
+                        </Button>
+                        <Button x:Name="ColumnsDecrease" Width="15" Height="12" Padding="0" Click="ColumnsDecrease_Click" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▼
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
                 <!-- 行间距 -->
                 <TextBlock Text="纵向间距：" VerticalAlignment="Center" Grid.Row="2" Height="16" Width="64" HorizontalAlignment="Center" FontSize="14" />
                 <Slider x:Name="RowSpacingSlider" Minimum="0" Maximum="100" Value="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Grid.Row="2" Height="18" />
-                <TextBox x:Name="RowSpacingValue" Text="0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2" Height="20" Width="35" HorizontalAlignment="Left" FontSize="14" TextChanged="SliderOrTextBox_ValueChanged"/>
+                <Grid Grid.Column="2" Grid.Row="2" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="RowSpacingValue" VerticalAlignment="Center" FontSize="14" Text="0" Width="35" Height="24" 
+                             TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF164DF2"/>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="RowSpacingIncrease" Width="15" Height="12" Padding="0" Click="RowSpacingIncrease_Click" FontStretch="Medium" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▲
+                        </Button>
+                        <Button x:Name="RowSpacingDecrease" Width="15" Height="12" Padding="0" Click="RowSpacingDecrease_Click" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▼
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
                 <!-- 列间距 -->
                 <TextBlock Text="横向间距：" VerticalAlignment="Center" Grid.Row="3" Height="16" Width="62" HorizontalAlignment="Center" FontSize="14" />
                 <Slider x:Name="ColumnSpacingSlider" Minimum="0" Maximum="100" Value="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Grid.Row="3" Height="18" />
-                <TextBox x:Name="ColumnSpacingValue" Text="0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3" Height="20" Width="35" HorizontalAlignment="Left" FontSize="14" TextChanged="SliderOrTextBox_ValueChanged"/>
+                <Grid Grid.Column="2" Grid.Row="3" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="ColumnSpacingValue" VerticalAlignment="Center" FontSize="14" Text="0" Width="35" Height="24" 
+                             TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF164DF2"/>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="ColumnSpacingIncrease" Width="15" Height="12" Padding="0" Click="ColumnSpacingIncrease_Click" FontStretch="Medium" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▲
+                        </Button>
+                        <Button x:Name="ColumnSpacingDecrease" Width="15" Height="12" Padding="0" Click="ColumnSpacingDecrease_Click" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" BorderBrush="#FF164DF2">
+                            ▼
+                        </Button>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </GroupBox>
     </Grid>

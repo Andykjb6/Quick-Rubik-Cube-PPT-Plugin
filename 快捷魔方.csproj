@@ -73,9 +73,6 @@
     <OfficeApplication>PowerPoint</OfficeApplication>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AlignToolWindow.resx">
-      <DependentUpon>AlignToolWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="AnimationForm.resx">
       <DependentUpon>AnimationForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -372,11 +369,8 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="AlignToolWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AlignToolWindow.Designer.cs">
-      <DependentUpon>AlignToolWindow.cs</DependentUpon>
+    <Compile Include="AlignmentWindow.xaml.cs">
+      <DependentUpon>AlignmentWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="AnimationForm.cs">
       <SubType>Form</SubType>
@@ -395,12 +389,6 @@
     </Compile>
     <Compile Include="BoardInputTextForm.Designer.cs">
       <DependentUpon>BoardInputTextForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Centralalignment.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Centralalignment.Designer.cs">
-      <DependentUpon>Centralalignment.cs</DependentUpon>
     </Compile>
     <Compile Include="ConvenientTools.cs">
       <SubType>UserControl</SubType>
@@ -456,12 +444,6 @@
     <Compile Include="MatrixDistribution.xaml.cs">
       <DependentUpon>MatrixDistribution.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MovingAlignmentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MovingAlignmentForm.Designer.cs">
-      <DependentUpon>MovingAlignmentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="PinYinForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -509,12 +491,6 @@
     <Compile Include="Smartscaling.Designer.cs">
       <DependentUpon>Smartscaling.cs</DependentUpon>
     </Compile>
-    <Compile Include="SpecifyalignmentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SpecifyalignmentForm.Designer.cs">
-      <DependentUpon>SpecifyalignmentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="SvgSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -533,11 +509,8 @@
     <Compile Include="TableForm.Designer.cs">
       <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TableSettingsFormButton12.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TableSettingsFormButton12.Designer.cs">
-      <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
+    <Compile Include="TableSettingsForm.xaml.cs">
+      <DependentUpon>TableSettingsForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimerForm.cs">
       <SubType>Form</SubType>
@@ -566,9 +539,6 @@
     <Compile Include="快捷盒子.Designer.cs">
       <DependentUpon>快捷盒子.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Centralalignment.resx">
-      <DependentUpon>Centralalignment.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ConvenientTools.resx">
       <DependentUpon>ConvenientTools.cs</DependentUpon>
     </EmbeddedResource>
@@ -595,9 +565,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LayoutForm.resx">
       <DependentUpon>LayoutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MovingAlignmentForm.resx">
-      <DependentUpon>MovingAlignmentForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PinYinForm.resx">
       <DependentUpon>PinYinForm.cs</DependentUpon>
@@ -665,9 +632,6 @@
     <EmbeddedResource Include="Smartscaling.resx">
       <DependentUpon>Smartscaling.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SpecifyalignmentForm.resx">
-      <DependentUpon>SpecifyalignmentForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SvgSelectionForm.resx">
       <DependentUpon>SvgSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -676,9 +640,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TableForm.resx">
       <DependentUpon>TableForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TableSettingsFormButton12.resx">
-      <DependentUpon>TableSettingsFormButton12.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TimerForm.resx">
       <DependentUpon>TimerForm.cs</DependentUpon>
@@ -747,6 +708,18 @@
     <Resource Include="Resources\左对齐.png" />
     <Resource Include="Resources\历史记录.png" />
     <EmbeddedResource Include="汉字字典\拆分拼音.txt" />
+    <Resource Include="Resources\bottom.png" />
+    <Resource Include="Resources\bottomAlign.png" />
+    <Resource Include="Resources\center.png" />
+    <Resource Include="Resources\horizontalCenter.png" />
+    <Resource Include="Resources\left.png" />
+    <Resource Include="Resources\leftAlign.png" />
+    <Resource Include="Resources\right.png" />
+    <Resource Include="Resources\rightAlign.png" />
+    <Resource Include="Resources\top.png" />
+    <Resource Include="Resources\topAlign.png" />
+    <Resource Include="Resources\verticalCenter.png" />
+    <Resource Include="Resources\centerAlign.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
@@ -768,6 +741,10 @@
     <Folder Include="Microsoft\Office\Interop\PowerPoint\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AlignmentWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MatrixcopyForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -777,6 +754,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RingDistribution.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TableSettingsForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

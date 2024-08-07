@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Office.Interop.PowerPoint;
-using Microsoft.Office.Core;
-using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
-using System.Windows.Controls;
-using System;
 using System.Linq;
+using System;
+using System.Windows.Controls;
 
 namespace 课件帮PPT助手
 {
     public partial class MatrixCopy : Window
     {
-        private Dictionary<int, (float width, float height)> originalSizes = new Dictionary<int, (float width, float height)>();
         private List<Shape> matrixShapes = new List<Shape>(); // 保存矩阵中的形状
         private bool isUpdating = false;
 
@@ -57,10 +54,6 @@ namespace 课件帮PPT助手
                 foreach (Shape shape in selection.ShapeRange)
                 {
                     matrixShapes.Add(shape);
-                    if (!originalSizes.ContainsKey(shape.Id))
-                    {
-                        originalSizes[shape.Id] = (shape.Width, shape.Height);
-                    }
                 }
             }
             else
@@ -95,6 +88,54 @@ namespace 课件帮PPT助手
             }
         }
 
+        private void RowsIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowsSlider.Value = Math.Min(RowsSlider.Value + 1, RowsSlider.Maximum);
+            RowsValue.Text = RowsSlider.Value.ToString();
+        }
+
+        private void RowsDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowsSlider.Value = Math.Max(RowsSlider.Value - 1, RowsSlider.Minimum);
+            RowsValue.Text = RowsSlider.Value.ToString();
+        }
+
+        private void ColumnsIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnsSlider.Value = Math.Min(ColumnsSlider.Value + 1, ColumnsSlider.Maximum);
+            ColumnsValue.Text = ColumnsSlider.Value.ToString();
+        }
+
+        private void ColumnsDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnsSlider.Value = Math.Max(ColumnsSlider.Value - 1, ColumnsSlider.Minimum);
+            ColumnsValue.Text = ColumnsSlider.Value.ToString();
+        }
+
+        private void RowSpacingIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowSpacingSlider.Value = Math.Min(RowSpacingSlider.Value + 1, RowSpacingSlider.Maximum);
+            RowSpacingValue.Text = RowSpacingSlider.Value.ToString();
+        }
+
+        private void RowSpacingDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            RowSpacingSlider.Value = Math.Max(RowSpacingSlider.Value - 1, RowSpacingSlider.Minimum);
+            RowSpacingValue.Text = RowSpacingSlider.Value.ToString();
+        }
+
+        private void ColumnSpacingIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnSpacingSlider.Value = Math.Min(ColumnSpacingSlider.Value + 1, ColumnSpacingSlider.Maximum);
+            ColumnSpacingValue.Text = ColumnSpacingSlider.Value.ToString();
+        }
+
+        private void ColumnSpacingDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnSpacingSlider.Value = Math.Max(ColumnSpacingSlider.Value - 1, ColumnSpacingSlider.Minimum);
+            ColumnSpacingValue.Text = ColumnSpacingSlider.Value.ToString();
+        }
+
         private void UpdateUI()
         {
             if (RowsSlider == null || ColumnsSlider == null || RowSpacingSlider == null || ColumnSpacingSlider == null)
@@ -127,13 +168,11 @@ namespace 课件帮PPT助手
 
             int totalShapesNeeded = rows * columns;
 
-            // 确保 matrixShapes 中至少有一个形状，避免索引超出范围的错误
             if (matrixShapes.Count == 0)
             {
-                return; // 直接跳过，不执行后续操作
+                return;
             }
 
-            // 调整形状数量：添加或移除形状
             if (matrixShapes.Count < totalShapesNeeded)
             {
                 AddShapes(totalShapesNeeded - matrixShapes.Count);
@@ -143,12 +182,10 @@ namespace 课件帮PPT助手
                 RemoveShapes(matrixShapes.Count - totalShapesNeeded);
             }
 
-            // 获取基准形状的位置
             var firstShape = matrixShapes[0];
             double baseX = firstShape.Left;
             double baseY = firstShape.Top;
 
-            // 重新排列矩阵中的形状
             for (int r = 0; r < rows; r++)
             {
                 for (int c = 0; c < columns; c++)
@@ -162,14 +199,6 @@ namespace 课件帮PPT助手
 
                     matrixShapes[index].Left = (float)x;
                     matrixShapes[index].Top = (float)y;
-
-                    // 恢复原始大小
-                    if (originalSizes.ContainsKey(matrixShapes[index].Id))
-                    {
-                        var originalSize = originalSizes[matrixShapes[index].Id];
-                        matrixShapes[index].Width = originalSize.width;
-                        matrixShapes[index].Height = originalSize.height;
-                    }
                 }
             }
         }
@@ -181,7 +210,7 @@ namespace 课件帮PPT助手
 
             if (originalShape == null)
             {
-                return; // 直接返回，不执行后续操作
+                return;
             }
 
             for (int i = 0; i < count; i++)
@@ -189,11 +218,6 @@ namespace 课件帮PPT助手
                 var newShape = originalShape.Duplicate()[1];
                 newShape.Tags.Add("MatrixCopyCopy", "True");
                 matrixShapes.Add(newShape);
-
-                if (!originalSizes.ContainsKey(newShape.Id))
-                {
-                    originalSizes[newShape.Id] = (newShape.Width, newShape.Height);
-                }
             }
         }
 

@@ -1,0 +1,75 @@
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
+    x:Class="课件帮PPT助手.TableSettingsForm"
+    Title="生字赋格" Height="450" Width="160" 
+    WindowStyle="None" 
+    ShowInTaskbar="False" 
+    WindowStartupLocation="CenterScreen" 
+    Topmost="True" 
+    AllowsTransparency="True" 
+    Background="Transparent" 
+    MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border BorderBrush="#0000FF" BorderThickness="2" CornerRadius="10" Background="White" Width="125" Height="435">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+
+            <!-- 边框宽度标签 -->
+            <TextBlock Margin="0,5,0,0" VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center">
+                <Run Text="边框宽度:"/>
+            </TextBlock>
+
+            <!-- 边框宽度调节组合控件 -->
+            <Grid HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="TextBoxBorderWidth" Grid.Column="0" VerticalAlignment="Center" FontSize="18" Text="1.25" Width="65" Height="30" TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF144BF0"/>
+                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
+                    <Button x:Name="ButtonIncrease" Width="15" Height="15" Padding="0" Click="ButtonIncrease_Click" FontStretch="Medium" BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0">
+                        <mah:ContentControlEx Content="▲"/>
+                    </Button>
+                    <Button x:Name="ButtonDecrease" Content="▼" Width="15" Height="15" Padding="0" Click="ButtonDecrease_Click" BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 宽度差值标签 -->
+            <TextBlock Margin="0,0,0,3" VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center">
+                <Run Text="宽度差值:"/>
+            </TextBlock>
+
+            <!-- 宽度差值输入框 -->
+            <TextBox x:Name="TextBoxWidthDifference" Width="80" Height="25" Text="0" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" BorderBrush="#FF144BF0" ToolTip="内外部边框宽度差值"/>
+
+            <!-- 边框颜色标签 -->
+            <TextBlock Margin="0,10,0,0" VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center">
+                <Run Text="边框颜色:"/>
+            </TextBlock>
+
+            <!-- 颜色选择按钮 -->
+            <Button x:Name="ButtonChooseColor" Width="80" Height="30" Background="Black" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,10" Click="ButtonChooseColor_Click"/>
+
+            <!-- 明亮度差值标签 -->
+            <TextBlock VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center" Margin="0,1,0,3">
+                <Run Text="亮度差值:"/>
+            </TextBlock>
+
+            <!-- 明亮度差值输入框 -->
+            <TextBox x:Name="TextBoxBrightnessDifference" Width="80" Height="25" Text="0" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" BorderBrush="#FF144BF0" ToolTip="内外部边框颜色深浅差值"/>
+
+            <!-- 生成按钮 -->
+            <Button x:Name="ButtonOK" Width="80" Height="30" Margin="0,10,0,5" Background="Blue" Foreground="White" Content="生成" Click="ButtonOK_Click" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Null}" FontWeight="Bold" FontSize="16" ToolTip="生成田字格"/>
+
+            <!-- 应用按钮 -->
+            <Button x:Name="ButtonApply" Width="80" Height="30" Margin="0,5,0,5" Background="Blue" Foreground="White" Content="应用" Click="ButtonApply_Click" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Null}" FontWeight="Bold" FontSize="16" ToolTip="应用样式"/>
+
+            <!-- 读取按钮 -->
+            <Button x:Name="ButtonRead" Width="80" Height="30" Margin="0,5,0,5" Background="Green" Foreground="White" Content="读取" Click="ButtonRead_Click" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{x:Null}" FontWeight="Bold" FontSize="16" ToolTip="读取田字格参数"/>
+
+            <!-- 退出按钮 -->
+            <Button x:Name="ButtonExit" Width="80" Height="30" Margin="0,5,0,5" Background="Red" Foreground="White" Content="退出" Click="ButtonExit_Click" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="{x:Null}" FontSize="16" FontWeight="Bold"/>
+        </StackPanel>
+    </Border>
+</Window>
