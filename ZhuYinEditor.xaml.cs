@@ -13,6 +13,8 @@ using Microsoft.Office.Core;
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Windows.Media.Imaging;
+using Image = System.Windows.Controls.Image;
 
 namespace 课件帮PPT助手
 {
@@ -978,6 +980,19 @@ namespace 课件帮PPT助手
         {
             autoRememberEnabled = !autoRememberEnabled;
             MessageBox.Show(autoRememberEnabled ? "自动记忆已开启" : "自动记忆已关闭", "自动记忆", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // 获取当前按钮中的 Image 控件
+            var buttonImage = (Image)BtnAutoRemember.Content;
+
+            // 切换图片
+            if (autoRememberEnabled)
+            {
+                buttonImage.Source = new BitmapImage(new Uri("pack://application:,,,/课件帮PPT助手;component/Resources/自动记忆中.png"));
+            }
+            else
+            {
+                buttonImage.Source = new BitmapImage(new Uri("pack://application:,,,/课件帮PPT助手;component/Resources/自动记忆.png"));
+            }
         }
     }
 }
