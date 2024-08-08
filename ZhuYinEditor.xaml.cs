@@ -664,19 +664,15 @@ namespace 课件帮PPT助手
             TextBlockProgress.Visibility = Visibility.Collapsed;
         }
 
+        private readonly HashSet<char> chinesePunctuation = new HashSet<char>
+{
+    '。', '，', '、', '；', '：', '！', '？', '“', '”', '‘', '’', '（', '）', '【', '】', '《', '》', '—', '…', '『', '』', '「', '」'
+};
+
         private bool IsChinesePunctuation(string text)
         {
-            if (string.IsNullOrEmpty(text)) return false;
-
-            char[] chinesePunctuation = new char[]
-            {
-        '。', '，', '、', '；', '：', '！', '？', '“', '”', '‘', '’', '（', '）', '【', '】', '《', '》', '…', '—', '『', '』', '「', '」'
-            };
-
             return text.Length == 1 && chinesePunctuation.Contains(text[0]);
         }
-
-
 
 
         private void AdjustTableSize(PowerPoint.Table table)
