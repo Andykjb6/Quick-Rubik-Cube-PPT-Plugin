@@ -28,7 +28,6 @@
             <Button x:Name="BtnCorrectPronunciations" Width="28" Height="28" Click="BtnCorrectPronunciations_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/智能纠正.png" Stretch="Uniform" ToolTip="智能纠音"/>
             </Button>
-            <!-- 新增文本对齐按钮 -->
             <Button Name="BtnAlignLeft" Width="28" Height="28" Click="BtnAlignLeft_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/左对齐.png" Stretch="Uniform" ToolTip="左对齐"/>
             </Button>
@@ -38,7 +37,11 @@
             <Button Name="BtnAlignJustify" Width="28" Height="28" Click="BtnAlignJustify_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/两端对齐.png" Stretch="Uniform" ToolTip="两端对齐"/>
             </Button>
-            <!-- 新增历史记录按钮 -->
+
+            <!-- 新增自动记忆按钮 -->
+            <Button Name="BtnAutoRemember" Width="28" Height="28" Click="BtnAutoRemember_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/自动记忆.png" Stretch="Uniform" ToolTip="自动记忆"/>
+            </Button>
         </StackPanel>
 
         <!-- 左侧RichTextBox -->

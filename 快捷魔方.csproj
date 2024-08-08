@@ -706,7 +706,6 @@
     <Resource Include="Resources\两端对齐.png" />
     <Resource Include="Resources\居中对齐.png" />
     <Resource Include="Resources\左对齐.png" />
-    <Resource Include="Resources\历史记录.png" />
     <EmbeddedResource Include="汉字字典\拆分拼音.txt" />
     <Resource Include="Resources\bottom.png" />
     <Resource Include="Resources\bottomAlign.png" />
@@ -720,6 +719,7 @@
     <Resource Include="Resources\topAlign.png" />
     <Resource Include="Resources\verticalCenter.png" />
     <Resource Include="Resources\centerAlign.png" />
+    <Resource Include="Resources\自动记忆.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
