@@ -26,14 +26,15 @@ namespace 课件帮PPT助手
         private Dictionary<int, string> correctedPinyinDict = new Dictionary<int, string>();
         private List<TextBlock> multiPronunciationTextBlocks = new List<TextBlock>();
         private List<string> erhuaWordLibrary = new List<string>();
-        private List<string> lightToneWordLibrary = new List<string>();
         private bool isTextChangedEventHandlerActive = true;
-        private string erhuaWordLibraryFilePath;
-        private string lightToneWordLibraryFilePath;
+        private readonly string erhuaWordLibraryFilePath;
+       
 
         public ZhuYinEditor()
         {
             InitializeComponent();
+            // 在初始化时应用默认的字体设置
+            ApplyDefaultFontSettings();
 
             // 确定儿化音词语库文件的路径
             string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ErhuaCache");
@@ -117,6 +118,55 @@ namespace 课件帮PPT助手
 
             ContextMenu = contextMenu;
             MouseRightButtonUp += ZhuYinEditor_MouseRightButtonUp;
+        }
+        private void BtnFontSettings_Click(object sender, RoutedEventArgs e)
+        {
+            // 打开字体设置窗口
+            FontSettingsWindow fontSettingsWindow = new FontSettingsWindow();
+            if (fontSettingsWindow.ShowDialog() == true)
+            {
+                // 如果用户点击确认，则应用设置
+                ApplyFontSettings(fontSettingsWindow.PinyinFont, fontSettingsWindow.PinyinFontSize,
+                                  fontSettingsWindow.HanziFont, fontSettingsWindow.HanziFontSize);
+            }
+        }
+
+        private void ApplyFontSettings(string pinyinFont, double pinyinFontSize, string hanziFont, double hanziFontSize)
+        {
+            // 遍历 StackPanelContent 中的所有 TextBlock，应用字体设置
+            foreach (var child in StackPanelContent.Children)
+            {
+                if (child is StackPanel sp)
+                {
+                    foreach (var element in sp.Children)
+                    {
+                        if (element is StackPanel charPanel)
+                        {
+                            var pinyinBlock = charPanel.Children[0] as TextBlock;
+                            var hanziBlock = charPanel.Children[1] as TextBlock;
+
+                            if (pinyinBlock != null && hanziBlock != null)
+                            {
+                                pinyinBlock.FontFamily = new System.Windows.Media.FontFamily(pinyinFont);
+                                pinyinBlock.FontSize = pinyinFontSize;
+                                hanziBlock.FontFamily = new System.Windows.Media.FontFamily(hanziFont);
+                                hanziBlock.FontSize = hanziFontSize;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ApplyDefaultFontSettings()
+        {
+            // 获取并应用默认设置
+            string pinyinFont = Properties.Settings.Default.PinyinFont;
+            double pinyinFontSize = Properties.Settings.Default.PinyinFontSize;
+            string hanziFont = Properties.Settings.Default.HanziFont;
+            double hanziFontSize = Properties.Settings.Default.HanziFontSize;
+
+            ApplyFontSettings(pinyinFont, pinyinFontSize, hanziFont, hanziFontSize);
         }
 
         private void OpenErhuaWordLibraryFile()
@@ -427,6 +477,7 @@ namespace 课件帮PPT助手
             SyncAlignmentWithPinyin();
         }
 
+        // 在所有内容更新后调用字体应用
         private void CorrectPronunciations()
         {
             string text = GetPlainTextFromRichTextBox();
@@ -434,6 +485,7 @@ namespace 课件帮PPT助手
             SyncAlignmentWithPinyin();
             HighlightErhuaHanzi();
             HighlightReduplicatedWords(); // 检测并高亮叠词
+            ApplyFontSettings(); // 这里再次应用字体设置
         }
 
         // 更新 StackPanel 内容时检查儿化音词语库
@@ -534,6 +586,7 @@ namespace 课件帮PPT助手
             // 在这里调用 HighlightErhuaHanzi 确保拼音更新后立即高亮显示
             HighlightErhuaHanzi();
             HighlightReduplicatedWords(); // 检测并高亮叠词
+            ApplyFontSettings(); // 在内容更新后立即应用字体设置
         }
     
 
@@ -970,8 +1023,51 @@ namespace 课件帮PPT助手
             SyncAlignmentWithPinyin();
             HighlightErhuaHanzi();
             HighlightReduplicatedWords(); // 检测并高亮叠词
+            ApplyFontSettings(); // 内容更新后应用字体设置
+        }
+        private void ApplyFontSettings()
+        {
+            string pinyinFont = Properties.Settings.Default.PinyinFont;
+            double pinyinFontSize = Properties.Settings.Default.PinyinFontSize;
+            string hanziFont = Properties.Settings.Default.HanziFont;
+            double hanziFontSize = Properties.Settings.Default.HanziFontSize;
+
+            foreach (var child in StackPanelContent.Children)
+            {
+                if (child is StackPanel sp)
+                {
+                    foreach (var element in sp.Children)
+                    {
+                        if (element is StackPanel charPanel)
+                        {
+                            var pinyinBlock = charPanel.Children[0] as TextBlock;
+                            var hanziBlock = charPanel.Children[1] as TextBlock;
+
+                            if (pinyinBlock != null)
+                            {
+                                pinyinBlock.FontFamily = new System.Windows.Media.FontFamily(pinyinFont);  // System.Windows.Media.FontFamily
+                                pinyinBlock.FontSize = pinyinFontSize;
+                            }
+
+                            if (hanziBlock != null)
+                            {
+                                hanziBlock.FontFamily = new System.Windows.Media.FontFamily(hanziFont);  // System.Windows.Media.FontFamily
+                                hanziBlock.FontSize = hanziFontSize;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
+        private void BtnChangeFontSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var fontSettingsWindow = new FontSettingsWindow();
+            if (fontSettingsWindow.ShowDialog() == true)
+            {
+                ApplyFontSettings(); // 用户确认设置后应用新的字体设置
+            }
+        }
         private StackPanel CreateNewLinePanel()
         {
             return new StackPanel

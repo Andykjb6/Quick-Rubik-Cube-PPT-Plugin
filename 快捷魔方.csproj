@@ -427,6 +427,9 @@
     <Compile Include="FontDetectionForm.Designer.cs">
       <DependentUpon>FontDetectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FontSettingsWindow.xaml.cs">
+      <DependentUpon>FontSettingsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FormInputColumns.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -456,9 +459,6 @@
     </Compile>
     <Compile Include="MatrixDistribution.xaml.cs">
       <DependentUpon>MatrixDistribution.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MemoryEditorWindow.xaml.cs">
-      <DependentUpon>MemoryEditorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PinYinForm.cs">
       <SubType>Form</SubType>
@@ -611,6 +611,7 @@
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Ribbon.cs">
       <XmlRibbon>true</XmlRibbon>
@@ -740,6 +741,7 @@
     <Resource Include="Resources\自动记忆中.png" />
     <Resource Include="Resources\看拼音写词语.png" />
     <Resource Include="Resources\AI注音.png" />
+    <Resource Include="Resources\字体设置.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
@@ -765,15 +767,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FontSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MatrixcopyForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MatrixDistribution.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MemoryEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

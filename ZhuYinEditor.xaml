@@ -37,6 +37,9 @@
             <Button Name="BtnAlignJustify" Width="28" Height="28" Click="BtnAlignJustify_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/两端对齐.png" Stretch="Uniform" ToolTip="两端对齐"/>
             </Button>
+            <Button Name="BtnFontSettings" Width="28" Height="28" Click="BtnFontSettings_Click" BorderThickness="0">
+                <Image Source="/课件帮PPT助手;component/Resources/字体设置.png" Stretch="Uniform" ToolTip="字体设置"/>
+            </Button>
         </StackPanel>
 
         <!-- 左侧RichTextBox -->
