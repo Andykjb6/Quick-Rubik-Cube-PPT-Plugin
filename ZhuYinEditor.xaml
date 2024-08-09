@@ -37,11 +37,6 @@
             <Button Name="BtnAlignJustify" Width="28" Height="28" Click="BtnAlignJustify_Click" BorderThickness="0">
                 <Image Source="/课件帮PPT助手;component/Resources/两端对齐.png" Stretch="Uniform" ToolTip="两端对齐"/>
             </Button>
-
-            <!-- 新增自动记忆按钮 -->
-            <Button Name="BtnAutoRemember" Width="28" Height="28" Click="BtnAutoRemember_Click" BorderThickness="0">
-                <Image Source="/课件帮PPT助手;component/Resources/自动记忆.png" Stretch="Uniform" ToolTip="自动记忆"/>
-            </Button>
         </StackPanel>
 
         <!-- 左侧RichTextBox -->

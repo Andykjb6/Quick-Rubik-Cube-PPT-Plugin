@@ -542,8 +542,8 @@ namespace 课件帮PPT助手
             this.拓展应用.Image = ((System.Drawing.Image)(resources.GetObject("拓展应用.Image")));
             this.拓展应用.Items.Add(this.Zici);
             this.拓展应用.Items.Add(this.WritePinyin);
-            this.拓展应用.Items.Add(this.分解拼音);
             this.拓展应用.Items.Add(this.多音字词填空);
+            this.拓展应用.Items.Add(this.分解拼音);
             this.拓展应用.Label = "拓展应用";
             this.拓展应用.Name = "拓展应用";
             // 
