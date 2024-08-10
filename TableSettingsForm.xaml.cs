@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Office.Interop.PowerPoint;
@@ -73,8 +72,6 @@ namespace 课件帮PPT助手
                     // 同步参数到窗体
                     TextBoxBorderWidth.Text = borderWidth.Value.ToString();
                     TextBoxWidthDifference.Text = widthDifference.Value.ToString();
-
-                    ColorConverter converter = new ColorConverter();
                     borderColor = (Color)ColorConverter.ConvertFromString(borderColorString);
                     ButtonChooseColor.Background = new SolidColorBrush(borderColor);
 
@@ -479,6 +476,7 @@ namespace 课件帮PPT助手
             }
         }
 
+        //田字格布局算法
         private void GenerateShapeWithoutLayout()
         {
             if (!float.TryParse(TextBoxBorderWidth.Text, out float borderWidth))
@@ -613,6 +611,7 @@ namespace 课件帮PPT助手
             return newShapeNames;
         }
 
+        //使字号大小适应田字格大小
         private void AdjustFontSizeToFit(Shape textBox)
         {
             float maxSize = textBox.Width - 2;
@@ -641,18 +640,19 @@ namespace 课件帮PPT助手
         {
             return (color.B << 16) | (color.G << 8) | color.R;
         }
-
+        
+        //调整颜色明亮度
         private int AdjustColorBrightness(int rgb, float brightnessDifference)
         {
             Color color = Color.FromRgb((byte)(rgb & 0xFF), (byte)((rgb >> 8) & 0xFF), (byte)((rgb >> 16) & 0xFF));
-            float h, s, l;
-            ColorToHSL(color, out h, out s, out l);
+            ColorToHSL(color, out float h, out float s, out float l);
 
             l = Clamp(l + brightnessDifference, 0, 100);
 
             return HSLToColor(h, s, l);
         }
 
+        //RGB转HSL
         private void ColorToHSL(Color color, out float h, out float s, out float l)
         {
             float r = color.R / 255f;
@@ -693,6 +693,7 @@ namespace 课件帮PPT助手
             l *= 100f;
         }
 
+        //HSL转RGB
         private int HSLToColor(float h, float s, float l)
         {
             h /= 360f;
