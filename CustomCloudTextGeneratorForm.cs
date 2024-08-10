@@ -341,10 +341,5 @@ namespace 课件帮PPT助手
 
             return (a << 24) | (b << 16) | (g << 8) | r;
         }
-
-        private void CustomCloudTextGeneratorForm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

@@ -451,7 +451,6 @@ namespace 课件帮PPT助手
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "自定义云朵字生成";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.CustomCloudTextGeneratorForm_Load);
             this.tabControl.ResumeLayout(false);
             this.textSettingsPage.ResumeLayout(false);
             this.textSettingsPage.PerformLayout();

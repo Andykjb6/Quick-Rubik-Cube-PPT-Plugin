@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.69</ApplicationVersion>
+    <ApplicationVersion>1.0.0.73</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -143,8 +143,8 @@
       <HintPath>packages\ControlzEx.4.4.0\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="EPPlus, Version=7.2.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>packages\EPPlus.7.2.0\lib\net462\EPPlus.dll</HintPath>
+    <Reference Include="EPPlus, Version=7.2.2.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>packages\EPPlus.7.2.2\lib\net462\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
       <HintPath>packages\EPPlus.Interfaces.6.1.1\lib\net462\EPPlus.Interfaces.dll</HintPath>
@@ -152,8 +152,8 @@
     <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
       <HintPath>packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.61.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>packages\HtmlAgilityPack.1.11.61\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.62.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlAgilityPack.1.11.62\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="HtmlRenderer, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\HtmlRenderer.Core.1.5.0.6\lib\net45\HtmlRenderer.dll</HintPath>
@@ -245,9 +245,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Sdcb.SparkDesk, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Sdcb.SparkDesk.3.1.0\lib\netstandard2.0\Sdcb.SparkDesk.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -430,6 +427,12 @@
     <Compile Include="FontSettingsWindow.xaml.cs">
       <DependentUpon>FontSettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FontSizeAdjustForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FontSizeAdjustForm.Designer.cs">
+      <DependentUpon>FontSizeAdjustForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormInputColumns.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -570,6 +573,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FontDetectionForm.resx">
       <DependentUpon>FontDetectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FontSizeAdjustForm.resx">
+      <DependentUpon>FontSizeAdjustForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormInputColumns.resx">
       <DependentUpon>FormInputColumns.cs</DependentUpon>

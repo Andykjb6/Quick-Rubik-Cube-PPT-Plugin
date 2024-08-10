@@ -1,9 +1,8 @@
 ﻿<Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
     x:Class="课件帮PPT助手.FontSettingsWindow"
-    Title="切换界面显示字体" Height="300" Width="300" 
+    Title="切换界面显示字体" Height="300" Width="275" 
     WindowStyle="None" 
     ShowInTaskbar="False" 
     WindowStartupLocation="CenterScreen" 

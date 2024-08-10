@@ -28,7 +28,7 @@ namespace 课件帮PPT助手
         private List<string> erhuaWordLibrary = new List<string>();
         private bool isTextChangedEventHandlerActive = true;
         private readonly string erhuaWordLibraryFilePath;
-       
+
 
         public ZhuYinEditor()
         {
@@ -298,6 +298,7 @@ namespace 课件帮PPT助手
                 {
                     var menu = new ContextMenu();
 
+                    // 添加拼音选项到菜单
                     foreach (var pinyin in hanziPinyinDict[hanzi])
                     {
                         var menuItem = new MenuItem
@@ -339,8 +340,8 @@ namespace 课件帮PPT助手
                         }
                     }
 
-                    // 如果不是儿化音情况，添加轻声选项 (轻声，即无声调)
-                    if (!isErhua)
+                    // 确保只有在不是多音字的情况下才添加“轻声”选项
+                    if (!isErhua && hanziPinyinDict[hanzi].Count == 1)
                     {
                         var lightToneMenuItem = new MenuItem
                         {
@@ -356,6 +357,7 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
 
         private string RemoveTone(string pinyin)
         {
@@ -588,11 +590,11 @@ namespace 课件帮PPT助手
             HighlightReduplicatedWords(); // 检测并高亮叠词
             ApplyFontSettings(); // 在内容更新后立即应用字体设置
         }
-    
+
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
-           
+
             char currentChar = text[index];
 
             // 处理特殊的汉字拼音
