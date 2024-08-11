@@ -463,6 +463,12 @@
     <Compile Include="MatrixDistribution.xaml.cs">
       <DependentUpon>MatrixDistribution.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OddRowHeightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OddRowHeightForm.Designer.cs">
+      <DependentUpon>OddRowHeightForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PinYinForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -588,6 +594,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LayoutForm.resx">
       <DependentUpon>LayoutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OddRowHeightForm.resx">
+      <DependentUpon>OddRowHeightForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PinYinForm.resx">
       <DependentUpon>PinYinForm.cs</DependentUpon>

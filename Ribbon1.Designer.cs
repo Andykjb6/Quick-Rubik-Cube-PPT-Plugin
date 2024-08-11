@@ -57,6 +57,7 @@ namespace 课件帮PPT助手
             this.注音编辑 = this.Factory.CreateRibbonSplitButton();
             this.文本居中 = this.Factory.CreateRibbonButton();
             this.删列补行 = this.Factory.CreateRibbonButton();
+            this.奇数行行高设置 = this.Factory.CreateRibbonButton();
             this.自动补齐 = this.Factory.CreateRibbonButton();
             this.合并段落 = this.Factory.CreateRibbonButton();
             this.字号调整 = this.Factory.CreateRibbonButton();
@@ -364,6 +365,7 @@ namespace 课件帮PPT助手
             this.注音编辑.Image = ((System.Drawing.Image)(resources.GetObject("注音编辑.Image")));
             this.注音编辑.Items.Add(this.文本居中);
             this.注音编辑.Items.Add(this.删列补行);
+            this.注音编辑.Items.Add(this.奇数行行高设置);
             this.注音编辑.Items.Add(this.自动补齐);
             this.注音编辑.Items.Add(this.合并段落);
             this.注音编辑.Items.Add(this.字号调整);
@@ -393,6 +395,14 @@ namespace 课件帮PPT助手
             this.删列补行.ShowImage = true;
             this.删列补行.SuperTip = "默认单击，表格缩短一个中文字符宽度；按住Ctrl键单击可指定数量缩短若干中文字符宽度。";
             this.删列补行.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.删列补行_Click);
+            // 
+            // 奇数行行高设置
+            // 
+            this.奇数行行高设置.Image = ((System.Drawing.Image)(resources.GetObject("奇数行行高设置.Image")));
+            this.奇数行行高设置.Label = "文本行距";
+            this.奇数行行高设置.Name = "奇数行行高设置";
+            this.奇数行行高设置.ShowImage = true;
+            this.奇数行行高设置.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.奇数行行高设置_Click);
             // 
             // 自动补齐
             // 
@@ -1586,6 +1596,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 括弧关系;
         internal RibbonButton 多音字词填空;
         internal RibbonButton 字号调整;
+        internal RibbonButton 奇数行行高设置;
     }
 
     partial class ThisRibbonCollection

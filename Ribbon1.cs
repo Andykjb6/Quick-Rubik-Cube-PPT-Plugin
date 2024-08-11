@@ -2338,19 +2338,15 @@ End Sub
             // 返回选中的形状列表
             return selectedShapes;
         }
-    
+
 
         private void 交换尺寸_Click(object sender, RibbonControlEventArgs e)
         {
             try
             {
-                // 获取当前活动的PowerPoint应用程序
                 var application = Globals.ThisAddIn.Application;
-
-                // 获取当前选中的对象
                 var selection = application.ActiveWindow.Selection;
 
-                // 确保选中了两个对象
                 if (selection.Type == PpSelectionType.ppSelectionShapes)
                 {
                     var selectedShapes = selection.ShapeRange;
@@ -2362,21 +2358,20 @@ End Sub
 
                     if (selectedShapes.Count == 2)
                     {
-                        // 获取两个选中的形状
                         Shape shape1 = selectedShapes[1];
                         Shape shape2 = selectedShapes[2];
 
-                        // 记录这两个形状的原始尺寸
                         float shape1OriginalWidth = shape1.Width;
                         float shape1OriginalHeight = shape1.Height;
                         float shape2OriginalWidth = shape2.Width;
                         float shape2OriginalHeight = shape2.Height;
 
-                        // 计算这两个形状的比例
+                        float shape1Bottom = shape1.Top + shape1.Height;
+                        float shape2Bottom = shape2.Top + shape2.Height;
+
                         float shape1AspectRatio = shape1OriginalWidth / shape1OriginalHeight;
                         float shape2AspectRatio = shape2OriginalWidth / shape2OriginalHeight;
 
-                        // 交换彼此的比例进行裁剪和缩放
                         if (shape1.Type == MsoShapeType.msoPicture || shape1.Type == MsoShapeType.msoLinkedPicture)
                         {
                             ResizeAndCropShape(shape1, shape2AspectRatio, shape2OriginalWidth, shape2OriginalHeight);
@@ -2396,6 +2391,10 @@ End Sub
                             shape2.Width = shape1OriginalWidth;
                             shape2.Height = shape1OriginalHeight;
                         }
+
+                        // 调整Top属性，使底部位置不变
+                        shape1.Top = shape1Bottom - shape1.Height;
+                        shape2.Top = shape2Bottom - shape2.Height;
                     }
                     else
                     {
@@ -2423,7 +2422,6 @@ End Sub
 
             if (originalAspectRatio > targetAspectRatio)
             {
-                // 当前形状比例宽于目标比例，裁剪宽度
                 float newWidth = originalHeight * targetAspectRatio;
                 float cropWidth = (originalWidth - newWidth) / 2;
                 shape.PictureFormat.CropLeft += cropWidth;
@@ -2431,17 +2429,16 @@ End Sub
             }
             else
             {
-                // 当前形状比例窄于目标比例，裁剪高度
                 float newHeight = originalWidth / targetAspectRatio;
                 float cropHeight = (originalHeight - newHeight) / 2;
                 shape.PictureFormat.CropTop += cropHeight;
                 shape.PictureFormat.CropBottom += cropHeight;
             }
 
-            // 缩放到目标尺寸
             shape.Width = targetWidth;
             shape.Height = targetHeight;
         }
+
 
 
         private void 交换文字_Click(object sender, RibbonControlEventArgs e)
@@ -6408,6 +6405,44 @@ End Sub
             else
             {
                 MessageBox.Show("请选择一个注音文本布局表格进行字号调整。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void 奇数行行高设置_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                var application = Globals.ThisAddIn.Application;
+                var selection = application.ActiveWindow.Selection;
+
+                // 检查用户是否选中了一个表格
+                if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes && selection.ShapeRange.Count == 1)
+                {
+                    var shape = selection.ShapeRange[1];
+                    if (shape.HasTable == Microsoft.Office.Core.MsoTriState.msoTrue)
+                    {
+                        var table = shape.Table;
+
+                        // 显示设置奇数行行高的窗体
+                        OddRowHeightForm form = new OddRowHeightForm(table);
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            // 已在NumericUpDown的事件处理程序中应用行高
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选中一个包含表格的对象。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请选中一个包含表格的对象。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("设置奇数行行高时发生错误: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
