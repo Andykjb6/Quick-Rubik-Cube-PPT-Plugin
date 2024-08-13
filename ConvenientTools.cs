@@ -676,17 +676,31 @@ namespace 课件帮PPT助手
         {
             try
             {
+                // 应用格式刷
                 originalShape.PickUp();
                 newTextBox.Apply();
 
+                // 获取新文本框的段落格式
+                var paragraphFormat = newTextBox.TextFrame2.TextRange.ParagraphFormat;
+
+                // 重置缩进和间距，确保没有首行缩进
+                paragraphFormat.LeftIndent = 0;   // 左缩进
+                paragraphFormat.RightIndent = 0;  // 右缩进
+                paragraphFormat.FirstLineIndent = 0; // 首行缩进
+
+                // 重置段前段后的间距
+                paragraphFormat.SpaceBefore = 0; // 段前间距
+                paragraphFormat.SpaceAfter = 0;  // 段后间距
+
                 // 忽略字号大小的复制，保持新文本框的字号不变
-                // (即：在复制格式后不要再设置字体大小)
+                newTextBox.TextFrame.TextRange.Font.Size = originalShape.TextFrame.TextRange.Font.Size;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("使用格式刷复制字体属性时出错：" + ex.Message);
             }
         }
+
 
         private void HandlePress(TextRange textRange, float textWidth, float originalLeft, float originalTop, out float newLeft, out float newTop)
         {

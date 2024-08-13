@@ -4858,13 +4858,7 @@ End Sub
                                 {
                                     var targetCell = table.Cell(i, startCol + j);
                                     targetCell.Shape.TextFrame.TextRange.Text = contents[j];
-                                    // 应用格式
-                                    targetCell.Shape.TextFrame.TextRange.Font.Name = firstCellFormat.Name;
-                                    targetCell.Shape.TextFrame.TextRange.Font.Size = firstCellFormat.Size;
-                                    targetCell.Shape.TextFrame.TextRange.Font.Bold = firstCellFormat.Bold;
-                                    targetCell.Shape.TextFrame.TextRange.Font.Italic = firstCellFormat.Italic;
-                                    targetCell.Shape.TextFrame.TextRange.Font.Underline = firstCellFormat.Underline;
-                                    targetCell.Shape.TextFrame.TextRange.Font.Color.RGB = firstCellFormat.Color.RGB;
+                                    
                                 }
                             }
                         }
@@ -5115,18 +5109,9 @@ End Sub
                             {
                                 var pinyinCell = table.Cell(i, j).Shape.TextFrame.TextRange;
                                 var hanziCell = table.Cell(i + 1, j).Shape.TextFrame.TextRange;
-
                                 pinyinCell.Text = pinyinList[index].text;
-                                pinyinCell.Font.Size = pinyinList[index].fontSize;
-                                pinyinCell.Font.Name = pinyinList[index].fontName;
-                                pinyinCell.Font.Bold = pinyinList[index].bold;
                                 table.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
-
                                 hanziCell.Text = hanziList[index].text;
-                                hanziCell.Font.Size = hanziList[index].fontSize;
-                                hanziCell.Font.Name = hanziList[index].fontName;
-                                hanziCell.Font.Bold = hanziList[index].bold;
-
                                 index++;
                             }
                         }
@@ -6445,5 +6430,110 @@ End Sub
                 MessageBox.Show("设置奇数行行高时发生错误: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void 字词加点_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
+            {
+                PowerPoint.TextRange textRange = selection.TextRange;
+                PowerPoint.Shape textBox = selection.ShapeRange[1];
+                PowerPoint.Slide slide = app.ActiveWindow.View.Slide;
+
+                // 定义比例系数，用于调整圆点大小和位置
+                const float dotSizeRatio = 0.2f;  // 圆点大小占字体大小的比例
+                const float verticalAdjustmentRatio = 0.1f;  // 垂直调整比例，基于字体大小
+                const float upwardShiftRatio = 0.5f;  // 向上调整比例，基于额外行间距
+
+                // 遍历每个字符并在其下方添加圆点
+                for (int i = 1; i <= textRange.Text.Count(); i++)
+                {
+                    var charRange = textRange.Characters(i, 1);
+                    float fontSize = charRange.Font.Size;
+                    float boundHeight = charRange.BoundHeight;
+                    float dotSize = fontSize * dotSizeRatio;
+
+                    // 行高的估算，如果行高明显大于字体大小，则认为行间距＞1
+                    float extraLineSpacing = Math.Max(0, boundHeight - fontSize);
+
+                    // 计算圆点的位置，基于行间距进行向上调整
+                    float left = charRange.BoundLeft + (charRange.BoundWidth / 2) - (dotSize / 2); // 圆点居中于字符
+                    float top = charRange.BoundTop + charRange.BoundHeight
+                                + (fontSize * verticalAdjustmentRatio)
+                                - (extraLineSpacing * upwardShiftRatio); // 调整圆点的垂直位置
+
+                    // 添加圆点
+                    var dot = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeOval, left, top, dotSize, dotSize);
+                    dot.Fill.ForeColor.RGB = charRange.Font.Color.RGB; // 设置圆点颜色
+                    dot.Line.Visible = Office.MsoTriState.msoFalse; // 隐藏圆点的边框
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选择文本框内的文本。");
+            }
+        }
+
+        private void 拼音升调_Click(object sender, RibbonControlEventArgs e)
+        {
+            PowerPoint.Application app = Globals.ThisAddIn.Application;
+            PowerPoint.Selection selection = app.ActiveWindow.Selection;
+
+            // 定义拼音声调映射字典
+            Dictionary<char, char> toneMap = new Dictionary<char, char>()
+    {
+        {'ā', 'á'}, {'á', 'ǎ'}, {'ǎ', 'à'}, {'à', 'ā'}, // 'a' 声调转换
+        {'ē', 'é'}, {'é', 'ě'}, {'ě', 'è'}, {'è', 'ē'}, // 'e' 声调转换
+        {'ī', 'í'}, {'í', 'ǐ'}, {'ǐ', 'ì'}, {'ì', 'ī'}, // 'i' 声调转换
+        {'ō', 'ó'}, {'ó', 'ǒ'}, {'ǒ', 'ò'}, {'ò', 'ō'}, // 'o' 声调转换
+        {'ū', 'ú'}, {'ú', 'ǔ'}, {'ǔ', 'ù'}, {'ù', 'ū'}, // 'u' 声调转换
+        {'ǖ', 'ǘ'}, {'ǘ', 'ǚ'}, {'ǚ', 'ǜ'}, {'ǜ', 'ǖ'}, // 'ü' 声调转换
+    };
+
+            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
+            {
+                // 如果选择的是文本，处理选中的文本
+                PowerPoint.TextRange textRange = selection.TextRange;
+                ApplyToneChange(textRange, toneMap);
+            }
+            else if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                // 如果选择的是形状（文本框），处理每个文本框中的文本
+                PowerPoint.ShapeRange shapeRange = selection.ShapeRange;
+                foreach (PowerPoint.Shape shape in shapeRange)
+                {
+                    if (shape.HasTextFrame == Office.MsoTriState.msoTrue)
+                    {
+                        PowerPoint.TextRange textRange = shape.TextFrame.TextRange;
+                        ApplyToneChange(textRange, toneMap);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("请先选择带有拼音的文本框或文本。");
+            }
+        }
+
+        private void ApplyToneChange(PowerPoint.TextRange textRange, Dictionary<char, char> toneMap)
+        {
+            string text = textRange.Text;
+            char[] newTextArray = text.ToCharArray();
+
+            // 遍历文本并调整声调
+            for (int i = 0; i < newTextArray.Length; i++)
+            {
+                if (toneMap.ContainsKey(newTextArray[i]))
+                {
+                    newTextArray[i] = toneMap[newTextArray[i]];
+                }
+            }
+
+            // 将调整后的文本设置回文本框
+            textRange.Text = new string(newTextArray);
+        }
     }
 }
+

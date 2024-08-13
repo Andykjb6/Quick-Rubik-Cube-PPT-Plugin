@@ -77,6 +77,7 @@ namespace 课件帮PPT助手
             this.WritePinyin = this.Factory.CreateRibbonButton();
             this.多音字词填空 = this.Factory.CreateRibbonButton();
             this.分解拼音 = this.Factory.CreateRibbonButton();
+            this.拼音升调 = this.Factory.CreateRibbonButton();
             this.Masking = this.Factory.CreateRibbonButton();
             this.图形分割 = this.Factory.CreateRibbonButton();
             this.button6 = this.Factory.CreateRibbonButton();
@@ -119,6 +120,7 @@ namespace 课件帮PPT助手
             this.单字拆分 = this.Factory.CreateRibbonButton();
             this.拆分段落 = this.Factory.CreateRibbonButton();
             this.批量改字 = this.Factory.CreateRibbonButton();
+            this.字词加点 = this.Factory.CreateRibbonButton();
             this.文本矢量化 = this.Factory.CreateRibbonButton();
             this.文写入形 = this.Factory.CreateRibbonButton();
             this.部首描红 = this.Factory.CreateRibbonButton();
@@ -545,6 +547,7 @@ namespace 课件帮PPT助手
             this.拓展应用.Items.Add(this.WritePinyin);
             this.拓展应用.Items.Add(this.多音字词填空);
             this.拓展应用.Items.Add(this.分解拼音);
+            this.拓展应用.Items.Add(this.拼音升调);
             this.拓展应用.Label = "拓展应用";
             this.拓展应用.Name = "拓展应用";
             // 
@@ -587,6 +590,14 @@ namespace 课件帮PPT助手
             this.分解拼音.ShowImage = true;
             this.分解拼音.SuperTip = "选中拼音文本框，单击可分解其声母和韵母";
             this.分解拼音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.分解拼音_Click);
+            // 
+            // 拼音升调
+            // 
+            this.拼音升调.Image = ((System.Drawing.Image)(resources.GetObject("拼音升调.Image")));
+            this.拼音升调.Label = "拼音升调";
+            this.拼音升调.Name = "拼音升调";
+            this.拼音升调.ShowImage = true;
+            this.拼音升调.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.拼音升调_Click);
             // 
             // Masking
             // 
@@ -932,6 +943,7 @@ namespace 课件帮PPT助手
             this.文本.Items.Add(this.单字拆分);
             this.文本.Items.Add(this.拆分段落);
             this.文本.Items.Add(this.批量改字);
+            this.文本.Items.Add(this.字词加点);
             this.文本.Items.Add(this.文本矢量化);
             this.文本.Items.Add(this.文写入形);
             this.文本.Items.Add(this.部首描红);
@@ -989,6 +1001,14 @@ namespace 课件帮PPT助手
             this.批量改字.ShowImage = true;
             this.批量改字.SuperTip = "选中一个或多个文本框（形状），可对它们的文本进行批量修改。";
             this.批量改字.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.批量改字_Click);
+            // 
+            // 字词加点
+            // 
+            this.字词加点.Image = ((System.Drawing.Image)(resources.GetObject("字词加点.Image")));
+            this.字词加点.Label = "字词加点";
+            this.字词加点.Name = "字词加点";
+            this.字词加点.ShowImage = true;
+            this.字词加点.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.字词加点_Click);
             // 
             // 文本矢量化
             // 
@@ -1597,6 +1617,8 @@ namespace 课件帮PPT助手
         internal RibbonButton 多音字词填空;
         internal RibbonButton 字号调整;
         internal RibbonButton 奇数行行高设置;
+        internal RibbonButton 字词加点;
+        internal RibbonButton 拼音升调;
     }
 
     partial class ThisRibbonCollection
