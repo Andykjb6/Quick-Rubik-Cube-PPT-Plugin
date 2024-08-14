@@ -167,6 +167,7 @@ namespace 课件帮PPT助手
             this.快捷盒子 = this.Factory.CreateRibbonButton();
             this.Replaceaudio = this.Factory.CreateRibbonButton();
             this.splitButton2 = this.Factory.CreateRibbonSplitButton();
+            this.增加行宽 = this.Factory.CreateRibbonButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -312,6 +313,7 @@ namespace 课件帮PPT助手
             this.关于我.Items.Add(this.检查更新);
             this.关于我.Label = "快捷魔方";
             this.关于我.Name = "关于我";
+            this.关于我.SuperTip = "点击进入Andy老师的博客";
             this.关于我.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.关于我_Click);
             // 
             // 检查更新
@@ -367,6 +369,7 @@ namespace 课件帮PPT助手
             this.注音编辑.Image = ((System.Drawing.Image)(resources.GetObject("注音编辑.Image")));
             this.注音编辑.Items.Add(this.文本居中);
             this.注音编辑.Items.Add(this.删列补行);
+            this.注音编辑.Items.Add(this.增加行宽);
             this.注音编辑.Items.Add(this.奇数行行高设置);
             this.注音编辑.Items.Add(this.自动补齐);
             this.注音编辑.Items.Add(this.合并段落);
@@ -1007,7 +1010,9 @@ namespace 课件帮PPT助手
             this.字词加点.Image = ((System.Drawing.Image)(resources.GetObject("字词加点.Image")));
             this.字词加点.Label = "字词加点";
             this.字词加点.Name = "字词加点";
+            this.字词加点.ScreenTip = "使用说明：";
             this.字词加点.ShowImage = true;
+            this.字词加点.SuperTip = "在文本框内选中需要需要加点的字词。";
             this.字词加点.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.字词加点_Click);
             // 
             // 文本矢量化
@@ -1459,6 +1464,14 @@ namespace 课件帮PPT助手
             this.splitButton2.Label = "splitButton2";
             this.splitButton2.Name = "splitButton2";
             // 
+            // 增加行宽
+            // 
+            this.增加行宽.Image = ((System.Drawing.Image)(resources.GetObject("增加行宽.Image")));
+            this.增加行宽.Label = "增加行宽";
+            this.增加行宽.Name = "增加行宽";
+            this.增加行宽.ShowImage = true;
+            this.增加行宽.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.增加行宽_Click);
+            // 
             // Ribbon1
             // 
             this.Name = "Ribbon1";
@@ -1619,6 +1632,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 奇数行行高设置;
         internal RibbonButton 字词加点;
         internal RibbonButton 拼音升调;
+        internal RibbonButton 增加行宽;
     }
 
     partial class ThisRibbonCollection

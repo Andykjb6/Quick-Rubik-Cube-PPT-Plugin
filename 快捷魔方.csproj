@@ -36,7 +36,7 @@
     <PublishUrl>E:\快捷魔方插件版本\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
-    <ApplicationVersion>1.0.0.78</ApplicationVersion>
+    <ApplicationVersion>1.0.0.79</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -432,6 +432,12 @@
     </Compile>
     <Compile Include="FontSizeAdjustForm.Designer.cs">
       <DependentUpon>FontSizeAdjustForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAddColumns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddColumns.Designer.cs">
+      <DependentUpon>FormAddColumns.cs</DependentUpon>
     </Compile>
     <Compile Include="FormInputColumns.cs">
       <SubType>Form</SubType>

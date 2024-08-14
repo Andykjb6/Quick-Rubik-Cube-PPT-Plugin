@@ -5013,7 +5013,6 @@ End Sub
             ZhuYinEditor editor = new ZhuYinEditor();
             editor.Show();
         }
-
         private void 删列补行_Click(object sender, RibbonControlEventArgs e)
         {
             // 获取当前激活的PPT应用程序实例
@@ -5117,6 +5116,34 @@ End Sub
                         }
                     }
 
+                    // 设置所有奇数行的高度与第一行保持一致，偶数行的高度与第二行保持一致
+                    float firstRowHeight = table.Rows[1].Height;
+                    float secondRowHeight = table.Rows[2].Height;
+                    for (int i = 3; i <= table.Rows.Count; i += 2)
+                    {
+                        table.Rows[i].Height = firstRowHeight;
+                        if (i + 1 <= table.Rows.Count)
+                        {
+                            table.Rows[i + 1].Height = secondRowHeight;
+                        }
+                    }
+
+                    // 设置所有奇数行的字号与第一行一致，偶数行的字号与第二行一致
+                    float firstRowFontSize = table.Cell(1, 1).Shape.TextFrame.TextRange.Font.Size;
+                    float secondRowFontSize = table.Cell(2, 1).Shape.TextFrame.TextRange.Font.Size;
+
+                    for (int i = 3; i <= table.Rows.Count; i += 2)
+                    {
+                        for (int j = 1; j <= table.Columns.Count; j++)
+                        {
+                            table.Cell(i, j).Shape.TextFrame.TextRange.Font.Size = firstRowFontSize;
+                            if (i + 1 <= table.Rows.Count)
+                            {
+                                table.Cell(i + 1, j).Shape.TextFrame.TextRange.Font.Size = secondRowFontSize;
+                            }
+                        }
+                    }
+
                     // 删除多余的空行，保留非空行上方的空行
                     for (int i = table.Rows.Count; i > 1; i--)
                     {
@@ -5159,6 +5186,7 @@ End Sub
                 MessageBox.Show("请选择一个包含表格的形状。", "重排表格", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         private void 合并段落_Click(object sender, RibbonControlEventArgs e)
         {
@@ -6472,7 +6500,7 @@ End Sub
             }
             else
             {
-                MessageBox.Show("请先选择文本框内的文本。");
+                MessageBox.Show("请在文本框内选择需要加点的字词。");
             }
         }
 
@@ -6534,6 +6562,149 @@ End Sub
             // 将调整后的文本设置回文本框
             textRange.Text = new string(newTextArray);
         }
+
+        private void 增加行宽_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取当前激活的PPT应用程序实例
+            Application application = Globals.ThisAddIn.Application;
+
+            // 获取当前选中的对象
+            Selection selection = application.ActiveWindow.Selection;
+
+            // 检查是否按下Ctrl键
+            bool isCtrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+            int columnsToAdd = 1;
+
+            // 如果按下Ctrl键，显示输入窗口
+            if (isCtrlPressed)
+            {
+                using (FormAddColumns form = new FormAddColumns ())
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        columnsToAdd = form.ColumnsToAdd;  // 改为添加列的数量
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // 确保选中的是表格
+            if (selection.Type == PpSelectionType.ppSelectionShapes &&
+                selection.ShapeRange.Count == 1 &&
+                selection.ShapeRange[1].HasTable == MsoTriState.msoTrue)
+            {
+                PowerPoint.Table table = selection.ShapeRange[1].Table;
+
+                // 获取表格的当前行数和列数
+                int rowCount = table.Rows.Count;
+                int colCount = table.Columns.Count;
+
+                // 新增指定数量的列
+                for (int k = 0; k < columnsToAdd; k++)
+                {
+                    table.Columns.Add();
+                }
+                colCount += columnsToAdd;
+
+                // 创建两个临时列表来存储拼音和汉字内容及其样式
+                List<(string text, float fontSize, string fontName, MsoTriState bold)> pinyinList = new List<(string, float, string, MsoTriState)>();
+                List<(string text, float fontSize, string fontName, MsoTriState bold)> hanziList = new List<(string, float, string, MsoTriState)>();
+
+                // 将表格中的拼音和汉字内容及其样式分别存储到临时列表中
+                for (int i = 1; i <= rowCount; i += 2)
+                {
+                    for (int j = 1; j <= colCount - columnsToAdd; j++)  // 只存储原始列数的数据
+                    {
+                        var pinyinCell = table.Cell(i, j).Shape.TextFrame.TextRange;
+                        var hanziCell = table.Cell(i + 1, j).Shape.TextFrame.TextRange;
+
+                        pinyinList.Add((pinyinCell.Text, pinyinCell.Font.Size, pinyinCell.Font.Name, pinyinCell.Font.Bold));
+                        hanziList.Add((hanziCell.Text, hanziCell.Font.Size, hanziCell.Font.Name, hanziCell.Font.Bold));
+                    }
+                }
+
+                // 清空所有单元格内容
+                for (int i = 1; i <= table.Rows.Count; i++)
+                {
+                    for (int j = 1; j <= table.Columns.Count; j++)
+                    {
+                        table.Cell(i, j).Shape.TextFrame.TextRange.Text = string.Empty;
+                    }
+                }
+
+                // 重新排列表格内容并应用样式
+                int index = 0;
+                for (int i = 1; i <= rowCount; i += 2)
+                {
+                    for (int j = 1; j <= colCount; j++)
+                    {
+                        if (index < pinyinList.Count)
+                        {
+                            var pinyinCell = table.Cell(i, j).Shape.TextFrame.TextRange;
+                            var hanziCell = table.Cell(i + 1, j).Shape.TextFrame.TextRange;
+                            pinyinCell.Text = pinyinList[index].text;
+                            table.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
+                            hanziCell.Text = hanziList[index].text;
+                            index++;
+                        }
+                    }
+                }
+
+                // 删除多余的空行，保留非空行上方的空行
+                for (int i = table.Rows.Count; i > 1; i--)
+                {
+                    bool isEmpty = true;
+                    for (int j = 1; j <= table.Columns.Count; j++)
+                    {
+                        if (!string.IsNullOrEmpty(table.Cell(i, j).Shape.TextFrame.TextRange.Text))
+                        {
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+
+                    if (isEmpty)
+                    {
+                        table.Rows[i].Delete();
+                    }
+                }
+
+                // 设置所有奇数行的高度与第一行保持一致，偶数行的高度与第二行保持一致
+                float firstRowHeight = table.Rows[1].Height;
+                float secondRowHeight = table.Rows[2].Height;
+                for (int i = 3; i <= table.Rows.Count; i += 2)
+                {
+                    table.Rows[i].Height = firstRowHeight;
+                    if (i + 1 <= table.Rows.Count)
+                    {
+                        table.Rows[i + 1].Height = secondRowHeight;
+                    }
+                }
+
+                // 设置所有奇数行的字号与第一行一致，偶数行的字号与第二行一致
+                float firstRowFontSize = table.Cell(1, 1).Shape.TextFrame.TextRange.Font.Size;
+                float secondRowFontSize = table.Cell(2, 1).Shape.TextFrame.TextRange.Font.Size;
+
+                for (int i = 3; i <= table.Rows.Count; i += 2)
+                {
+                    for (int j = 1; j <= table.Columns.Count; j++)
+                    {
+                        table.Cell(i, j).Shape.TextFrame.TextRange.Font.Size = firstRowFontSize;
+                        if (i + 1 <= table.Rows.Count)
+                        {
+                            table.Cell(i + 1, j).Shape.TextFrame.TextRange.Font.Size = secondRowFontSize;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择一个包含表格的形状。", "增列减行", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 }
-
