@@ -33,13 +33,13 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(278, 31);
             this.label1.TabIndex = 0;
-            this.label1.Text = "请输入要缩短的字符数：";
+            this.label1.Text = "输入每行减少的字符数：";
             // 
             // txtColumns
             // 
             this.txtColumns.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtColumns.Location = new System.Drawing.Point(274, 22);
-            this.txtColumns.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.txtColumns.Margin = new System.Windows.Forms.Padding(6);
             this.txtColumns.Name = "txtColumns";
             this.txtColumns.Size = new System.Drawing.Size(196, 39);
             this.txtColumns.TabIndex = 1;
@@ -54,7 +54,7 @@
             this.btnOK.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.btnOK.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.btnOK.Location = new System.Drawing.Point(324, 76);
-            this.btnOK.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(6);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(146, 45);
             this.btnOK.TabIndex = 2;
@@ -71,7 +71,7 @@
             this.Controls.Add(this.txtColumns);
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "FormInputColumns";
             this.Text = "缩短行宽";
             this.ResumeLayout(false);

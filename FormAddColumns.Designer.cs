@@ -18,7 +18,6 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAddColumns));
             this.label1 = new System.Windows.Forms.Label();
             this.txtColumns = new System.Windows.Forms.TextBox();
             this.btnOK = new System.Windows.Forms.Button();
@@ -31,9 +30,9 @@
             this.label1.Location = new System.Drawing.Point(9, 28);
             this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(262, 31);
+            this.label1.Size = new System.Drawing.Size(278, 31);
             this.label1.TabIndex = 0;
-            this.label1.Text = "请输入要增加的列数：";
+            this.label1.Text = "输入每行增加的字符数：";
             // 
             // txtColumns
             // 
@@ -70,7 +69,6 @@
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.txtColumns);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "FormAddColumns";
             this.Text = "增加列数";

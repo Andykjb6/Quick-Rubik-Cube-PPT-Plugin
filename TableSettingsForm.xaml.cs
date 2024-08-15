@@ -6,12 +6,14 @@ using Microsoft.Office.Interop.PowerPoint;
 using Office = Microsoft.Office.Core;
 using Color = System.Windows.Media.Color;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace 课件帮PPT助手
 {
     public partial class TableSettingsForm : Window
     {
-        private Color borderColor = Colors.Black;
+        private Color borderColor = Colors.Green;
+        private Color overlayColor = Colors.White; // 默认叠底颜色
         private int tianZiGeCounter = 1;
 
         public TableSettingsForm()
@@ -30,6 +32,9 @@ namespace 课件帮PPT助手
                 string borderColorString = null;
                 float? brightnessDifference = null;
 
+                float? overlayTransparency = null;
+                string overlayColorString = null;
+
                 int tianZiGeCount = 0;
 
                 foreach (Shape groupShape in selectedShapes)
@@ -42,6 +47,10 @@ namespace 课件帮PPT助手
                         string currentBorderColorString = groupShape.Tags["BorderColor"];
                         float currentBrightnessDifference = float.Parse(groupShape.Tags["BrightnessDifference"]);
 
+                        Shape overlayShape = GetOverlayShape(groupShape);
+                        float currentOverlayTransparency = overlayShape?.Fill.Transparency ?? 1;
+                        string currentOverlayColorString = overlayShape?.Fill.ForeColor.RGB.ToString() ?? Colors.White.ToString();
+
                         if (borderWidth == null)
                         {
                             // 初始化参数
@@ -49,6 +58,8 @@ namespace 课件帮PPT助手
                             widthDifference = currentWidthDifference;
                             borderColorString = currentBorderColorString;
                             brightnessDifference = currentBrightnessDifference;
+                            overlayTransparency = currentOverlayTransparency;
+                            overlayColorString = currentOverlayColorString;
                         }
                         else
                         {
@@ -56,7 +67,9 @@ namespace 课件帮PPT助手
                             if (borderWidth != currentBorderWidth ||
                                 widthDifference != currentWidthDifference ||
                                 borderColorString != currentBorderColorString ||
-                                brightnessDifference != currentBrightnessDifference)
+                                brightnessDifference != currentBrightnessDifference ||
+                                overlayTransparency != currentOverlayTransparency ||
+                                overlayColorString != currentOverlayColorString)
                             {
                                 allAreTianZiGe = false;
                                 break;
@@ -76,6 +89,16 @@ namespace 课件帮PPT助手
                     ButtonChooseColor.Background = new SolidColorBrush(borderColor);
 
                     TextBoxBrightnessDifference.Text = brightnessDifference.Value.ToString();
+
+                    CheckBoxOverlayShape.IsChecked = overlayTransparency.Value == 0;
+
+                    // 将 RGB 值转换为 Color 对象
+                    overlayColor = Color.FromRgb(
+                        (byte)(int.Parse(overlayColorString) & 0xFF),
+                        (byte)((int.Parse(overlayColorString) >> 8) & 0xFF),
+                        (byte)((int.Parse(overlayColorString) >> 16) & 0xFF)
+                    );
+                    ButtonOverlayColor.Background = new SolidColorBrush(overlayColor);
                 }
                 else
                 {
@@ -83,11 +106,15 @@ namespace 课件帮PPT助手
                     if (tianZiGeCount == 0)
                     {
                         // 选中对象中没有田字格，显示默认参数
-                        TextBoxBorderWidth.Text = "1.25";
-                        TextBoxWidthDifference.Text = "0";
-                        borderColor = Colors.Black;
+                        TextBoxBorderWidth.Text = "1.5";
+                        TextBoxWidthDifference.Text = "0.5";
+                        borderColor = Colors.Green;
                         ButtonChooseColor.Background = new SolidColorBrush(borderColor);
-                        TextBoxBrightnessDifference.Text = "0";
+                        TextBoxBrightnessDifference.Text = "5";
+
+                        CheckBoxOverlayShape.IsChecked = false;
+                        overlayColor = Colors.White;
+                        ButtonOverlayColor.Background = new SolidColorBrush(overlayColor);
                     }
                     else
                     {
@@ -97,6 +124,36 @@ namespace 课件帮PPT助手
             }
         }
 
+        private void ButtonIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            AdjustBorderWidth(0.25m);
+        }
+
+        private void ButtonDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            AdjustBorderWidth(-0.25m);
+        }
+
+        private void AdjustBorderWidth(decimal adjustment)
+        {
+            if (decimal.TryParse(TextBoxBorderWidth.Text, out decimal currentValue))
+            {
+                currentValue = Math.Max(0, currentValue + adjustment);
+                TextBoxBorderWidth.Text = currentValue.ToString("0.00");
+            }
+        }
+
+        private Shape GetOverlayShape(Shape groupShape)
+        {
+            foreach (Shape shape in groupShape.GroupItems)
+            {
+                if (shape.Tags["IsOverlay"] == "True")
+                {
+                    return shape;
+                }
+            }
+            return null;
+        }
 
         private void ButtonChooseColor_Click(object sender, RoutedEventArgs e)
         {
@@ -105,6 +162,16 @@ namespace 课件帮PPT助手
             {
                 borderColor = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
                 ButtonChooseColor.Background = new SolidColorBrush(borderColor);
+            }
+        }
+
+        private void ButtonOverlayColor_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                overlayColor = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                ButtonOverlayColor.Background = new SolidColorBrush(overlayColor);
             }
         }
 
@@ -147,13 +214,14 @@ namespace 课件帮PPT助手
                 }
 
                 bool ctrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
                 if (ctrlPressed)
                 {
-                    GenerateShapeWithoutLayout();
+                    GenerateShapeWithoutLayout(); // 无布局生成田字格
                 }
                 else
                 {
-                    GenerateShape();
+                    GenerateShape(); // 有布局生成田字格
                 }
             }
             else
@@ -161,29 +229,6 @@ namespace 课件帮PPT助手
                 MessageBox.Show("请先选中一个或多个对象。");
             }
         }
-
-        // 辅助方法：检查两个形状是否重叠
-        private bool AreShapesOverlapping(Shape shape1, Shape shape2)
-        {
-            float shape1Left = shape1.Left;
-            float shape1Top = shape1.Top;
-            float shape1Right = shape1Left + shape1.Width;
-            float shape1Bottom = shape1Top + shape1.Height;
-
-            float shape2Left = shape2.Left;
-            float shape2Top = shape2.Top;
-            float shape2Right = shape2Left + shape2.Width;
-            float shape2Bottom = shape2Top + shape2.Height;
-
-            // 检查是否有重叠
-            bool isOverlapping = !(shape1Left >= shape2Right ||
-                                   shape1Right <= shape2Left ||
-                                   shape1Top >= shape2Bottom ||
-                                   shape1Bottom <= shape2Top);
-
-            return isOverlapping;
-        }
-
 
         private void ButtonApply_Click(object sender, RoutedEventArgs e)
         {
@@ -195,6 +240,8 @@ namespace 课件帮PPT助手
 
             float widthDifference = float.Parse(TextBoxWidthDifference.Text);
             float brightnessDifference = float.Parse(TextBoxBrightnessDifference.Text);
+            bool overlayChecked = CheckBoxOverlayShape.IsChecked == true;
+            float overlayTransparency = overlayChecked ? 0f : 1f;
 
             Microsoft.Office.Interop.PowerPoint.Application app = Globals.ThisAddIn.Application;
             if (app.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
@@ -236,6 +283,19 @@ namespace 课件帮PPT助手
 
                         groupShape.Tags.Delete("BrightnessDifference");
                         groupShape.Tags.Add("BrightnessDifference", brightnessDifference.ToString());
+
+                        Shape overlayShape = GetOverlayShape(groupShape);
+                        if (overlayShape != null)
+                        {
+                            overlayShape.Fill.ForeColor.RGB = ConvertColor(overlayColor);
+                            overlayShape.Fill.Transparency = overlayTransparency;
+
+                            overlayShape.Tags.Delete("OverlayTransparency");
+                            overlayShape.Tags.Add("OverlayTransparency", overlayTransparency.ToString());
+
+                            overlayShape.Tags.Delete("OverlayColor");
+                            overlayShape.Tags.Add("OverlayColor", overlayColor.ToString());
+                        }
                     }
                     else
                     {
@@ -245,6 +305,7 @@ namespace 课件帮PPT助手
                 }
             }
         }
+
         private void ButtonRead_Click(object sender, RoutedEventArgs e)
         {
             // 检查当前选中的对象
@@ -259,6 +320,9 @@ namespace 课件帮PPT助手
                 string borderColorString = null;
                 float? brightnessDifference = null;
 
+                float? overlayTransparency = null;
+                string overlayColorString = null;
+
                 int tianZiGeCount = 0;
 
                 foreach (Shape groupShape in selectedShapes)
@@ -271,6 +335,10 @@ namespace 课件帮PPT助手
                         string currentBorderColorString = groupShape.Tags["BorderColor"];
                         float currentBrightnessDifference = float.Parse(groupShape.Tags["BrightnessDifference"]);
 
+                        Shape overlayShape = GetOverlayShape(groupShape);
+                        float currentOverlayTransparency = overlayShape?.Fill.Transparency ?? 1;
+                        string currentOverlayColorString = overlayShape?.Fill.ForeColor.RGB.ToString() ?? Colors.White.ToString();
+
                         if (borderWidth == null)
                         {
                             // 初始化参数
@@ -278,6 +346,8 @@ namespace 课件帮PPT助手
                             widthDifference = currentWidthDifference;
                             borderColorString = currentBorderColorString;
                             brightnessDifference = currentBrightnessDifference;
+                            overlayTransparency = currentOverlayTransparency;
+                            overlayColorString = currentOverlayColorString;
                         }
                         else
                         {
@@ -285,7 +355,9 @@ namespace 课件帮PPT助手
                             if (borderWidth != currentBorderWidth ||
                                 widthDifference != currentWidthDifference ||
                                 borderColorString != currentBorderColorString ||
-                                brightnessDifference != currentBrightnessDifference)
+                                brightnessDifference != currentBrightnessDifference ||
+                                overlayTransparency != currentOverlayTransparency ||
+                                overlayColorString != currentOverlayColorString)
                             {
                                 allAreTianZiGe = false;
                                 break;
@@ -301,11 +373,29 @@ namespace 课件帮PPT助手
                     // 同步参数到窗体
                     TextBoxBorderWidth.Text = borderWidth.Value.ToString();
                     TextBoxWidthDifference.Text = widthDifference.Value.ToString();
-                    _ = new ColorConverter();
                     borderColor = (Color)ColorConverter.ConvertFromString(borderColorString);
                     ButtonChooseColor.Background = new SolidColorBrush(borderColor);
 
                     TextBoxBrightnessDifference.Text = brightnessDifference.Value.ToString();
+
+                    CheckBoxOverlayShape.IsChecked = overlayTransparency.Value == 0;
+
+                    // 将 overlayColorString 转换为 Color 对象
+                    if (int.TryParse(overlayColorString, out int rgbValue))
+                    {
+                        overlayColor = Color.FromRgb(
+                            (byte)(rgbValue & 0xFF),
+                            (byte)((rgbValue >> 8) & 0xFF),
+                            (byte)((rgbValue >> 16) & 0xFF)
+                        );
+                    }
+                    else
+                    {
+                        // 如果解析失败，使用默认颜色
+                        overlayColor = Colors.White;
+                    }
+
+                    ButtonOverlayColor.Background = new SolidColorBrush(overlayColor);
                 }
                 else
                 {
@@ -313,11 +403,15 @@ namespace 课件帮PPT助手
                     if (tianZiGeCount == 0)
                     {
                         // 选中对象中没有田字格，显示默认参数
-                        TextBoxBorderWidth.Text = "1.25";
-                        TextBoxWidthDifference.Text = "0";
-                        borderColor = Colors.Black;
+                        TextBoxBorderWidth.Text = "1.5";
+                        TextBoxWidthDifference.Text = "0.5";
+                        borderColor = Colors.Green;
                         ButtonChooseColor.Background = new SolidColorBrush(borderColor);
-                        TextBoxBrightnessDifference.Text = "0";
+                        TextBoxBrightnessDifference.Text = "5";
+
+                        CheckBoxOverlayShape.IsChecked = false;
+                        overlayColor = Colors.White;
+                        ButtonOverlayColor.Background = new SolidColorBrush(overlayColor);
                     }
                     else
                     {
@@ -327,25 +421,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
-        private void ButtonIncrease_Click(object sender, RoutedEventArgs e)
-        {
-            AdjustBorderWidth(0.25m);
-        }
-
-        private void ButtonDecrease_Click(object sender, RoutedEventArgs e)
-        {
-            AdjustBorderWidth(-0.25m);
-        }
-
-        private void AdjustBorderWidth(decimal adjustment)
-        {
-            if (decimal.TryParse(TextBoxBorderWidth.Text, out decimal currentValue))
-            {
-                currentValue = Math.Max(0, currentValue + adjustment);
-                TextBoxBorderWidth.Text = currentValue.ToString("0.00");
-            }
-        }
 
         private void GenerateShape()
         {
@@ -425,14 +500,25 @@ namespace 课件帮PPT助手
                     verticalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
                     horizontalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
 
-                    // 先调整外部边框的层次，将其置于顶层
-                    squareShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
+                    // 生成叠底形状
+                    Shape overlayShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, top, selectedSize, selectedSize);
+                    overlayShape.Fill.ForeColor.RGB = ConvertColor(overlayColor);
+                    overlayShape.Fill.Transparency = CheckBoxOverlayShape.IsChecked == true ? 0f : 1f;  // 如果未勾选，设置为透明
+                    overlayShape.Line.Visible = Office.MsoTriState.msoFalse;  // 无边框
+                    overlayShape.Tags.Add("IsOverlay", "True");
+                    // 将叠底形状发送到最底层
+                    overlayShape.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
 
-                    // 将所有形状组合成一个田字格
-                    ShapeRange shapeRange = activeSlide.Shapes.Range(new string[] { squareShape.Name, verticalLine.Name, horizontalLine.Name });
+                    // 将所有形状组合成一个田字格，确保叠底形状在最底层
+                    List<string> shapeNames = new List<string> { squareShape.Name, verticalLine.Name, horizontalLine.Name };
+                    if (overlayShape != null)
+                    {
+                        shapeNames.Insert(0, overlayShape.Name);  // 将叠底形状放在最底层
+                    }
+
+                    ShapeRange shapeRange = activeSlide.Shapes.Range(shapeNames.ToArray());
                     Shape groupShape = shapeRange.Group();
                     groupShape.Name = $"田字格{tianZiGeCounter++}";
-                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
 
                     // 为组合形状添加标签
                     groupShape.Tags.Add("IsTianZiGe", "True");
@@ -449,10 +535,15 @@ namespace 课件帮PPT助手
                         shape.Tags.Add("WidthDifference", widthDifference.ToString());
                         shape.Tags.Add("BorderColor", borderColor.ToString());
                         shape.Tags.Add("BrightnessDifference", brightnessDifference.ToString());
+
+                        if (shape.Tags["IsOverlay"] == "True")
+                        {
+                            shape.Tags.Add("OverlayTransparency", CheckBoxOverlayShape.IsChecked == true ? "0" : "1");
+                            shape.Tags.Add("OverlayColor", overlayColor.ToString());
+                        }
                     }
 
-                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
-
+                    // 如果是文本框，调整字体大小以适应田字格
                     if (selectedShape.Type == Office.MsoShapeType.msoTextBox)
                     {
                         selectedShape.Width = selectedSize;
@@ -467,14 +558,65 @@ namespace 课件帮PPT助手
                         selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
                         selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
                     }
-
-                    currentLeft += selectedSize;
-
-                    groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                    // 将所选对象移动到组合对象的上一层
                     selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
+                    currentLeft += selectedSize;
                 }
             }
         }
+
+
+        // 生成叠底形状的方法
+        private void GenerateOverlayShape(Shape groupShape, Slide activeSlide, int initialZOrderPosition)
+        {
+            // 创建叠底形状
+            Shape overlayShape = activeSlide.Shapes.AddShape(
+                Office.MsoAutoShapeType.msoShapeRectangle,
+                groupShape.Left, groupShape.Top,
+                groupShape.Width, groupShape.Height);
+
+            overlayShape.Fill.ForeColor.RGB = ConvertColor(overlayColor);
+            overlayShape.Fill.Transparency = CheckBoxOverlayShape.IsChecked == true ? 0f : 1f;
+            overlayShape.Line.Visible = Office.MsoTriState.msoFalse; // 无边框
+            overlayShape.Tags.Add("IsOverlay", "True");
+
+            // 将叠底形状移到目标位置
+            MoveShapeBehind(overlayShape, initialZOrderPosition);
+
+            // 将叠底形状与田字格组合
+            Shape finalGroup = CombineShapes(activeSlide, overlayShape, groupShape);
+            SetShapeTags(finalGroup, groupShape, overlayShape);
+        }
+
+        // 将形状移动到指定的ZOrder位置
+        private void MoveShapeBehind(Shape shape, int targetZOrder)
+        {
+            while (shape.ZOrderPosition > targetZOrder - 1)
+            {
+                shape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+            }
+        }
+
+        // 组合两个形状
+        private Shape CombineShapes(Slide slide, Shape overlayShape, Shape groupShape)
+        {
+            ShapeRange combinedShapes = slide.Shapes.Range(new string[] { overlayShape.Name, groupShape.Name });
+            return combinedShapes.Group();
+        }
+
+        // 为组合形状设置标签
+        private void SetShapeTags(Shape finalGroup, Shape groupShape, Shape overlayShape)
+        {
+            finalGroup.Name = groupShape.Name + "_Combined";
+            finalGroup.Tags.Add("IsTianZiGe", "True");
+            finalGroup.Tags.Add("BorderWidth", groupShape.Tags["BorderWidth"]);
+            finalGroup.Tags.Add("WidthDifference", groupShape.Tags["WidthDifference"]);
+            finalGroup.Tags.Add("BorderColor", groupShape.Tags["BorderColor"]);
+            finalGroup.Tags.Add("BrightnessDifference", groupShape.Tags["BrightnessDifference"]);
+            finalGroup.Tags.Add("OverlayTransparency", overlayShape.Fill.Transparency.ToString());
+            finalGroup.Tags.Add("OverlayColor", overlayColor.ToString());
+        }
+
 
         //田字格布局算法
         private void GenerateShapeWithoutLayout()
@@ -577,6 +719,28 @@ namespace 课件帮PPT助手
             }
         }
 
+        // 辅助方法：检查两个形状是否重叠
+        private bool AreShapesOverlapping(Shape shape1, Shape shape2)
+        {
+            float shape1Left = shape1.Left;
+            float shape1Top = shape1.Top;
+            float shape1Right = shape1Left + shape1.Width;
+            float shape1Bottom = shape1Top + shape1.Height;
+
+            float shape2Left = shape2.Left;
+            float shape2Top = shape2.Top;
+            float shape2Right = shape2Left + shape2.Width;
+            float shape2Bottom = shape2Top + shape2.Height;
+
+            // 检查是否有重叠
+            bool isOverlapping = !(shape1Left >= shape2Right ||
+                                   shape1Right <= shape2Left ||
+                                   shape1Top >= shape2Bottom ||
+                                   shape1Bottom <= shape2Top);
+
+            return isOverlapping;
+        }
+
         private List<string> SplitTextBoxIntoCharacters(Slide slide, Shape textBox)
         {
             List<string> newShapeNames = new List<string>();
@@ -638,9 +802,9 @@ namespace 课件帮PPT助手
 
         private int ConvertColor(Color color)
         {
-            return (color.B << 16) | (color.G << 8) | color.R;
+            return ((int)color.R) | (((int)color.G) << 8) | (((int)color.B) << 16);
         }
-        
+
         //调整颜色明亮度
         private int AdjustColorBrightness(int rgb, float brightnessDifference)
         {

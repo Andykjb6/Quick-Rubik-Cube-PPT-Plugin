@@ -18,13 +18,11 @@ namespace 课件帮PPT助手
         {
             InitializeComponent();
             InitializeFontComboBox();
-
         }
 
         public void InitializeForm()
         {
             InitializeFontComboBox();
-            LoadSelectedTextBoxProperties();
         }
 
         private void InitializeFontComboBox()
@@ -37,27 +35,7 @@ namespace 课件帮PPT助手
             this.fontComboBox.SelectedIndexChanged += new System.EventHandler(this.fontComboBox_SelectedIndexChanged);
         }
 
-        private void LoadSelectedTextBoxProperties()
-        {
-            PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Selection selection = pptApp.ActiveWindow.Selection;
-
-            if (selection.Type == PowerPoint.PpSelectionType.ppSelectionShapes)
-            {
-                PowerPoint.Shape shape = selection.ShapeRange[1];
-                if (shape.HasTextFrame == Office.MsoTriState.msoTrue && shape.TextFrame2.HasText == Office.MsoTriState.msoTrue)
-                {
-                    textBoxShape = shape;
-                    textBox.Text = textBoxShape.TextFrame.TextRange.Text;
-                    fontComboBox.SelectedItem = textBoxShape.TextFrame2.TextRange.Font.Name;
-                    fontSizeNumericUpDown.Value = (decimal)textBoxShape.TextFrame2.TextRange.Font.Size;
-
-                    topColorButton.BackColor = ColorTranslator.FromOle(textBoxShape.TextFrame2.TextRange.Font.Fill.ForeColor.RGB);
-                    middleColorButton.BackColor = ColorTranslator.FromOle(textBoxShape2.TextFrame2.TextRange.Font.Fill.ForeColor.RGB);
-                    bottomColorButton.BackColor = ColorTranslator.FromOle(textBoxShape3.TextFrame2.TextRange.Font.Fill.ForeColor.RGB);
-                }
-            }
-        }
+       
 
         private void topColorButton_Click(object sender, EventArgs e)
         {
@@ -127,6 +105,7 @@ namespace 课件帮PPT助手
                 textBoxShape3.TextFrame2.TextRange.Font.Shadow.Visible = shadowCheckBox.Checked ? Office.MsoTriState.msoFalse : Office.MsoTriState.msoTrue;
             }
         }
+
 
         private void shadowColorButton_Click(object sender, EventArgs e)
         {

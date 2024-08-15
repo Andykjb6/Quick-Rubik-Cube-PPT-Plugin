@@ -28,13 +28,15 @@ namespace 课件帮PPT助手
         private List<string> erhuaWordLibrary = new List<string>();
         private bool isTextChangedEventHandlerActive = true;
         private readonly string erhuaWordLibraryFilePath;
-
+        private const int MaxCharCountThreshold = 300; // 设置字符数阈值
 
         public ZhuYinEditor()
         {
             InitializeComponent();
             // 在初始化时应用默认的字体设置
             ApplyDefaultFontSettings();
+
+           
 
             // 确定儿化音词语库文件的路径
             string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ErhuaCache");
@@ -52,6 +54,7 @@ namespace 课件帮PPT助手
 
             InitializeContextMenu();
         }
+      
 
         private void InitializeContextMenu()
         {
@@ -528,7 +531,6 @@ namespace 课件帮PPT助手
                         StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
                         currentLinePanel.Children.Add(sp);
 
-                        // 保存纠正后的拼音到字典
                         int index = GetCharacterIndex(sp);
                         if (index >= 0)
                         {
@@ -565,7 +567,6 @@ namespace 课件帮PPT助手
                         string matchingErhua = erhuaWordLibrary.FirstOrDefault(e => e.StartsWith(word));
                         if (!string.IsNullOrEmpty(matchingErhua))
                         {
-                            // 找到匹配的儿化音词语，使用缓存的拼音
                             var cachedPinyin = matchingErhua.Substring(matchingErhua.IndexOf('(') + 1).TrimEnd(')');
                             var prevCharPanel = currentLinePanel.Children[currentLinePanel.Children.Count - 2] as StackPanel;
                             var prevPinyinBlock = prevCharPanel?.Children[0] as TextBlock;
@@ -573,7 +574,7 @@ namespace 课件帮PPT助手
                             {
                                 prevPinyinBlock.Text = cachedPinyin;
                             }
-                            (sp.Children[0] as TextBlock).Text = string.Empty;  // 清空"儿"字的拼音
+                            (sp.Children[0] as TextBlock).Text = string.Empty;
                         }
                     }
                 }
@@ -585,11 +586,11 @@ namespace 课件帮PPT助手
                 StackPanelContent.Children.Add(currentLinePanel);
             }
 
-            // 在这里调用 HighlightErhuaHanzi 确保拼音更新后立即高亮显示
             HighlightErhuaHanzi();
-            HighlightReduplicatedWords(); // 检测并高亮叠词
-            ApplyFontSettings(); // 在内容更新后立即应用字体设置
+            HighlightReduplicatedWords();
+            ApplyFontSettings();
         }
+
 
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
@@ -966,8 +967,14 @@ namespace 课件帮PPT助手
             {
                 isTextChangedEventHandlerActive = false;
 
-                correctedPinyinDict.Clear(); // 清空纠正的拼音字典
+                // 获取纯文本，去除换行符和空格
                 string text = GetPlainTextFromRichTextBox();
+                string plainText = text.Replace(Environment.NewLine, "").Replace(" ", "");
+
+                int charCount = plainText.Length; // 计算字符数
+                UpdateCharacterCount(charCount); // 更新字符数统计
+
+                correctedPinyinDict.Clear(); // 清空纠正的拼音字典
                 UpdateStackPanelContentWithCorrection(text); // 优先使用用户反馈更新拼音
                 SyncAlignmentWithPinyin();
 
@@ -975,10 +982,27 @@ namespace 课件帮PPT助手
             }
         }
 
+        private void UpdateCharacterCount(int charCount)
+        {
+            TextBlockCharCount.Text = $"当前字符数: {charCount}";
+
+            if (charCount > MaxCharCountThreshold)
+            {
+                BtnCharCountWarning.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnCharCountWarning.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private string GetPlainTextFromRichTextBox()
         {
+            // 获取 RichTextBox 中的纯文本
             return new TextRange(RichTextBoxLeft.Document.ContentStart, RichTextBoxLeft.Document.ContentEnd).Text;
         }
+
+
 
         private void UpdateStackPanelContent(string text)
         {
@@ -1203,6 +1227,7 @@ namespace 课件帮PPT助手
                 rightPanels[i].HorizontalAlignment = ConvertToHorizontalAlignment(alignment);
             }
         }
+
 
         private void BtnAlignLeft_Click(object sender, RoutedEventArgs e)
         {

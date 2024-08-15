@@ -21,6 +21,7 @@ using OfficeOpenXml;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Windows.Interop;
+using System.Windows.Input;
 
 
 
@@ -6704,6 +6705,83 @@ End Sub
             else
             {
                 MessageBox.Show("请选择一个包含表格的形状。", "增列减行", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void 插入矩形_Click(object sender, RibbonControlEventArgs e)
+        {
+            Microsoft.Office.Interop.PowerPoint.Application app = Globals.ThisAddIn.Application;
+            Slide activeSlide = app.ActiveWindow.View.Slide as Slide;
+
+            // 存储新插入的矩形的名称列表
+            List<string> newShapeNames = new List<string>();
+
+            if (app.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
+            {
+                // 选中形状时的操作
+                PowerPoint.ShapeRange selectedShapes = app.ActiveWindow.Selection.ShapeRange;
+
+                foreach (Shape selectedShape in selectedShapes)
+                {
+                    float left = selectedShape.Left;
+                    float top = selectedShape.Top;
+                    float width = selectedShape.Width;
+                    float height = selectedShape.Height;
+
+                    // 插入矩形，并确保位置重合
+                    Shape rectangle = activeSlide.Shapes.AddShape(
+                        Office.MsoAutoShapeType.msoShapeRectangle,
+                        left,
+                        top,
+                        width,
+                        height);
+                    // 设置矩形外观为无边框
+                    rectangle.Line.Visible = Office.MsoTriState.msoFalse; // 隐藏边框
+
+                    // 判断是否按住了 Ctrl 键
+                    bool ctrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
+                    if (ctrlPressed)
+                    {
+                        // 获取选中形状的层次位置
+                        int selectedShapeZOrder = selectedShape.ZOrderPosition;
+
+                        // 将新插入的矩形移动到所选形状的下方
+                        while (rectangle.ZOrderPosition > selectedShapeZOrder)
+                        {
+                            rectangle.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
+                        }
+                    }
+                    // 将新插入的矩形名称加入列表
+                    newShapeNames.Add(rectangle.Name);
+                }
+            }
+            else
+            {
+                // 没有选中任何形状时，在幻灯片上插入一个与幻灯片等大的矩形
+                float slideWidth = app.ActivePresentation.PageSetup.SlideWidth;
+                float slideHeight = app.ActivePresentation.PageSetup.SlideHeight;
+
+                // 插入矩形
+                Shape rectangle = activeSlide.Shapes.AddShape(
+                    Office.MsoAutoShapeType.msoShapeRectangle,
+                    0,
+                    0,
+                    slideWidth,
+                    slideHeight);
+
+                // 将新插入的矩形名称加入列表
+                newShapeNames.Add(rectangle.Name);
+                // 设置矩形外观为无边框
+                rectangle.Line.Visible = Office.MsoTriState.msoFalse; // 隐藏边框
+
+            }
+
+            // 自动选中新插入的所有矩形
+            if (newShapeNames.Count > 0)
+            {
+                PowerPoint.ShapeRange newShapes = activeSlide.Shapes.Range(newShapeNames.ToArray());
+                newShapes.Select(); // 选中新插入的矩形
             }
         }
     }

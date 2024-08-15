@@ -58,5 +58,10 @@
             <ProgressBar Name="ProgressBarExport" Height="20" Width="400" Margin="10" Visibility="Collapsed" />
             <TextBlock Name="TextBlockProgress" Height="20" Margin="10,0,0,0" Visibility="Collapsed" TextAlignment="Center"/>
         </StackPanel>
+        <!-- 新增字符数统计 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,5">
+            <TextBlock Name="TextBlockCharCount" FontSize="14" VerticalAlignment="Center"/>
+            <Button Name="BtnCharCountWarning" Content="警告: 字符数过多，可能导致导出失败或崩溃" Visibility="Collapsed" Foreground="Red" BorderThickness="0" Background="Transparent" Margin="10,0,0,0"/>
+        </StackPanel>
     </Grid>
 </Window>
