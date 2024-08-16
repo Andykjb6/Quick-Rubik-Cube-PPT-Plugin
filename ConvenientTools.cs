@@ -447,6 +447,17 @@ namespace 课件帮PPT助手
 
                 Slide slide = app.ActiveWindow.View.Slide;
 
+                // 添加标识符“&”到当前幻灯片上符合条件的形状
+                List<PowerPoint.Shape> shapesToRename = new List<PowerPoint.Shape>();
+                foreach (PowerPoint.Shape shape in slide.Shapes)
+                {
+                    if (shape.Name.StartsWith($"{selectedText}-笔画"))
+                    {
+                        shape.Name = $"&{shape.Name}";
+                        shapesToRename.Add(shape);
+                    }
+                }
+
                 // 调用笔画拆分的点击事件
                 笔画拆分_Click(sender, e);
 
@@ -454,7 +465,7 @@ namespace 课件帮PPT助手
                 List<PowerPoint.Shape> shapesToGroup = new List<PowerPoint.Shape>();
                 foreach (PowerPoint.Shape shape in slide.Shapes)
                 {
-                    if (shape.Name.StartsWith($"{selectedText}-笔画"))
+                    if (shape.Name.StartsWith($"{selectedText}-笔画") && !shape.Name.StartsWith("&"))
                     {
                         shape.Name = "※" + shape.Name;
                         shapesToGroup.Add(shape);
@@ -473,7 +484,7 @@ namespace 课件帮PPT助手
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("请勿重复分解同一汉字笔顺，如需继续请删除当前已创建的分解笔顺");
+                        MessageBox.Show("您之前使用笔画拆分的汉字和现在要分解笔顺的汉字相同，导致程序无法判断该分解哪个笔画，您可以先对拆分的笔画进行批量命名或者组合或直接使用旧版的分解笔顺功能。");
                         return;
                     }
 
@@ -570,12 +581,22 @@ namespace 课件帮PPT助手
                         }
                     }
                 }
+
+                // 删除标识符“&”以恢复原始形状名称
+                foreach (PowerPoint.Shape shape in shapesToRename)
+                {
+                    if (shape.Name.StartsWith($"&{selectedText}-笔画"))
+                    {
+                        shape.Name = shape.Name.Substring(1);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
+
 
 
 
@@ -883,6 +904,7 @@ namespace 课件帮PPT助手
 
         private void AddAndRunVBA(PowerPoint.Application app, string svgFileName)
         {
+            string guid = Guid.NewGuid().ToString("N"); // 生成唯一的GUID标识符
             string vbaCode = $@"
 Sub ConvertSVGToShape()
     ' Ensure a shape is selected
@@ -921,12 +943,17 @@ Sub ConvertSVGToShape()
         End If
     Next shapeItem
     
-    ' Rename each shape based on the SVG file name and its layer order, excluding text boxes
+    ' Remove the border from each ungrouped shape and rename them, but without changing the naming pattern
     Dim count As Integer
     count = 1
     For Each shapeItem In slide.Shapes
         If Left(shapeItem.Name, 8) = ""Freeform"" Then
+            ' Assign the name as per your naming pattern
             shapeItem.Name = ""{svgFileName}-笔画"" & count
+            ' Add a tag to uniquely identify this batch of shapes
+            shapeItem.Tags.Add ""BatchIdentifier"", ""{guid}""
+            ' Remove the border
+            shapeItem.Line.Visible = msoFalse
             count = count + 1
         End If
     Next shapeItem
@@ -940,6 +967,7 @@ End Sub";
 
             vbProject.VBComponents.Remove(vbModule);
         }
+
 
         public void PerformStrokeSplit(string selectedText)
         {
