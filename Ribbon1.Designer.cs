@@ -39,21 +39,11 @@ namespace 课件帮PPT助手
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl10 = this.Factory.CreateRibbonDropDownItem();
             this.课件帮PPT助手 = this.Factory.CreateRibbonTab();
             this.group3 = this.Factory.CreateRibbonGroup();
-            this.group10 = this.Factory.CreateRibbonGroup();
-            this.group2 = this.Factory.CreateRibbonGroup();
-            this.group1 = this.Factory.CreateRibbonGroup();
-            this.group4 = this.Factory.CreateRibbonGroup();
-            this.group8 = this.Factory.CreateRibbonGroup();
-            this.group6 = this.Factory.CreateRibbonGroup();
-            this.group9 = this.Factory.CreateRibbonGroup();
-            this.矩形拆分 = this.Factory.CreateRibbonButton();
-            this.Mosaic = this.Factory.CreateRibbonButton();
-            this.ApplyFilter = this.Factory.CreateRibbonButton();
-            this.Expandimage = this.Factory.CreateRibbonButton();
-            this.splitButton2 = this.Factory.CreateRibbonSplitButton();
             this.关于我 = this.Factory.CreateRibbonSplitButton();
             this.检查更新 = this.Factory.CreateRibbonButton();
+            this.group10 = this.Factory.CreateRibbonGroup();
             this.toggleTaskPaneButton = this.Factory.CreateRibbonButton();
+            this.group2 = this.Factory.CreateRibbonGroup();
             this.button5 = this.Factory.CreateRibbonButton();
             this.笔顺图解 = this.Factory.CreateRibbonButton();
             this.生字赋格 = this.Factory.CreateRibbonButton();
@@ -82,6 +72,7 @@ namespace 课件帮PPT助手
             this.多音字词填空 = this.Factory.CreateRibbonButton();
             this.分解拼音 = this.Factory.CreateRibbonButton();
             this.拼音升调 = this.Factory.CreateRibbonButton();
+            this.group1 = this.Factory.CreateRibbonGroup();
             this.Masking = this.Factory.CreateRibbonButton();
             this.图形分割 = this.Factory.CreateRibbonButton();
             this.button6 = this.Factory.CreateRibbonButton();
@@ -94,6 +85,11 @@ namespace 课件帮PPT助手
             this.Bgsub = this.Factory.CreateRibbonButton();
             this.矢量 = this.Factory.CreateRibbonSplitButton();
             this.Tmttool = this.Factory.CreateRibbonButton();
+            this.矩形拆分 = this.Factory.CreateRibbonButton();
+            this.Mosaic = this.Factory.CreateRibbonButton();
+            this.ApplyFilter = this.Factory.CreateRibbonButton();
+            this.Expandimage = this.Factory.CreateRibbonButton();
+            this.group4 = this.Factory.CreateRibbonGroup();
             this.平移居中 = this.Factory.CreateRibbonButton();
             this.分布 = this.Factory.CreateRibbonMenu();
             this.沿线分布 = this.Factory.CreateRibbonButton();
@@ -105,6 +101,7 @@ namespace 课件帮PPT助手
             this.选择居中 = this.Factory.CreateRibbonSplitButton();
             this.button10 = this.Factory.CreateRibbonButton();
             this.Pagecentered = this.Factory.CreateRibbonButton();
+            this.group8 = this.Factory.CreateRibbonGroup();
             this.筛选 = this.Factory.CreateRibbonSplitButton();
             this.Type = this.Factory.CreateRibbonButton();
             this.Selectsize = this.Factory.CreateRibbonButton();
@@ -158,6 +155,7 @@ namespace 课件帮PPT助手
             this.清除备注 = this.Factory.CreateRibbonButton();
             this.清除超链接 = this.Factory.CreateRibbonButton();
             this.删除未用版式 = this.Factory.CreateRibbonButton();
+            this.group6 = this.Factory.CreateRibbonGroup();
             this.Timer = this.Factory.CreateRibbonButton();
             this.板贴辅助 = this.Factory.CreateRibbonButton();
             this.检测字体 = this.Factory.CreateRibbonButton();
@@ -167,8 +165,10 @@ namespace 课件帮PPT助手
             this.快捷盒子 = this.Factory.CreateRibbonButton();
             this.Replaceaudio = this.Factory.CreateRibbonButton();
             this.插入矩形 = this.Factory.CreateRibbonButton();
+            this.group9 = this.Factory.CreateRibbonGroup();
             this.comboBox1 = this.Factory.CreateRibbonComboBox();
             this.comboBox2 = this.Factory.CreateRibbonComboBox();
+            this.splitButton2 = this.Factory.CreateRibbonSplitButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -199,102 +199,6 @@ namespace 课件帮PPT助手
             this.group3.Label = "关于我";
             this.group3.Name = "group3";
             // 
-            // group10
-            // 
-            this.group10.Items.Add(this.toggleTaskPaneButton);
-            this.group10.Name = "group10";
-            // 
-            // group2
-            // 
-            this.group2.Items.Add(this.button5);
-            this.group2.Items.Add(this.笔顺图解);
-            this.group2.Items.Add(this.生字赋格);
-            this.group2.Items.Add(this.注音编辑);
-            this.group2.Items.Add(this.常用格子);
-            this.group2.Items.Add(this.注音工具);
-            this.group2.Items.Add(this.拓展应用);
-            this.group2.Label = "字音字形";
-            this.group2.Name = "group2";
-            // 
-            // group1
-            // 
-            this.group1.Items.Add(this.Masking);
-            this.group1.Items.Add(this.图形分割);
-            this.group1.Items.Add(this.button6);
-            this.group1.Items.Add(this.button1);
-            this.group1.Items.Add(this.Gradientrectangle);
-            this.group1.Items.Add(this.在线工具);
-            this.group1.Items.Add(this.矩形拆分);
-            this.group1.Items.Add(this.Mosaic);
-            this.group1.Items.Add(this.ApplyFilter);
-            this.group1.Items.Add(this.Expandimage);
-            this.group1.Label = "图形处理";
-            this.group1.Name = "group1";
-            // 
-            // group4
-            // 
-            this.group4.Items.Add(this.平移居中);
-            this.group4.Items.Add(this.分布);
-            this.group4.Label = "参考对齐";
-            this.group4.Name = "group4";
-            // 
-            // group8
-            // 
-            this.group8.Items.Add(this.筛选);
-            this.group8.Items.Add(this.选择增强);
-            this.group8.Items.Add(this.智能缩放);
-            this.group8.Items.Add(this.文本);
-            this.group8.Items.Add(this.绘图);
-            this.group8.Items.Add(this.更多便捷);
-            this.group8.Label = "便捷常用";
-            this.group8.Name = "group8";
-            // 
-            // group6
-            // 
-            this.group6.Items.Add(this.Timer);
-            this.group6.Items.Add(this.板贴辅助);
-            this.group6.Items.Add(this.检测字体);
-            this.group6.Items.Add(this.生成样机);
-            this.group6.Items.Add(this.图形修剪);
-            this.group6.Items.Add(this.button20);
-            this.group6.Items.Add(this.快捷盒子);
-            this.group6.Items.Add(this.Replaceaudio);
-            this.group6.Items.Add(this.插入矩形);
-            this.group6.Label = "辅助";
-            this.group6.Name = "group6";
-            // 
-            // group9
-            // 
-            this.group9.Items.Add(this.comboBox1);
-            this.group9.Items.Add(this.comboBox2);
-            this.group9.Label = "页面布局";
-            this.group9.Name = "group9";
-            // 
-            // 矩形拆分
-            // 
-            this.矩形拆分.Label = "";
-            this.矩形拆分.Name = "矩形拆分";
-            // 
-            // Mosaic
-            // 
-            this.Mosaic.Label = "";
-            this.Mosaic.Name = "Mosaic";
-            // 
-            // ApplyFilter
-            // 
-            this.ApplyFilter.Label = "";
-            this.ApplyFilter.Name = "ApplyFilter";
-            // 
-            // Expandimage
-            // 
-            this.Expandimage.Label = "";
-            this.Expandimage.Name = "Expandimage";
-            // 
-            // splitButton2
-            // 
-            this.splitButton2.Label = "splitButton2";
-            this.splitButton2.Name = "splitButton2";
-            // 
             // 关于我
             // 
             this.关于我.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -313,6 +217,11 @@ namespace 课件帮PPT助手
             this.检查更新.ShowImage = true;
             this.检查更新.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.检查更新_Click);
             // 
+            // group10
+            // 
+            this.group10.Items.Add(this.toggleTaskPaneButton);
+            this.group10.Name = "group10";
+            // 
             // toggleTaskPaneButton
             // 
             this.toggleTaskPaneButton.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -321,6 +230,18 @@ namespace 课件帮PPT助手
             this.toggleTaskPaneButton.Name = "toggleTaskPaneButton";
             this.toggleTaskPaneButton.ShowImage = true;
             this.toggleTaskPaneButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.toggleTaskPane_Click);
+            // 
+            // group2
+            // 
+            this.group2.Items.Add(this.button5);
+            this.group2.Items.Add(this.笔顺图解);
+            this.group2.Items.Add(this.生字赋格);
+            this.group2.Items.Add(this.注音编辑);
+            this.group2.Items.Add(this.常用格子);
+            this.group2.Items.Add(this.注音工具);
+            this.group2.Items.Add(this.拓展应用);
+            this.group2.Label = "字音字形";
+            this.group2.Name = "group2";
             // 
             // button5
             // 
@@ -601,6 +522,21 @@ namespace 课件帮PPT助手
             this.拼音升调.ShowImage = true;
             this.拼音升调.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.拼音升调_Click);
             // 
+            // group1
+            // 
+            this.group1.Items.Add(this.Masking);
+            this.group1.Items.Add(this.图形分割);
+            this.group1.Items.Add(this.button6);
+            this.group1.Items.Add(this.button1);
+            this.group1.Items.Add(this.Gradientrectangle);
+            this.group1.Items.Add(this.在线工具);
+            this.group1.Items.Add(this.矩形拆分);
+            this.group1.Items.Add(this.Mosaic);
+            this.group1.Items.Add(this.ApplyFilter);
+            this.group1.Items.Add(this.Expandimage);
+            this.group1.Label = "图形处理";
+            this.group1.Name = "group1";
+            // 
             // Masking
             // 
             this.Masking.Image = ((System.Drawing.Image)(resources.GetObject("Masking.Image")));
@@ -709,6 +645,33 @@ namespace 课件帮PPT助手
             this.Tmttool.Name = "Tmttool";
             this.Tmttool.ShowImage = true;
             this.Tmttool.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.位图转矢量图_Click);
+            // 
+            // 矩形拆分
+            // 
+            this.矩形拆分.Label = "";
+            this.矩形拆分.Name = "矩形拆分";
+            // 
+            // Mosaic
+            // 
+            this.Mosaic.Label = "";
+            this.Mosaic.Name = "Mosaic";
+            // 
+            // ApplyFilter
+            // 
+            this.ApplyFilter.Label = "";
+            this.ApplyFilter.Name = "ApplyFilter";
+            // 
+            // Expandimage
+            // 
+            this.Expandimage.Label = "";
+            this.Expandimage.Name = "Expandimage";
+            // 
+            // group4
+            // 
+            this.group4.Items.Add(this.平移居中);
+            this.group4.Items.Add(this.分布);
+            this.group4.Label = "参考对齐";
+            this.group4.Name = "group4";
             // 
             // 平移居中
             // 
@@ -819,6 +782,17 @@ namespace 课件帮PPT助手
             this.Pagecentered.ShowImage = true;
             this.Pagecentered.SuperTip = "默认单击，将所选对象整体平移到页面中心。按住Ctrl键单击，则将所选对象整体平移至水平线中部。";
             this.Pagecentered.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.Pagecentered_Click);
+            // 
+            // group8
+            // 
+            this.group8.Items.Add(this.筛选);
+            this.group8.Items.Add(this.选择增强);
+            this.group8.Items.Add(this.智能缩放);
+            this.group8.Items.Add(this.文本);
+            this.group8.Items.Add(this.绘图);
+            this.group8.Items.Add(this.更多便捷);
+            this.group8.Label = "便捷常用";
+            this.group8.Name = "group8";
             // 
             // 筛选
             // 
@@ -1360,6 +1334,20 @@ namespace 课件帮PPT助手
             this.删除未用版式.SuperTip = "使用本功能，可一键删除未使用的版式，可在一定程序上缩减文件大小。";
             this.删除未用版式.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.删除未用版式_Click);
             // 
+            // group6
+            // 
+            this.group6.Items.Add(this.Timer);
+            this.group6.Items.Add(this.板贴辅助);
+            this.group6.Items.Add(this.检测字体);
+            this.group6.Items.Add(this.生成样机);
+            this.group6.Items.Add(this.图形修剪);
+            this.group6.Items.Add(this.button20);
+            this.group6.Items.Add(this.快捷盒子);
+            this.group6.Items.Add(this.Replaceaudio);
+            this.group6.Items.Add(this.插入矩形);
+            this.group6.Label = "辅助";
+            this.group6.Name = "group6";
+            // 
             // Timer
             // 
             this.Timer.Image = ((System.Drawing.Image)(resources.GetObject("Timer.Image")));
@@ -1448,6 +1436,13 @@ namespace 课件帮PPT助手
             this.插入矩形.SuperTip = "无选中对象，默认单击，插入与幻灯片等大的矩形；选中对象，默认单击，在所选对象顶层插入与其等大的矩形；按Ctrl单击，则在所选对象底层插入等大的矩形。";
             this.插入矩形.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.插入矩形_Click);
             // 
+            // group9
+            // 
+            this.group9.Items.Add(this.comboBox1);
+            this.group9.Items.Add(this.comboBox2);
+            this.group9.Label = "页面布局";
+            this.group9.Name = "group9";
+            // 
             // comboBox1
             // 
             this.comboBox1.Image = ((System.Drawing.Image)(resources.GetObject("comboBox1.Image")));
@@ -1485,6 +1480,11 @@ namespace 课件帮PPT助手
             this.comboBox2.ShowImage = true;
             this.comboBox2.Text = null;
             this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
+            // 
+            // splitButton2
+            // 
+            this.splitButton2.Label = "splitButton2";
+            this.splitButton2.Name = "splitButton2";
             // 
             // Ribbon1
             // 

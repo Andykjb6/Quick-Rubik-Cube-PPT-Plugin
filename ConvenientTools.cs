@@ -413,6 +413,8 @@ namespace 课件帮PPT助手
 
                 // 确定选中的文本
                 string selectedText = null;
+                PowerPoint.Shape selectedShape = null;  // 定义 selectedShape 变量
+
                 if (sel.Type == PpSelectionType.ppSelectionText || sel.Type == PpSelectionType.ppSelectionShapes)
                 {
                     TextRange textRange = null;
@@ -425,6 +427,7 @@ namespace 课件帮PPT助手
                         if (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].HasTextFrame == MsoTriState.msoTrue && sel.ShapeRange[1].TextFrame.HasText == MsoTriState.msoTrue)
                         {
                             textRange = sel.ShapeRange[1].TextFrame.TextRange;
+                            selectedShape = sel.ShapeRange[1];  // 赋值给 selectedShape
                         }
                     }
 
@@ -439,13 +442,17 @@ namespace 课件帮PPT助手
                     }
                 }
 
-                if (string.IsNullOrEmpty(selectedText))
+                if (string.IsNullOrEmpty(selectedText) || selectedShape == null)
                 {
                     MessageBox.Show("请选择包含一个汉字的文本框。");
                     return;
                 }
 
                 Slide slide = app.ActiveWindow.View.Slide;
+
+                // 获取选中文本框的初始位置
+                float initialLeft = selectedShape.Left;
+                float initialTop = selectedShape.Top + selectedShape.Height; // 计算底部位置
 
                 // 添加标识符“&”到当前幻灯片上符合条件的形状
                 List<PowerPoint.Shape> shapesToRename = new List<PowerPoint.Shape>();
@@ -498,7 +505,7 @@ namespace 课件帮PPT助手
                     }
 
                     // 手动缩放编组后的形状
-                    float scaleFactor = 0.26f;
+                    float scaleFactor = 0.5f;
                     groupShape.Width *= scaleFactor;
                     groupShape.Height *= scaleFactor;
 
@@ -515,6 +522,7 @@ namespace 课件帮PPT助手
                             // Duplicate the original group
                             PowerPoint.Shape newGroup = groupShape.Duplicate()[1];
                             newGroup.Left += (i + 1) * (groupShape.Width + 10); // Adjust position
+                            newGroup.Tags.Add("FenBu", "True");  // 添加 "FenBu" Tag
                             newGroups.Add(newGroup);
                         }
 
@@ -555,16 +563,16 @@ namespace 课件帮PPT助手
                                 int row = i / columns;
                                 int column = i % columns;
 
-                                newGroup.Left = groupShape.Left + column * (groupShape.Width + 10);
-                                newGroup.Top = groupShape.Top + row * (groupShape.Height + 10);
+                                newGroup.Left = initialLeft + column * (groupShape.Width + 10);
+                                newGroup.Top = initialTop + row * (groupShape.Height + 10); // Adjust the top position
                             }
                         }
 
                         // 删除原来的组合形状
                         groupShape.Delete();
 
-                        // 收集所有前缀名为“【所选文本】：分步”的形状
-                        List<PowerPoint.Shape> finalGroupsToAlign = newGroups.Where(g => g.Name.StartsWith($"【{selectedText}】：分步")).ToList();
+                        // 收集所有带有 "FenBu" Tag 的形状
+                        List<PowerPoint.Shape> finalGroupsToAlign = newGroups.Where(g => g.Tags["FenBu"] == "True").ToList();
 
                         // 确保不影响其他已存在的形状
                         if (finalGroupsToAlign.Count > 0)
@@ -572,12 +580,18 @@ namespace 课件帮PPT助手
                             PowerPoint.ShapeRange newShapeRange = slide.Shapes.Range(finalGroupsToAlign.Select(s => s.Name).ToArray());
                             PowerPoint.Shape newGroupShape = newShapeRange.Group();
 
-                            // 对新组合执行水平居中对齐
-                            float slideCenter = slide.Master.Width / 2;
-                            newGroupShape.Left = slideCenter - newGroupShape.Width / 2;
+                            // 对新组合执行水平位置对齐
+                            newGroupShape.Left = initialLeft;
+                            newGroupShape.Top = initialTop;  // Set the top position
 
                             // 取消组合
                             newGroupShape.Ungroup();
+
+                            // 删除 "FenBu" Tag
+                            foreach (PowerPoint.Shape shape in finalGroupsToAlign)
+                            {
+                                shape.Tags.Delete("FenBu");
+                            }
                         }
                     }
                 }
@@ -596,9 +610,6 @@ namespace 课件帮PPT助手
                 MessageBox.Show($"发生错误：{ex.Message}");
             }
         }
-
-
-
 
         private void 挖词填空_Click(object sender, EventArgs e)
         {
@@ -889,8 +900,8 @@ namespace 课件帮PPT助手
             PowerPoint.Shape svgShape = slide.Shapes.AddPicture(tempSvgPath, MsoTriState.msoFalse, MsoTriState.msoCTrue, left, top);
 
             // 放大SVG
-            svgShape.Width *= 2;
-            svgShape.Height *= 2;
+            svgShape.Width *= 1.5f;
+            svgShape.Height *= 1.5f;
 
             File.Delete(tempSvgPath);
 
