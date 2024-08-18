@@ -2815,8 +2815,8 @@ End Sub
                                 // 检查是否有重叠的田字格对象
                                 if (IsOverlappingWithTianZiGe(selectedShape))
                                 {
-                                    // 将新文本框整体向上移动23个单位
-                                    newShape.Top -= 15;
+                                    // 将拼音文本框移动到所选对象的顶部上方
+                                    newShape.Top = selectedShape.Top - newShape.Height;
                                 }
                             }
                         }
@@ -2874,8 +2874,8 @@ End Sub
                                 // 检查是否有重叠的田字格对象
                                 if (IsOverlappingWithTianZiGe(selectedShape))
                                 {
-                                    // 将新文本框整体向上移动23个单位
-                                    newShape.Top -= 15;
+                                    // 将拼音文本框移动到所选对象的顶部上方
+                                    newShape.Top = selectedShape.Top - newShape.Height;
                                 }
                             }
                         }
@@ -7043,7 +7043,7 @@ End Sub
                 PowerPoint.ShapeRange newShapes = activeSlide.Shapes.Range(newShapeNames.ToArray());
                 newShapes.Select(); // 选中新插入的矩形
             }
-        }    
+        }
     }
 }
 

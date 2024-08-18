@@ -466,7 +466,11 @@ namespace 课件帮PPT助手
 
                 foreach (Shape selectedShape in selectedShapes)
                 {
-                    float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + 18;
+                    // 根据选择的对象类型设置 sizeIncrease
+                    float sizeIncrease = selectedShape.Type == Office.MsoShapeType.msoTextBox ? 3 : 20;
+
+                    // 确保田字格的大小是基于形状的宽度和高度
+                    float selectedSize = Math.Max(selectedShape.Width, selectedShape.Height) + sizeIncrease;
                     maxHeightInRow = Math.Max(maxHeightInRow, selectedSize);
 
                     if (Math.Abs(selectedShape.Top - rowStartTop) > 20)
@@ -542,28 +546,22 @@ namespace 课件帮PPT助手
                             shape.Tags.Add("OverlayColor", overlayColor.ToString());
                         }
                     }
-
-                    // 如果是文本框，调整字体大小以适应田字格
+                    // 如果是文本框，设置其宽度等于田字格的宽度
                     if (selectedShape.Type == Office.MsoShapeType.msoTextBox)
                     {
                         selectedShape.Width = selectedSize;
-                        selectedShape.Height = selectedSize;
-                        AdjustFontSizeToFit(selectedShape);
+                    }
+                    // 确保对象在田字格中居中对齐
+                    selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
+                    selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
 
-                        selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
-                        selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
-                    }
-                    else
-                    {
-                        selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
-                        selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
-                    }
                     // 将所选对象移动到组合对象的上一层
                     selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
                     currentLeft += selectedSize;
                 }
             }
         }
+
 
 
         // 生成叠底形状的方法
@@ -700,9 +698,11 @@ namespace 课件帮PPT助手
 
                     if (selectedShape.Type == Office.MsoShapeType.msoTextBox)
                     {
+                        // 设置文本框的宽度等于田字格的宽度
                         selectedShape.Width = selectedSize;
-                        selectedShape.Height = selectedSize;
-                        AdjustFontSizeToFit(selectedShape);
+
+                        // 保持文本框的高度不变
+                        selectedShape.Height = selectedShape.Height;
 
                         selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
                         selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
@@ -712,7 +712,6 @@ namespace 课件帮PPT助手
                         selectedShape.Left = left + (selectedSize - selectedShape.Width) / 2;
                         selectedShape.Top = top + (selectedSize - selectedShape.Height) / 2;
                     }
-
                     groupShape.ZOrder(Office.MsoZOrderCmd.msoSendBackward);
                     selectedShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);
                 }
@@ -775,21 +774,7 @@ namespace 课件帮PPT助手
             return newShapeNames;
         }
 
-        //使字号大小适应田字格大小
-        private void AdjustFontSizeToFit(Shape textBox)
-        {
-            float maxSize = textBox.Width - 2;
-            float fontSize = textBox.TextFrame.TextRange.Font.Size + 14;
-
-            textBox.TextFrame.TextRange.Font.Size = fontSize;
-
-            while (fontSize > 1 && textBox.TextFrame.TextRange.BoundWidth > maxSize)
-            {
-                fontSize -= 1;
-                textBox.TextFrame.TextRange.Font.Size = fontSize;
-            }
-        }
-
+       
         private void ButtonExit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
