@@ -2822,11 +2822,17 @@ End Sub
                         }
                         else
                         {
-                            // 如果没有找到完整词语，逐个处理字符（保留原有代码逻辑）
+                            // 如果没有找到完整词语，逐个处理字符
                             for (int i = 1; i <= textRange.Text.Length; i++)
                             {
                                 PowerPoint.TextRange charRange = textRange.Characters(i, 1);
                                 string charText = charRange.Text;
+
+                                // 如果字符是标点符号，跳过处理
+                                if (char.IsPunctuation(charText, 0))
+                                {
+                                    continue;
+                                }
 
                                 // 获取拼音注音后的文本
                                 string annotatedText = GetPinyinForText(charText, hanziPinyinDictionary, duoyinziDictionary, hanziDictionary, selectedText);
@@ -2975,25 +2981,12 @@ End Sub
             List<string> pinyinList = new List<string>();
             string remainingText = text;
 
-            // 先查找多音字词语库
-            foreach (var kvp in duoyinziDictionary)
+            for (int index = 0; index < remainingText.Length; index++)
             {
-                if (remainingText.Contains(kvp.Key))
-                {
-                    string[] pinyins = kvp.Value.Split(' ');
-                    for (int i = 0; i < pinyins.Length; i++)
-                    {
-                        pinyinList.Add(pinyins[i]);
-                    }
-                    remainingText = remainingText.Replace(kvp.Key, string.Empty);
-                }
-            }
+                char currentChar = remainingText[index];
+                string hanzi = currentChar.ToString();
 
-            // 处理剩余的字符
-            foreach (char c in remainingText)
-            {
-                string hanzi = c.ToString();
-
+                // 处理普通汉字
                 if (hanziPinyinDictionary.ContainsKey(hanzi))
                 {
                     string pinyin = hanziPinyinDictionary[hanzi];
@@ -3034,7 +3027,6 @@ End Sub
                 return pinyin;
             }
         }
-
 
         private void Zici_Click(object sender, RibbonControlEventArgs e)
         {
