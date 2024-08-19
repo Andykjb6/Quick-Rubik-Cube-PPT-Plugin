@@ -12,6 +12,8 @@ using System.Drawing;
 using Microsoft.Office.Core;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Office.Interop.PowerPoint;
+using System.Text.Json; // For JsonSerializer
 
 namespace 课件帮PPT助手
 {
@@ -473,8 +475,32 @@ namespace 课件帮PPT助手
 
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
+            ContextMenu exportMenu = new ContextMenu();
+
+            MenuItem exportTableMenuItem = new MenuItem() { Header = "导出表格" };
+            exportTableMenuItem.Click += (s, args) => ExportToTable();
+
+            MenuItem exportTextMenuItem = new MenuItem() { Header = "导出文本" };
+            exportTextMenuItem.Click += (s, args) => ExportToTextBox();
+
+            exportMenu.Items.Add(exportTableMenuItem);
+            exportMenu.Items.Add(exportTextMenuItem);
+
+            BtnExport.ContextMenu = exportMenu;
+            BtnExport.ContextMenu.IsOpen = true;
+        }
+
+
+        private void ExportTable_Click(object sender, RoutedEventArgs e)
+        {
             ExportToTable();
         }
+
+        private void ExportText_Click(object sender, RoutedEventArgs e)
+        {
+            ExportToTextBox();
+        }
+
 
         private void BtnCorrectPronunciations_Click(object sender, RoutedEventArgs e)
         {
@@ -947,6 +973,137 @@ namespace 课件帮PPT助手
             }
         }
 
+        private void ExportToTextBox()
+        {
+            var pptApp = Globals.ThisAddIn.Application;
+            PowerPoint.Slide activeSlide = pptApp.ActiveWindow.View.Slide as PowerPoint.Slide;
+
+            // 获取拼音和汉字文本
+            string hanziText = string.Empty;
+            List<PinyinData> pinyinDataList = new List<PinyinData>();
+
+            foreach (var child in StackPanelContent.Children)
+            {
+                if (child is StackPanel sp)
+                {
+                    foreach (var element in sp.Children)
+                    {
+                        if (element is StackPanel charPanel)
+                        {
+                            var pinyinBlock = charPanel.Children[0] as TextBlock;
+                            var hanziBlock = charPanel.Children[1] as TextBlock;
+
+                            hanziText += hanziBlock.Text;
+                            pinyinDataList.Add(new PinyinData
+                            {
+                                Pinyin = pinyinBlock.Text,
+                                CharIndex = hanziText.Length, // 记录字符的索引位置
+                                HanziTextBoxName = "HanziTextBox" // 暂时设置为默认值
+                            });
+                        }
+                    }
+                }
+            }
+
+            // 创建一个大的文本框来容纳汉字和标点符号
+            float fontSize = 28; // 汉字的字体大小
+            float pinyinFontSize = fontSize * 0.5f; // 拼音的字体大小为汉字的一半
+            float textBoxWidth = 700; // 假设的文本框宽度，根据需要调整
+
+            PowerPoint.Shape hanziTextBox = activeSlide.Shapes.AddTextbox(
+                MsoTextOrientation.msoTextOrientationHorizontal, 100, 100, textBoxWidth, 100);
+            hanziTextBox.TextFrame2.TextRange.Text = hanziText;
+            hanziTextBox.TextFrame2.TextRange.Font.Size = fontSize;
+            hanziTextBox.TextFrame2.TextRange.ParagraphFormat.SpaceWithin = 1.5f; // 行间距
+            hanziTextBox.TextFrame2.TextRange.Font.Spacing = 6; // 字间距设为加宽
+            hanziTextBox.TextFrame2.WordWrap = MsoTriState.msoTrue;
+            hanziTextBox.TextFrame.AutoSize = PpAutoSize.ppAutoSizeShapeToFitText;
+
+            // 更新每个拼音数据的文本框名称
+            for (int i = 0; i < pinyinDataList.Count; i++)
+            {
+                pinyinDataList[i].HanziTextBoxName = hanziTextBox.Name;
+            }
+
+            // 获取每个字符的位置和大小
+            for (int i = 1; i <= hanziTextBox.TextFrame.TextRange.Text.Length; i++)
+            {
+                Microsoft.Office.Interop.PowerPoint.TextRange charRange = hanziTextBox.TextFrame.TextRange.Characters(i, 1);
+                char currentChar = hanziTextBox.TextFrame.TextRange.Text[i - 1];
+
+                // 跳过标点符号和空格
+                if (char.IsPunctuation(currentChar) || char.IsWhiteSpace(currentChar))
+                {
+                    continue;
+                }
+
+                // 获取选中文字的位置和大小并进行调整
+                float charTop = charRange.BoundTop - fontSize / 2; // 初始位置调整
+
+                // 计算行间距调整
+                float extraLineSpacing = Math.Max(0, charRange.BoundHeight - fontSize);
+                const float downwardShiftRatio = 1.2f;  // 基于额外行间距的向下调整比例
+                charTop += extraLineSpacing * downwardShiftRatio;
+
+                // 动态计算偏移量
+                float lineSpacingMultiplier = charRange.ParagraphFormat.SpaceWithin; // 获取行间距倍数
+                float baseOffset = 5; // 基础偏移量（对应1.5倍行间距）
+                float additionalOffset = (lineSpacingMultiplier - 1.5f) * 12; // 每增加0.25行间距，增加3个单位的偏移量
+                float adjustedPinyinTop = charTop - pinyinFontSize - (baseOffset + additionalOffset);
+
+                // 计算动态左移偏移量，基于28字号时左移3个单位
+                float charLeft = charRange.BoundLeft - ((charRange.Font.Size / 28) * 3);
+                float charWidth = charRange.BoundWidth;
+
+                // 创建拼音文本框并设置位置
+                PowerPoint.Shape pinyinTextBox = activeSlide.Shapes.AddTextbox(
+                    MsoTextOrientation.msoTextOrientationHorizontal, charLeft, adjustedPinyinTop, charWidth, pinyinFontSize);
+                pinyinTextBox.TextFrame.TextRange.Text = pinyinDataList[i - 1].Pinyin;
+                pinyinTextBox.TextFrame.TextRange.Font.Size = pinyinFontSize;
+                pinyinTextBox.TextFrame.TextRange.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter;
+                pinyinTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
+
+                // 添加 Tags
+                pinyinTextBox.Tags.Add("PinYin", "True");
+                pinyinTextBox.Tags.Add("ParentCharIndex", (i).ToString());
+                pinyinTextBox.Tags.Add("ParentTextBoxName", hanziTextBox.Name);
+            }
+
+            // 检查并移除汉字文本框末尾的空白行
+            if (hanziText.EndsWith("\r\n") || hanziText.EndsWith("\n") || hanziText.EndsWith("\r"))
+            {
+                // 移除末尾的空白行
+                hanziTextBox.TextFrame2.TextRange.Text = hanziText.TrimEnd('\r', '\n');
+            }
+
+            // 获取用户应用数据目录中的特定子目录路径
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "课件帮PPT助手");
+            if (!Directory.Exists(appDataPath))
+            {
+                Directory.CreateDirectory(appDataPath);
+            }
+
+            // 组合最终的文件路径
+            string pinyinDataFilePath = Path.Combine(appDataPath, "PinyinData.json");
+
+            // 将拼音数据保存为 JSON 文件
+            string jsonData = JsonSerializer.Serialize(pinyinDataList);
+            File.WriteAllText(pinyinDataFilePath, jsonData);
+
+            // 在所有拼音文本框创建完成后弹出一次成功提示
+            MessageBox.Show("已成功导出注音文本。", "导出成功");
+
+        }
+    
+
+        private class PinyinData
+        {
+            public string HanziTextBoxName { get; set; }
+            public int CharIndex { get; set; }
+            public string Pinyin { get; set; }
+        }
+
+
         private void RichTextBoxLeft_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -999,10 +1156,8 @@ namespace 课件帮PPT助手
         private string GetPlainTextFromRichTextBox()
         {
             // 获取 RichTextBox 中的纯文本
-            return new TextRange(RichTextBoxLeft.Document.ContentStart, RichTextBoxLeft.Document.ContentEnd).Text;
+            return new System.Windows.Documents.TextRange(RichTextBoxLeft.Document.ContentStart, RichTextBoxLeft.Document.ContentEnd).Text;
         }
-
-
 
         private void UpdateStackPanelContent(string text)
         {

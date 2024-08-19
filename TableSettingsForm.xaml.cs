@@ -504,6 +504,9 @@ namespace 课件帮PPT助手
                     verticalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
                     horizontalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
 
+                    // 将外部边框移动到内部边框的前面
+                    squareShape.ZOrder(Office.MsoZOrderCmd.msoBringForward);
+
                     // 生成叠底形状
                     Shape overlayShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, left, top, selectedSize, selectedSize);
                     overlayShape.Fill.ForeColor.RGB = ConvertColor(overlayColor);
@@ -677,6 +680,8 @@ namespace 课件帮PPT助手
 
                     verticalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
                     horizontalLine.Line.DashStyle = Office.MsoLineDashStyle.msoLineDash;
+                    // 将外部边框移动到内部边框的前面
+                    squareShape.ZOrder(Office.MsoZOrderCmd.msoBringForward);
 
                     // 先调整外部边框的层次，将其置于顶层
                     squareShape.ZOrder(Office.MsoZOrderCmd.msoBringToFront);

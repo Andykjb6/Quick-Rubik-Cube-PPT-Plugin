@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Windows.Input;
 using Excel = OfficeOpenXml.ExcelPackage;
 using System.Text;
+using System.Text.Json;
 
 
 
@@ -4022,6 +4023,7 @@ End Sub
             {
                 var allShapes = new List<PowerPoint.Shape>();
                 var tag = Guid.NewGuid().ToString(); // 生成唯一的标签
+                var groupedShapes = new List<PowerPoint.Shape>(); // 用于存储新的组合对象
 
                 foreach (PowerPoint.Shape shape in selection.ShapeRange)
                 {
@@ -4065,6 +4067,9 @@ End Sub
 
                         // 删除组合后的Shape Tag
                         newGroup.Tags.Delete("GroupTag");
+
+                        // 将新组合的形状加入到groupedShapes列表中
+                        groupedShapes.Add(newGroup);
                     }
                 }
 
@@ -4075,6 +4080,14 @@ End Sub
                     {
                         shape.Tags.Delete("GroupTag");
                     }
+                }
+
+                // 如果有新的组合形状，自动选中这些组合
+                if (groupedShapes.Count > 0)
+                {
+                    var newGroupNames = groupedShapes.Select(g => g.Name).ToArray();
+                    var newSelectionRange = application.ActiveWindow.Selection.SlideRange.Shapes.Range(newGroupNames);
+                    newSelectionRange.Select(); // 自动选中新组合的形状
                 }
             }
             else
@@ -4968,16 +4981,28 @@ End Sub
                 Application app = Globals.ThisAddIn.Application;
                 Selection sel = app.ActiveWindow.Selection;
 
-                if (sel.Type == PpSelectionType.ppSelectionShapes && sel.ShapeRange.Count == 1)
+                if (sel.Type == PpSelectionType.ppSelectionShapes)
                 {
-                    Shape selectedShape = sel.ShapeRange[1];
+                    Shape selectedShape;
+
+                    // 如果所选对象不是组合对象，自动将其组合
+                    if (sel.ShapeRange.Count > 1 || (sel.ShapeRange.Count == 1 && sel.ShapeRange[1].Type != MsoShapeType.msoGroup))
+                    {
+                        // 自动将所选对象组合起来
+                        selectedShape = sel.ShapeRange.Group();
+                    }
+                    else
+                    {
+                        selectedShape = sel.ShapeRange[1];
+                    }
+
+                    // 检查组合对象并获取其中第一个形状的前缀名
                     if (selectedShape.Type == MsoShapeType.msoGroup)
                     {
-                        // 获取组合中第一个形状的前缀名
                         var firstShapeName = selectedShape.GroupItems[1].Name;
                         var prefixName = firstShapeName.Split('-')[0].Trim();
 
-                        // Load Excel data
+                        // 加载 Excel 数据
                         var hanziStrokeOrderDictionary = new Dictionary<string, string>();
 
                         if (!File.Exists(filePath))
@@ -5052,6 +5077,7 @@ End Sub
             }
             return tempFilePath;
         }
+
 
         private void 关于我_Click(object sender, RibbonControlEventArgs e)
         {
@@ -5372,6 +5398,10 @@ End Sub
                                 pinyinCell.Text = pinyinList[index].text;
                                 table.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
                                 hanziCell.Text = hanziList[index].text;
+
+                                // 确保奇数行的字号大小为偶数行字号大小的一半
+                                pinyinCell.Font.Size = hanziCell.Font.Size / 2;
+
                                 index++;
                             }
                         }
@@ -5386,22 +5416,6 @@ End Sub
                         if (i + 1 <= table.Rows.Count)
                         {
                             table.Rows[i + 1].Height = secondRowHeight;
-                        }
-                    }
-
-                    // 设置所有奇数行的字号与第一行一致，偶数行的字号与第二行一致
-                    float firstRowFontSize = table.Cell(1, 1).Shape.TextFrame.TextRange.Font.Size;
-                    float secondRowFontSize = table.Cell(2, 1).Shape.TextFrame.TextRange.Font.Size;
-
-                    for (int i = 3; i <= table.Rows.Count; i += 2)
-                    {
-                        for (int j = 1; j <= table.Columns.Count; j++)
-                        {
-                            table.Cell(i, j).Shape.TextFrame.TextRange.Font.Size = firstRowFontSize;
-                            if (i + 1 <= table.Rows.Count)
-                            {
-                                table.Cell(i + 1, j).Shape.TextFrame.TextRange.Font.Size = secondRowFontSize;
-                            }
                         }
                     }
 
@@ -5548,9 +5562,6 @@ End Sub
             {
                 Table table = selection.ShapeRange[1].Table;
 
-                // 获取当前主题的字体
-                _ = application.ActivePresentation.SlideMaster.TextStyles[PpTextStyleType.ppBodyStyle];
-
                 for (int i = 1; i <= table.Rows.Count; i++)
                 {
                     for (int j = 1; j <= table.Columns.Count; j++)
@@ -5558,13 +5569,15 @@ End Sub
                         Cell cell = table.Cell(i, j);
                         PowerPoint.TextFrame2 textFrame = cell.Shape.TextFrame2;
 
-                        // 偶数行设置为顶端对齐并应用主题的中文字体
+                        // 设置字体颜色为黑色
+                        textFrame.TextRange.Font.Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Black);
+
+                        // 偶数行设置为顶端对齐
                         if (i % 2 == 0)
                         {
                             textFrame.VerticalAnchor = Office.MsoVerticalAnchor.msoAnchorTop;
-                            // 这里不显式设置字体，以便使用主题字体
                         }
-                        else // 奇数行应用主题的西文字体并设置字号为偶数行的50%
+                        else // 奇数行设置字号为偶数行的50%
                         {
                             float evenRowFontSize = 12; // 默认值
 
@@ -5580,7 +5593,6 @@ End Sub
 
                             // 设置奇数行字号为偶数行的50%
                             textFrame.TextRange.Font.Size = evenRowFontSize * 0.5f;
-                            // 这里不显式设置字体，以便使用主题字体
                         }
                     }
                 }
@@ -6840,7 +6852,7 @@ End Sub
             // 如果按下Ctrl键，显示输入窗口
             if (isCtrlPressed)
             {
-                using (FormAddColumns form = new FormAddColumns ())
+                using (FormAddColumns form = new FormAddColumns())
                 {
                     if (form.ShowDialog() == DialogResult.OK)
                     {
@@ -6910,6 +6922,10 @@ End Sub
                             pinyinCell.Text = pinyinList[index].text;
                             table.Cell(i, j).Shape.TextFrame.VerticalAnchor = MsoVerticalAnchor.msoAnchorBottom;
                             hanziCell.Text = hanziList[index].text;
+
+                            // 确保奇数行的字号大小为偶数行字号大小的一半
+                            pinyinCell.Font.Size = hanziCell.Font.Size / 2;
+
                             index++;
                         }
                     }
@@ -7044,6 +7060,223 @@ End Sub
                 newShapes.Select(); // 选中新插入的矩形
             }
         }
+
+        // 公共的拼音数据文件路径，确保在各个地方使用相同的路径
+        private static readonly string PinyinDataFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "课件帮PPT助手",
+            "PinyinData.json"
+        );
+
+        private void 调整宽度_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 检测用户是否按住Ctrl键
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                HandleDeletePinyinData();
+            }
+            else
+            {
+                AdjustWidthAndRecreatePinyinTextBoxes();
+            }
+        }
+
+        private void HandleDeletePinyinData()
+        {
+            // 检查文件是否存在
+            if (!File.Exists(PinyinDataFilePath))
+            {
+                MessageBox.Show("拼音数据文件不存在。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 获取文件大小
+            FileInfo fileInfo = new FileInfo(PinyinDataFilePath);
+            long fileSize = fileInfo.Length;
+            double fileSizeInKB = fileSize / 1024.0;
+
+            // 弹出确认删除对话框
+            DialogResult result = MessageBox.Show(
+                $"拼音数据文件的大小为 {fileSizeInKB:F2} KB。\n\n是否确认删除？",
+                "确认删除",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            // 如果用户点击“是”，删除文件
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    File.Delete(PinyinDataFilePath);
+                    MessageBox.Show("拼音数据文件已成功删除。", "删除成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"删除拼音数据文件时发生错误：{ex.Message}", "删除失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void AdjustWidthAndRecreatePinyinTextBoxes()
+        {
+            var pptApp = Globals.ThisAddIn.Application;
+            var selection = pptApp.ActiveWindow.Selection;
+
+            if (selection.Type != PpSelectionType.ppSelectionShapes)
+            {
+                MessageBox.Show("请先选择文本框和拼音文本框。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 用于收集错误信息
+            int missingTextBoxCount = 0;
+            int indexErrorCount = 0;
+
+            // 检查并移除拼音文本框之前，检查并添加空白行
+            foreach (Shape shape in selection.ShapeRange)
+            {
+                if (shape.HasTextFrame == MsoTriState.msoTrue && shape.Tags["PinYin"] != "True")
+                {
+                    // 检查是否需要添加空白行
+                    if (!shape.TextFrame2.TextRange.Text.EndsWith("\r"))
+                    {
+                        shape.TextFrame2.TextRange.Text += "\r";
+                    }
+                }
+            }
+
+            // 1. 删除所有带有 "PinYin" 标签的形状
+            foreach (Shape shape in selection.ShapeRange)
+            {
+                if (shape.Tags["PinYin"] == "True")
+                {
+                    shape.Delete();
+                }
+            }
+
+            // 2. 从 JSON 文件加载拼音数据
+            if (!File.Exists(PinyinDataFilePath))
+            {
+                MessageBox.Show("未找到拼音数据文件。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string jsonData = File.ReadAllText(PinyinDataFilePath);
+            var pinyinData = JsonSerializer.Deserialize<List<PinyinData>>(jsonData);
+
+            if (pinyinData == null)
+            {
+                MessageBox.Show("加载拼音数据失败。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 3. 根据 JSON 数据重新生成拼音文本框
+            foreach (var data in pinyinData)
+            {
+                var hanziTextBox = GetShapeByName(selection.ShapeRange, data.HanziTextBoxName);
+                if (hanziTextBox == null)
+                {
+                    missingTextBoxCount++;
+                    continue;
+                }
+
+                try
+                {
+                    // 获取当前汉字字符的位置
+                    Microsoft.Office.Interop.PowerPoint.TextRange charRange = hanziTextBox.TextFrame.TextRange.Characters(data.CharIndex, 1);
+
+                    // 检查字符是否是标点符号或空格符，跳过这些字符
+                    char currentChar = hanziTextBox.TextFrame.TextRange.Text[data.CharIndex - 1];
+                    if (char.IsPunctuation(currentChar) || char.IsWhiteSpace(currentChar))
+                    {
+                        continue;  // 跳过标点符号和空格符
+                    }
+
+                    // 计算字符的顶部位置
+                    float charTop = charRange.BoundTop - charRange.Font.Size / 2;
+                    float extraLineSpacing = Math.Max(0, charRange.BoundHeight - charRange.Font.Size);
+                    const float downwardShiftRatio = 1.2f;
+                    charTop += extraLineSpacing * downwardShiftRatio;
+
+                    // 计算动态偏移量
+                    float lineSpacingMultiplier = charRange.ParagraphFormat.SpaceWithin; // 获取行间距倍数
+                    float baseOffset = 5; // 基础偏移量（对应1.5倍行间距）
+                    float additionalOffset = (lineSpacingMultiplier - 1.5f) * 12; // 每增加0.25行间距，增加3个单位的偏移量
+                    float adjustedPinyinTop = charTop - (charRange.Font.Size * 0.5f) - (baseOffset + additionalOffset);
+
+                    // 动态调整左移偏移量，基于字号28时左移3个单位
+                    float charLeft = charRange.BoundLeft - ((charRange.Font.Size / 28) * 3);
+                    float charWidth = charRange.BoundWidth;
+
+                    // 确保拼音文本框居中于汉字字符
+                    float adjustedCharLeft = charLeft + (charWidth - charRange.BoundWidth) / 2;
+
+                    // 创建拼音文本框
+                    PowerPoint.Shape pinyinTextBox = hanziTextBox.Parent.Shapes.AddTextbox(
+                        MsoTextOrientation.msoTextOrientationHorizontal, adjustedCharLeft, adjustedPinyinTop, charWidth, charRange.Font.Size * 0.5f);
+                    pinyinTextBox.TextFrame.TextRange.Text = data.Pinyin;
+                    pinyinTextBox.TextFrame.TextRange.Font.Size = charRange.Font.Size * 0.5f;
+                    pinyinTextBox.TextFrame.TextRange.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter;
+                    pinyinTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
+
+                    // 添加 Tags
+                    pinyinTextBox.Tags.Add("PinYin", "True");
+                    pinyinTextBox.Tags.Add("ParentCharIndex", data.CharIndex.ToString());
+                    pinyinTextBox.Tags.Add("ParentTextBoxName", hanziTextBox.Name);
+                }
+                catch (System.Runtime.InteropServices.COMException)
+                {
+                    indexErrorCount++;
+                }
+            }
+
+            // 移除空白行
+            foreach (Shape shape in selection.ShapeRange)
+            {
+                if (shape.HasTextFrame == MsoTriState.msoTrue && shape.Tags["PinYin"] != "True")
+                {
+                    string text = shape.TextFrame2.TextRange.Text;
+                    if (text.EndsWith("\r"))
+                    {
+                        shape.TextFrame2.TextRange.Text = text.TrimEnd('\r');
+                    }
+                }
+            }
+
+            // 综合错误信息
+            if (missingTextBoxCount > 0 || indexErrorCount > 0)
+            {
+                string errorMessage = "操作中遇到以下问题：\n";
+                if (missingTextBoxCount > 0)
+                {
+                    errorMessage += $"{missingTextBoxCount} 个拼音文本框未找到位置。\n";
+                }
+                if (indexErrorCount > 0)
+                {
+                    errorMessage += $"{indexErrorCount} 次字符索引访问失败。\n";
+                }
+                MessageBox.Show(errorMessage, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private Shape GetShapeByName(PowerPoint.ShapeRange shapeRange, string name)
+        {
+            foreach (Shape shape in shapeRange)
+            {
+                if (shape.Name == name)
+                {
+                    return shape;
+                }
+            }
+            return null;
+        }
+
+        private class PinyinData
+        {
+            public string HanziTextBoxName { get; set; }
+            public int CharIndex { get; set; }
+            public string Pinyin { get; set; }
+        }
     }
 }
-

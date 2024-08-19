@@ -20,6 +20,12 @@
                 <Image Source="/课件帮PPT助手;component/Resources/导入.png" Stretch="Uniform" ToolTip="导入txt文件"/>
             </Button>
             <Button Name="BtnExport" Width="28" Height="28" Click="BtnExport_Click" BorderThickness="0">
+                <Button.ContextMenu>
+                    <ContextMenu Name="ExportContextMenu">
+                        <MenuItem Header="导出表格" Click="ExportTable_Click"/>
+                        <MenuItem Header="导出文本" Click="ExportText_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
                 <Image Source="/课件帮PPT助手;component/Resources/导出.png" Stretch="Uniform" ToolTip="导出注音文本到幻灯片"/>
             </Button>
             <Button Name="BtnDetectMultiPronunciations" Width="28" Height="28" Click="BtnDetectMultiPronunciations_Click" BorderThickness="0">

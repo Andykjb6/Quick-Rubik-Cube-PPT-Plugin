@@ -60,6 +60,7 @@ namespace 课件帮PPT助手
             this.增加行宽 = this.Factory.CreateRibbonButton();
             this.奇数行行高设置 = this.Factory.CreateRibbonButton();
             this.自动补齐 = this.Factory.CreateRibbonButton();
+            this.调整宽度 = this.Factory.CreateRibbonButton();
             this.合并段落 = this.Factory.CreateRibbonButton();
             this.字号调整 = this.Factory.CreateRibbonButton();
             this.晓声通在线注音 = this.Factory.CreateRibbonSplitButton();
@@ -369,6 +370,7 @@ namespace 课件帮PPT助手
             // 
             this.注音编辑.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.注音编辑.Image = ((System.Drawing.Image)(resources.GetObject("注音编辑.Image")));
+            this.注音编辑.Items.Add(this.调整宽度);
             this.注音编辑.Items.Add(this.文本居中);
             this.注音编辑.Items.Add(this.删列补行);
             this.注音编辑.Items.Add(this.增加行宽);
@@ -386,7 +388,7 @@ namespace 课件帮PPT助手
             // 文本居中
             // 
             this.文本居中.Image = ((System.Drawing.Image)(resources.GetObject("文本居中.Image")));
-            this.文本居中.Label = "行内居中";
+            this.文本居中.Label = "行内居中（表）";
             this.文本居中.Name = "文本居中";
             this.文本居中.ScreenTip = "使用说明：";
             this.文本居中.ShowImage = true;
@@ -396,7 +398,7 @@ namespace 课件帮PPT助手
             // 删列补行
             // 
             this.删列补行.Image = ((System.Drawing.Image)(resources.GetObject("删列补行.Image")));
-            this.删列补行.Label = "缩短行宽";
+            this.删列补行.Label = "缩短行宽（表）";
             this.删列补行.Name = "删列补行";
             this.删列补行.ScreenTip = "使用说明：";
             this.删列补行.ShowImage = true;
@@ -406,7 +408,7 @@ namespace 课件帮PPT助手
             // 增加行宽
             // 
             this.增加行宽.Image = ((System.Drawing.Image)(resources.GetObject("增加行宽.Image")));
-            this.增加行宽.Label = "增加行宽";
+            this.增加行宽.Label = "增加行宽（表）";
             this.增加行宽.Name = "增加行宽";
             this.增加行宽.ScreenTip = "使用说明：";
             this.增加行宽.ShowImage = true;
@@ -416,7 +418,7 @@ namespace 课件帮PPT助手
             // 奇数行行高设置
             // 
             this.奇数行行高设置.Image = ((System.Drawing.Image)(resources.GetObject("奇数行行高设置.Image")));
-            this.奇数行行高设置.Label = "文本行距";
+            this.奇数行行高设置.Label = "文本行距（表）";
             this.奇数行行高设置.Name = "奇数行行高设置";
             this.奇数行行高设置.ShowImage = true;
             this.奇数行行高设置.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.奇数行行高设置_Click);
@@ -424,17 +426,27 @@ namespace 课件帮PPT助手
             // 自动补齐
             // 
             this.自动补齐.Image = ((System.Drawing.Image)(resources.GetObject("自动补齐.Image")));
-            this.自动补齐.Label = "自动补齐";
+            this.自动补齐.Label = "自动补齐（表）";
             this.自动补齐.Name = "自动补齐";
             this.自动补齐.ScreenTip = "使用说明：";
             this.自动补齐.ShowImage = true;
             this.自动补齐.SuperTip = "若表格行开头有空白格，选中该行，可使后续内容补齐行开头空白格。";
             this.自动补齐.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.自动补齐_Click);
             // 
+            // 调整宽度
+            // 
+            this.调整宽度.Image = ((System.Drawing.Image)(resources.GetObject("调整宽度.Image")));
+            this.调整宽度.Label = "自动宽度（文）";
+            this.调整宽度.Name = "调整宽度";
+            this.调整宽度.ScreenTip = "使用说明：";
+            this.调整宽度.ShowImage = true;
+            this.调整宽度.SuperTip = "以文本方式导出注音文本后，调整文本框宽度，可全选拼音和文本框，单击“自动宽度”，可使拼音位置跟随和适应最新宽度的文本框。";
+            this.调整宽度.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.调整宽度_Click);
+            // 
             // 合并段落
             // 
             this.合并段落.Image = ((System.Drawing.Image)(resources.GetObject("合并段落.Image")));
-            this.合并段落.Label = "合并段落";
+            this.合并段落.Label = "合并段落（表）";
             this.合并段落.Name = "合并段落";
             this.合并段落.ScreenTip = "使用说明：";
             this.合并段落.ShowImage = true;
@@ -444,7 +456,7 @@ namespace 课件帮PPT助手
             // 字号调整
             // 
             this.字号调整.Image = ((System.Drawing.Image)(resources.GetObject("字号调整.Image")));
-            this.字号调整.Label = "字号调整";
+            this.字号调整.Label = "字号调整（表）";
             this.字号调整.Name = "字号调整";
             this.字号调整.ScreenTip = "使用说明：";
             this.字号调整.ShowImage = true;
@@ -1649,6 +1661,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 拼音升调;
         internal RibbonButton 增加行宽;
         internal RibbonButton 插入矩形;
+        internal RibbonButton 调整宽度;
     }
 
     partial class ThisRibbonCollection
