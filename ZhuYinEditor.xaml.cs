@@ -1047,7 +1047,7 @@ namespace 课件帮PPT助手
 
                 // 动态计算偏移量
                 float lineSpacingMultiplier = charRange.ParagraphFormat.SpaceWithin; // 获取行间距倍数
-                float baseOffset = 5; // 基础偏移量（对应1.5倍行间距）
+                float baseOffset = 8; // 基础偏移量（对应1.5倍行间距）
                 float additionalOffset = (lineSpacingMultiplier - 1.5f) * 12; // 每增加0.25行间距，增加3个单位的偏移量
                 float adjustedPinyinTop = charTop - pinyinFontSize - (baseOffset + additionalOffset);
 
@@ -1075,27 +1075,11 @@ namespace 课件帮PPT助手
                 // 移除末尾的空白行
                 hanziTextBox.TextFrame2.TextRange.Text = hanziText.TrimEnd('\r', '\n');
             }
-
-            // 获取用户应用数据目录中的特定子目录路径
-            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "课件帮PPT助手");
-            if (!Directory.Exists(appDataPath))
-            {
-                Directory.CreateDirectory(appDataPath);
-            }
-
-            // 组合最终的文件路径
-            string pinyinDataFilePath = Path.Combine(appDataPath, "PinyinData.json");
-
-            // 将拼音数据保存为 JSON 文件
-            string jsonData = JsonSerializer.Serialize(pinyinDataList);
-            File.WriteAllText(pinyinDataFilePath, jsonData);
-
             // 在所有拼音文本框创建完成后弹出一次成功提示
             MessageBox.Show("已成功导出注音文本。", "导出成功");
 
         }
     
-
         private class PinyinData
         {
             public string HanziTextBoxName { get; set; }
