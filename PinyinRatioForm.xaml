@@ -1,0 +1,65 @@
+﻿<Window x:Class="课件帮PPT助手.PinyinRatioForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="设置拼音文本框比例" Height="270" Width="180"
+        WindowStyle="None"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border BorderBrush="#0000FF" BorderThickness="2" CornerRadius="10" Background="White" Width="170" Height="260">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+
+            <!-- 拼音比例设置标签 -->
+            <TextBlock Margin="0,5,0,0" VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center">
+                <Run Text="拼音字号比例:"/>
+            </TextBlock>
+
+            <!-- 拼音比例调节组合控件 -->
+            <Grid HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="TextBoxPinyinRatio" Grid.Column="0" VerticalAlignment="Center" FontSize="18" Text="0.5" Width="65" Height="30" 
+                         TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF144BF0"/>
+                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
+                    <Button x:Name="ButtonIncrease" Width="15" Height="15" Padding="0" Click="ButtonIncrease_Click" FontStretch="Medium" 
+                            BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" Content="▲"/>
+                    <Button x:Name="ButtonDecrease" Width="15" Height="15" Padding="0" Click="ButtonDecrease_Click" 
+                            BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" Content="▼"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 偏移量设置标签 -->
+            <TextBlock Margin="0,5,0,0" VerticalAlignment="Center" FontSize="16" HorizontalAlignment="Center">
+                <Run Text="拼音偏移量:"/>
+            </TextBlock>
+
+            <!-- 偏移量调节组合控件 -->
+            <Grid HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="TextBoxOffsetValue" Grid.Column="0" VerticalAlignment="Center" FontSize="18" Text="0" Width="65" Height="30" 
+                         TextAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="#FF144BF0"/>
+                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0">
+                    <Button x:Name="ButtonIncreaseOffset" Width="15" Height="15" Padding="0" Click="ButtonIncreaseOffset_Click" FontStretch="Medium" 
+                            BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" Content="▲"/>
+                    <Button x:Name="ButtonDecreaseOffset" Width="15" Height="15" Padding="0" Click="ButtonDecreaseOffset_Click" 
+                            BorderBrush="#FF144BF0" Background="#FF144BF0" Foreground="White" FontSize="9" Margin="0" Content="▼"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 确定和取消按钮，从上往下布局 -->
+            <Button x:Name="btnOK" Content="确定" Width="80" Height="30" Click="btnOK_Click" Margin="5,0" Background="#FF144BF0" Foreground="White" FontWeight="Bold" BorderBrush="{x:Null}" FontSize="14"/>
+            <Button x:Name="btnCancel" Content="取消" Width="80" Height="30" Click="btnCancel_Click" Margin="0,10,0,0" Background="Red" Foreground="White" FontWeight="Bold" BorderBrush="{x:Null}" FontSize="14"/>
+
+        </StackPanel>
+    </Border>
+</Window>

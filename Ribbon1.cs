@@ -7063,6 +7063,22 @@ End Sub
 
         private void 调整宽度_Click(object sender, RibbonControlEventArgs e)
         {
+            // 检查是否按下了Ctrl键
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                // 打开拼音比例设置窗体
+                PinyinRatioForm pinyinRatioForm = new PinyinRatioForm();
+                if (pinyinRatioForm.ShowDialog() == true)
+                {
+                    // 将新的拼音比例和偏移量保存到设置中
+                    Properties.Settings.Default.PinyinRatio = (double)pinyinRatioForm.PinyinRatio;
+                    Properties.Settings.Default.OffsetValue = pinyinRatioForm.OffsetValue; // 保存偏移量
+                    Properties.Settings.Default.Save();
+                }
+                return;
+            }
+
+            // 如果没有按下Ctrl键，继续执行调整宽度的操作
             var pptApp = Globals.ThisAddIn.Application;
             var selection = pptApp.ActiveWindow.Selection;
 
@@ -7071,6 +7087,9 @@ End Sub
                 MessageBox.Show("请先选择文本框和拼音文本框。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            // 从设置中加载已保存的拼音比例和偏移量
+            float pinyinRatio = (float)Properties.Settings.Default.PinyinRatio;
+            float offsetValue = (float)Properties.Settings.Default.OffsetValue; // 加载偏移量
 
             // 用于收集错误信息
             int indexErrorCount = 0;
@@ -7150,12 +7169,10 @@ End Sub
 
                         // 调整现有拼音文本框的位置和大小
                         pinyinTextBox.Left = adjustedCharLeft;
-                        pinyinTextBox.Top = adjustedPinyinTop;
+                        pinyinTextBox.Top = adjustedPinyinTop + offsetValue; // 应用偏移量
                         pinyinTextBox.Width = charWidth;
-                        pinyinTextBox.Height = charRange.Font.Size * 0.5f;
-
-                        // 调整字体大小
-                        pinyinTextBox.TextFrame.TextRange.Font.Size = charRange.Font.Size * 0.5f;
+                        // 使用保存的拼音比例来调整拼音文本框的字号大小
+                        pinyinTextBox.TextFrame.TextRange.Font.Size = charRange.Font.Size * pinyinRatio;
 
                         // 如果添加了空白行，现在删除它
                         if (addedNewLine)

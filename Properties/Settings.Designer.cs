@@ -70,5 +70,29 @@ namespace 课件帮PPT助手.Properties {
                 this["HanziFontSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public double PinyinRatio {
+            get {
+                return ((double)(this["PinyinRatio"]));
+            }
+            set {
+                this["PinyinRatio"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double OffsetValue {
+            get {
+                return ((double)(this["OffsetValue"]));
+            }
+            set {
+                this["OffsetValue"] = value;
+            }
+        }
     }
 }

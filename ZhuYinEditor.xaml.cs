@@ -627,21 +627,39 @@ namespace 课件帮PPT助手
             // 处理特殊的汉字拼音
             if (currentChar == '哇')
             {
-                if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                // 优先检查是否是最后一个字符，或后面跟的是标点符号
+                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
+                {
+                    return "wa";
+                }
+                // 如果前后字符相同
+                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
                 {
                     return "wa";
                 }
             }
             else if (currentChar == '啊')
             {
-                if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                // 优先检查是否是最后一个字符
+                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
+                {
+                    return "a";
+                }
+                // 如果前后字符相同
+                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
                 {
                     return "a";
                 }
             }
             else if (currentChar == '呀')
             {
-                if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                // 优先检查是否是最后一个字符
+                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
+                {
+                    return "ya";
+                }
+                // 如果前后字符相同
+                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
                 {
                     return "ya";
                 }
