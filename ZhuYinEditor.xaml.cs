@@ -647,6 +647,13 @@ namespace 课件帮PPT助手
                     return "ya";
                 }
             }
+            else if (currentChar == '哼')
+            {
+                if (index < text.Length - 1 && char.IsPunctuation(text[index + 1]))
+            {
+                    return "hng";
+                }
+            }
             else if (currentChar == '不')
             {
                 // 如果前后字符相同，则拼音为“bu”（轻声）
