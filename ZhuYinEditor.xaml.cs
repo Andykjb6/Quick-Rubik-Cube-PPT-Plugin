@@ -617,8 +617,6 @@ namespace 课件帮PPT助手
             ApplyFontSettings();
         }
 
-
-
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
 
@@ -627,41 +625,46 @@ namespace 课件帮PPT助手
             // 处理特殊的汉字拼音
             if (currentChar == '哇')
             {
-                // 优先检查是否是最后一个字符，或后面跟的是标点符号
-                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
-                {
-                    return "wa";
-                }
-                // 如果前后字符相同
-                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                if ((index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1]) ||
+                    (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
                 {
                     return "wa";
                 }
             }
             else if (currentChar == '啊')
             {
-                // 优先检查是否是最后一个字符
-                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
-                {
-                    return "a";
-                }
-                // 如果前后字符相同
-                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+                if ((index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1]) ||
+                    (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
                 {
                     return "a";
                 }
             }
             else if (currentChar == '呀')
             {
-                // 优先检查是否是最后一个字符
-                if (isLastChar || (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
+                if ((index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1]) ||
+                    (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
                 {
                     return "ya";
                 }
-                // 如果前后字符相同
-                else if (index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1])
+            }
+            else if (currentChar == '不')
+            {
+                // 如果前后字符相同，则拼音为“bu”（轻声）
+                if ((index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1]) ||
+                    (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
                 {
-                    return "ya";
+                    return "bu";
+                }
+                // 如果后一个拼音是第四声，则“不”的拼音为“bú”
+                else if (index < text.Length - 1)
+                {
+                    char nextChar = text[index + 1];
+                    string nextCharPinyin = hanziPinyinDict.ContainsKey(nextChar.ToString()) ? hanziPinyinDict[nextChar.ToString()][0] : string.Empty;
+
+                    if (nextCharPinyin.IndexOfAny(new char[] { 'à', 'ò', 'è', 'ì', 'ù', 'ǜ' }) >= 0)
+                    {
+                        return "bú";
+                    }
                 }
             }
             else if (currentChar == '一')

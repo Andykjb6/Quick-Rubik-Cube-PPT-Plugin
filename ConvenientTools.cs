@@ -668,6 +668,12 @@ namespace 课件帮PPT助手
                     // 设置文本框的文本对齐方式为居中
                     newTextRange.ParagraphFormat.Alignment = PpParagraphAlignment.ppAlignCenter;
 
+                    // 添加“擦除”动画，并设置在“单击”时播放
+                    PowerPoint.TimeLine timeLine = slide.TimeLine;
+                    PowerPoint.Sequence sequence = timeLine.MainSequence;
+                    PowerPoint.Effect effect = sequence.AddEffect(newTextBox, MsoAnimEffect.msoAnimEffectFade, (MsoAnimateByLevel)MsoAnimTriggerType.msoAnimTriggerOnShapeClick);
+                    effect.Timing.Duration = 0.5f; // 动画持续时间为2秒
+
                     // 初始化 newLeft, newTop 和 newWidth 变量
                     float newLeft;
                     float newTop;
