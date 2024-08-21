@@ -51,12 +51,30 @@ namespace 课件帮PPT助手
             LoadHanziPinyinDict();
             LoadMultiPronunciationDict();
             LoadErhuaWordLibrary();
+            LoadVerbDict();  // 加载动词字典
             RichTextBoxLeft.KeyDown += RichTextBoxLeft_KeyDown;
             RichTextBoxLeft.TextChanged += RichTextBoxLeft_TextChanged;
 
             InitializeContextMenu();
         }
-      
+
+        private HashSet<string> verbSet;
+
+        private void LoadVerbDict()
+        {
+            verbSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字动词大全.txt");
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                string verb = line.Trim();
+                if (!string.IsNullOrEmpty(verb))
+                {
+                    verbSet.Add(verb);
+                }
+            }
+        }
+
 
         private void InitializeContextMenu()
         {
@@ -674,6 +692,19 @@ namespace 课件帮PPT助手
                     }
                 }
             }
+            else if (currentChar == '地')
+            {
+                // 判断“地”后面是否是动词
+                if (index < text.Length - 1)
+                {
+                    string remainingText = text.Substring(index + 1);
+                    string nextWord = GetNextWord(remainingText);
+                    if (verbSet.Contains(nextWord))
+                    {
+                        return "de";
+                    }
+                }
+            }
             else if (currentChar == '一')
             {
                 if (index < text.Length - 1)
@@ -714,7 +745,16 @@ namespace 课件帮PPT助手
             // 默认处理其他汉字
             return hanziPinyinDict.ContainsKey(currentChar.ToString()) ? hanziPinyinDict[currentChar.ToString()][0] : string.Empty;
         }
-
+        // 辅助方法，提取下一个词
+        private string GetNextWord(string text)
+        {
+            int i = 0;
+            while (i < text.Length && char.IsLetterOrDigit(text[i]))
+            {
+                i++;
+            }
+            return text.Substring(0, i);
+        }
 
         private string GetWordToCheck(string text, int startIndex)
         {
