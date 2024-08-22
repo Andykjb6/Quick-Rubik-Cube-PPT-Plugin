@@ -780,6 +780,7 @@
     <Resource Include="Resources\字体设置.png" />
     <Resource Include="Resources\首选项.png" />
     <EmbeddedResource Include="汉字字典\汉字动词大全.txt" />
+    <Resource Include="Resources\词库管理.png" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />

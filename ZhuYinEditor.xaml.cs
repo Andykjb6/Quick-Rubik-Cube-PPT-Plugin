@@ -38,7 +38,7 @@ namespace 课件帮PPT助手
             // 在初始化时应用默认的字体设置
             ApplyDefaultFontSettings();
 
-           
+
 
             // 确定儿化音词语库文件的路径
             string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ErhuaCache");
@@ -473,9 +473,6 @@ namespace 课件帮PPT助手
             }
         }
 
-
-
-
         private void BtnImport_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -632,12 +629,42 @@ namespace 课件帮PPT助手
 
             HighlightErhuaHanzi();
             HighlightReduplicatedWords();
+
+            // 在叠词高亮之后再次确保“地”的拼音为“de”
+            for (int j = 0; j < text.Length; j++)
+            {
+                if (text[j] == '地')
+                {
+                    string correctedPinyin = GetCorrectedPinyin(text, j, j == text.Length - 1);
+                    if (correctedPinyin == "de")
+                    {
+                        var linePanel = StackPanelContent.Children[j / MaxCharsPerLine] as StackPanel;
+                        var charPanel = linePanel.Children[j % MaxCharsPerLine] as StackPanel;
+                        var pinyinBlock = charPanel.Children[0] as TextBlock;
+                        pinyinBlock.Text = correctedPinyin;
+                    }
+                }
+            }
+
             ApplyFontSettings();
+        }
+
+        // 获取“地”后面的词
+        private string GetNextWord(string text, int startIndex)
+        {
+            for (int length = Math.Min(text.Length - startIndex, 4); length > 0; length--)
+            {
+                string potentialWord = text.Substring(startIndex, length);
+                if (verbSet.Contains(potentialWord))
+                {
+                    return potentialWord;
+                }
+            }
+            return text[startIndex].ToString();
         }
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
-
             char currentChar = text[index];
 
             // 处理特殊的汉字拼音
@@ -668,7 +695,7 @@ namespace 课件帮PPT助手
             else if (currentChar == '哼')
             {
                 if (index < text.Length - 1 && char.IsPunctuation(text[index + 1]))
-            {
+                {
                     return "hng";
                 }
             }
@@ -697,11 +724,23 @@ namespace 课件帮PPT助手
                 // 判断“地”后面是否是动词
                 if (index < text.Length - 1)
                 {
-                    string remainingText = text.Substring(index + 1);
-                    string nextWord = GetNextWord(remainingText);
-                    if (verbSet.Contains(nextWord))
+                    for (int i = index + 1; i < text.Length; i++)
                     {
-                        return "de";
+                        // 找到后面的第一个汉字并检查是否为动词
+                        string NextWord = GetNextWord(text, i);
+                        if (verbSet.Contains(NextWord))
+                        {
+                            return "de";
+                        }
+                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
+                        {
+                            // 跳过非动词的汉字，继续检查下一个字符
+                            continue;
+                        }
+                        else
+                        {
+                            break; // 如果遇到非汉字，则跳出循环
+                        }
                     }
                 }
             }
@@ -745,16 +784,7 @@ namespace 课件帮PPT助手
             // 默认处理其他汉字
             return hanziPinyinDict.ContainsKey(currentChar.ToString()) ? hanziPinyinDict[currentChar.ToString()][0] : string.Empty;
         }
-        // 辅助方法，提取下一个词
-        private string GetNextWord(string text)
-        {
-            int i = 0;
-            while (i < text.Length && char.IsLetterOrDigit(text[i]))
-            {
-                i++;
-            }
-            return text.Substring(0, i);
-        }
+
 
         private string GetWordToCheck(string text, int startIndex)
         {
@@ -1147,7 +1177,7 @@ namespace 课件帮PPT助手
             MessageBox.Show("已成功导出注音文本。", "导出成功");
 
         }
-    
+
         private class PinyinData
         {
             public string HanziTextBoxName { get; set; }
