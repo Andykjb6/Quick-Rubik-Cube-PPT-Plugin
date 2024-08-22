@@ -744,6 +744,90 @@ namespace 课件帮PPT助手
                     }
                 }
             }
+            else if (currentChar == '得')
+            {
+                bool hasVerbBefore = false;
+                bool hasVerbAfter = false;
+
+                // 检查“得”前面是否有动词
+                if (index > 0)
+                {
+                    for (int i = index - 1; i >= 0; i--)
+                    {
+                        string prevWord = GetNextWord(text, i);
+                        if (verbSet.Contains(prevWord))
+                        {
+                            hasVerbBefore = true;
+                            break;
+                        }
+                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
+                        {
+                            // 跳过非动词的汉字，继续检查前一个字符
+                            continue;
+                        }
+                        else
+                        {
+                            break; // 如果遇到非汉字，则跳出循环
+                        }
+                    }
+                }
+
+                // 检查“得”后面是否有动词
+                if (index < text.Length - 1)
+                {
+                    for (int i = index + 1; i < text.Length; i++)
+                    {
+                        string nextWord = GetNextWord(text, i);
+                        if (verbSet.Contains(nextWord))
+                        {
+                            hasVerbAfter = true;
+                            break;
+                        }
+                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
+                        {
+                            // 跳过非动词的汉字，继续检查下一个字符
+                            continue;
+                        }
+                        else
+                        {
+                            break; // 如果遇到非汉字，则跳出循环
+                        }
+                    }
+                }
+
+                if (hasVerbBefore && !hasVerbAfter)
+                {
+                    return "de";
+                }
+                else if (!hasVerbBefore && hasVerbAfter)
+                {
+                    return "děi";
+                }
+            }
+            else if (currentChar == '更')
+            {
+                // 判断“更”后面是否是动词
+                if (index < text.Length - 1)
+                {
+                    for (int i = index + 1; i < text.Length; i++)
+                    {
+                        string nextWord = GetNextWord(text, i);
+                        if (verbSet.Contains(nextWord))
+                        {
+                            return "gèng";
+                        }
+                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
+                        {
+                            // 跳过非动词的汉字，继续检查下一个字符
+                            continue;
+                        }
+                        else
+                        {
+                            break; // 如果遇到非汉字，则跳出循环
+                        }
+                    }
+                }
+            }
             else if (currentChar == '一')
             {
                 if (index < text.Length - 1)
