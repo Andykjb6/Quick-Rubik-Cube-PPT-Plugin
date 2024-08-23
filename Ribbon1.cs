@@ -7359,5 +7359,10 @@ End Sub
 
             // 如果有其他需要禁用的功能，可以在这里添加
         }
+
+        private void 汉字拆字_Click(object sender, RibbonControlEventArgs e)
+        {
+
+        }
     }
 }
