@@ -2719,8 +2719,17 @@ End Sub
             scalingForm.Show();
         }
 
-        private void 一键注音_Click(object sender, RibbonControlEventArgs e)
+        private void 字典注音_Click(object sender, RibbonControlEventArgs e)
         {
+            // 检查是否已激活
+            if (!Properties.Settings.Default.IsActivated)
+            {
+                // 插件未激活，提示用户激活
+                System.Windows.Forms.MessageBox.Show("请激活插件以使用此功能。", "未激活", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                return; // 插件未激活，直接返回，不执行后续代码
+            }
+
+            // 插件已激活，允许使用功能
             // 设置EPPlus的许可上下文
             Excel.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
@@ -5297,9 +5306,20 @@ End Sub
 
         private void 注音编辑_Click(object sender, RibbonControlEventArgs e)
         {
-            ZhuYinEditor editor = new ZhuYinEditor();
-            editor.Show();
+            // 检查是否已激活
+            if (Properties.Settings.Default.IsActivated)
+            {
+                // 插件已激活，允许使用功能
+                ZhuYinEditor editor = new ZhuYinEditor();
+                editor.Show();
+            }
+            else
+            {
+                // 插件未激活，提示用户激活
+                System.Windows.Forms.MessageBox.Show("请激活插件以使用此功能。", "未激活", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+            }
         }
+
         private void 删列补行_Click(object sender, RibbonControlEventArgs e)
         {
             // 获取当前激活的PPT应用程序实例
@@ -6178,12 +6198,10 @@ End Sub
             int lineColor;
             if (centerShape.Line.Visible == Office.MsoTriState.msoTrue)
             {
-                // 如果存在边框，使用边框颜色
                 lineColor = centerShape.Line.ForeColor.RGB;
             }
             else
             {
-                // 如果不存在边框，使用填充颜色
                 lineColor = centerShape.Fill.ForeColor.RGB;
             }
 
@@ -6211,13 +6229,63 @@ End Sub
                 targetShape.Left = targetX;
                 targetShape.Top = targetY;
 
+                // 计算目标对象的中心点
+                float targetCenterX = targetShape.Left + (targetShape.Width / 2);
+                float targetCenterY = targetShape.Top + (targetShape.Height / 2);
+
                 // 创建并更新线段
-                PowerPoint.Shape line = shapes.Parent.Shapes.AddLine(centerX, centerY, targetX + targetShape.Width / 2, targetY + targetShape.Height / 2);
+                PowerPoint.Shape line = shapes.Parent.Shapes.AddLine(centerX, centerY, targetCenterX, targetCenterY);
                 line.Line.ForeColor.RGB = lineColor; // 使用确定的颜色
                 line.ZOrder(Office.MsoZOrderCmd.msoSendToBack);
                 line.Line.Weight = 2;
                 line.Tags.Add("LayoutTag", currentTag);
                 settingsForm.LayoutLines.Add(line);
+            }
+        }
+        // 查找与目标对象关联的线段
+        private PowerPoint.Shape FindExistingLine(PowerPoint.Shape targetShape)
+        {
+            foreach (PowerPoint.Shape line in settingsForm.LayoutLines)
+            {
+                if (line.Tags["TargetShapeName"] == targetShape.Name)
+                {
+                    return line;
+                }
+            }
+            return null;
+        }
+
+        // 更新现有线段的位置
+        private void UpdateLinePosition(PowerPoint.Shape line, float startX, float startY, float endX, float endY)
+        {
+            // 更新线段的位置
+            line.Left = Math.Min(startX, endX);
+            line.Top = Math.Min(startY, endY);
+
+            // 更新线段的尺寸
+            line.Width = Math.Abs(endX - startX);
+            line.Height = Math.Abs(endY - startY);
+
+            // 更新线段的方向
+            if (endX >= startX && endY >= startY)
+            {
+                line.Line.BeginArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+                line.Line.EndArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+            }
+            else if (endX < startX && endY >= startY)
+            {
+                line.Line.BeginArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+                line.Line.EndArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+            }
+            else if (endX >= startX && endY < startY)
+            {
+                line.Line.BeginArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+                line.Line.EndArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+            }
+            else
+            {
+                line.Line.BeginArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
+                line.Line.EndArrowheadLength = Office.MsoArrowheadLength.msoArrowheadShort;
             }
         }
 
@@ -6256,7 +6324,7 @@ End Sub
                         if (ctrlPressed)
                         {
                             // 以文本框宽高的最大值作为初始直径
-                            float diameter = Math.Max(shape.Width, shape.Height);
+                            float diameter = Math.Max(shape.Width+3, shape.Height+3);
                             newShape = activeSlide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeOval, left, top, diameter, diameter);
                             newShape.TextFrame.TextRange.Text = originalText;
                             newShape.TextFrame.TextRange.Font.Size = originalFontSize;
@@ -7213,6 +7281,83 @@ End Sub
 
             // 显示版本号
             MessageBox.Show($"当前PPT插件的版本号是：{version}", "插件版本", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void 激活插件_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 提示用户输入激活码
+            string inputActivationCode = Microsoft.VisualBasic.Interaction.InputBox("请输入激活码", "插件激活", "");
+
+            // 获取用户的硬件ID
+            string hardwareId = HardwareInfoHelper.GetHardwareId();
+
+            // 使用硬件ID生成激活码
+            string correctActivationCode = HardwareInfoHelper.GenerateActivationCode(hardwareId);
+
+            // 检查用户输入的激活码是否正确
+            if (inputActivationCode == correctActivationCode)
+            {
+                // 激活成功，可以解锁插件功能
+                System.Windows.Forms.MessageBox.Show("激活成功！", "激活", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+
+                // 设置插件激活状态为 true，并保存
+                Properties.Settings.Default.IsActivated = true;
+                Properties.Settings.Default.Save();
+
+                // 启用插件功能
+                EnableAllPluginFeatures();  // 添加这行代码，确保插件功能被启用
+            }
+            else
+            {
+                // 激活失败
+                System.Windows.Forms.MessageBox.Show("激活码无效，请重新输入。", "激活失败", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+        }
+
+        private void EnableAllPluginFeatures()
+        {
+            // 启用插件的所有功能
+            注音编辑.Enabled = true;
+            字典注音.Enabled = true;
+
+            // 如果有其他需要启用的功能，可以在这里添加
+        }
+
+        private void 获取ID_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取硬件ID
+            string hardwareId = HardwareInfoHelper.GetHardwareId();
+
+            // 将硬件ID复制到剪贴板
+            Clipboard.SetText(hardwareId);
+
+            // 显示硬件ID给用户，并提示已复制到剪贴板
+            System.Windows.Forms.MessageBox.Show($"您的硬件ID: {hardwareId}\n该硬件ID已复制到剪贴板，请将此硬件ID发送给我们以获取激活码。", "硬件ID", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+        }
+
+        private void 清除激活_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 重置激活相关的设置
+            Properties.Settings.Default.IsActivated = false;
+            // 保存设置
+            Properties.Settings.Default.Save();
+
+            // 提示用户激活状态已清除
+            System.Windows.Forms.MessageBox.Show("激活状态已清除。插件功能已禁用。", "清除激活", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+
+            // 禁用插件功能
+            DisableAllPluginFeatures();
+        }
+
+        private void DisableAllPluginFeatures()
+        {
+            // 在这里禁用插件的所有功能
+            // 例如：禁用菜单项、按钮等
+
+            注音编辑.Enabled = false;
+            字典注音.Enabled = false;
+
+            // 如果有其他需要禁用的功能，可以在这里添加
         }
     }
 }

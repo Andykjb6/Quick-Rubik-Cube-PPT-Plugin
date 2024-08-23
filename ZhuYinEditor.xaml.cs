@@ -29,6 +29,7 @@ namespace 课件帮PPT助手
         private List<string> erhuaWordLibrary = new List<string>();
         private bool isTextChangedEventHandlerActive = true;
         private readonly string erhuaWordLibraryFilePath;
+        private Dictionary<string, string> lightToneDict; // 新的轻声词语库字典
         private const int MaxCharCountThreshold = 300; // 设置字符数阈值
 
         public ZhuYinEditor()
@@ -36,11 +37,9 @@ namespace 课件帮PPT助手
             InitializeComponent();
             LoadAdjectiveDict(); // 确保在窗口初始化时加载形容词字典
             LoadVerbDict(); // 加载动词字典
-            LoadLightTonDict(); // 加载轻声词语库
+            LoadLightToneDict(); // 加载轻声词语库
             // 在初始化时应用默认的字体设置
             ApplyDefaultFontSettings();
-
-
 
             // 确定儿化音词语库文件的路径
             string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ErhuaCache");
@@ -92,9 +91,9 @@ namespace 课件帮PPT助手
                 }
             }
         }
-        private void LoadLightTonDict()
+        private void LoadLightToneDict()
         {
-            multiPronunciationDict = new Dictionary<string, string>();
+            lightToneDict = new Dictionary<string, string>();
             string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.轻声词语库.txt");
 
             foreach (var line in File.ReadLines(filePath))
@@ -104,7 +103,7 @@ namespace 课件帮PPT助手
                 {
                     string word = parts[0].Trim();
                     string pinyin = parts[1].Trim();
-                    multiPronunciationDict[word] = pinyin;
+                    lightToneDict[word] = pinyin; // 存储到轻声词语库字典
                 }
             }
         }
@@ -564,7 +563,6 @@ namespace 课件帮PPT助手
             ApplyFontSettings(); // 这里再次应用字体设置
         }
 
-        // 更新 StackPanel 内容时检查儿化音词语库
         private void UpdateStackPanelContentWithCorrection(string text)
         {
             StackPanelContent.Children.Clear();
@@ -586,14 +584,31 @@ namespace 课件帮PPT助手
                     }
                 }
 
-                string wordToCheck = GetWordToCheck(text, i);
-
-                // 检查词语是否在轻声词语库中
-                if (multiPronunciationDict.ContainsKey(wordToCheck))
+                // 优先检查轻声词语库
+                string wordToCheck = GetLightToneWord(text, i);
+                if (lightToneDict.ContainsKey(wordToCheck))
                 {
-                    string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
-                    for (int j = 0; j < wordToCheck.Length; j++)
+                    i = ProcessWord(wordToCheck, lightToneDict[wordToCheck], ref currentCharCount, ref currentLinePanel, i);
+                }
+                // 检查多音字词语库
+                else
+                {
+                    wordToCheck = GetMultiPronunciationWord(text, i);
+                    if (multiPronunciationDict.ContainsKey(wordToCheck))
                     {
+                        i = ProcessWord(wordToCheck, multiPronunciationDict[wordToCheck], ref currentCharCount, ref currentLinePanel, i);
+                    }
+                    else
+                    {
+                        // 处理其他拼音逻辑
+                        char currentChar = text[i];
+                        string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
+
+                        if (correctedPinyinDict.ContainsKey(i))
+                        {
+                            pinyin = correctedPinyinDict[i];
+                        }
+
                         if (currentCharCount >= MaxCharsPerLine)
                         {
                             StackPanelContent.Children.Add(currentLinePanel);
@@ -601,54 +616,9 @@ namespace 课件帮PPT助手
                             currentCharCount = 0;
                         }
 
-                        StackPanel sp = CreateCharacterPanel(wordToCheck[j], pinyinArray[j]);
+                        StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
                         currentLinePanel.Children.Add(sp);
-
-                        int index = GetCharacterIndex(sp);
-                        if (index >= 0)
-                        {
-                            correctedPinyinDict[index] = pinyinArray[j];
-                        }
                         currentCharCount++;
-                    }
-                    i += wordToCheck.Length - 1;
-                }
-                else
-                {
-                    char currentChar = text[i];
-                    string pinyin = GetCorrectedPinyin(text, i, i == text.Length - 1);
-
-                    if (correctedPinyinDict.ContainsKey(i))
-                    {
-                        pinyin = correctedPinyinDict[i];
-                    }
-
-                    if (currentCharCount >= MaxCharsPerLine)
-                    {
-                        StackPanelContent.Children.Add(currentLinePanel);
-                        currentLinePanel = CreateNewLinePanel();
-                        currentCharCount = 0;
-                    }
-
-                    StackPanel sp = CreateCharacterPanel(currentChar, pinyin);
-                    currentLinePanel.Children.Add(sp);
-                    currentCharCount++;
-
-                    if (currentChar == '儿' && i > 0)
-                    {
-                        string word = text[i - 1] + "儿";
-                        string matchingErhua = erhuaWordLibrary.FirstOrDefault(e => e.StartsWith(word));
-                        if (!string.IsNullOrEmpty(matchingErhua))
-                        {
-                            var cachedPinyin = matchingErhua.Substring(matchingErhua.IndexOf('(') + 1).TrimEnd(')');
-                            var prevCharPanel = currentLinePanel.Children[currentLinePanel.Children.Count - 2] as StackPanel;
-                            var prevPinyinBlock = prevCharPanel?.Children[0] as TextBlock;
-                            if (prevPinyinBlock != null)
-                            {
-                                prevPinyinBlock.Text = cachedPinyin;
-                            }
-                            (sp.Children[0] as TextBlock).Text = string.Empty;
-                        }
                     }
                 }
                 i++;
@@ -663,27 +633,65 @@ namespace 课件帮PPT助手
             HighlightReduplicatedWords();
 
             // 在叠词高亮之后再次确保“地”的拼音为“de”
+            EnsureCorrectPinyinForWord(text, "地", "de");
+
+            ApplyFontSettings();
+        }
+
+        private int ProcessWord(string word, string pinyinData, ref int currentCharCount, ref StackPanel currentLinePanel, int i)
+        {
+            string[] pinyinArray = pinyinData.Split(' ');
+            for (int j = 0; j < word.Length; j++)
+            {
+                if (currentCharCount >= MaxCharsPerLine)
+                {
+                    StackPanelContent.Children.Add(currentLinePanel);
+                    currentLinePanel = CreateNewLinePanel();
+                    currentCharCount = 0;
+                }
+
+                StackPanel sp = CreateCharacterPanel(word[j], pinyinArray[j]);
+                currentLinePanel.Children.Add(sp);
+
+                int index = GetCharacterIndex(sp);
+                if (index >= 0)
+                {
+                    correctedPinyinDict[index] = pinyinArray[j];
+                }
+                currentCharCount++;
+            }
+            return i + word.Length - 1;
+        }
+
+        private void EnsureCorrectPinyinForWord(string text, string targetWord, string correctPinyin)
+        {
             for (int j = 0; j < text.Length; j++)
             {
-                if (text[j] == '地')
+                if (text[j] == targetWord[0])
                 {
-                    string correctedPinyin = GetCorrectedPinyin(text, j, j == text.Length - 1);
-                    if (correctedPinyin == "de")
+                    string pinyin = GetCorrectedPinyin(text, j, j == text.Length - 1);
+                    if (pinyin == correctPinyin)
                     {
                         var linePanel = StackPanelContent.Children[j / MaxCharsPerLine] as StackPanel;
                         var charPanel = linePanel.Children[j % MaxCharsPerLine] as StackPanel;
-                        var pinyinBlock = charPanel.Children[0] as TextBlock;
-                        pinyinBlock.Text = correctedPinyin;
+
+                        // 确保索引在范围内
+                        if (linePanel != null && charPanel != null)
+                        {
+                            var pinyinBlock = charPanel.Children[0] as TextBlock;
+                            pinyinBlock.Text = correctPinyin;
+                        }
                     }
                 }
             }
-
-            ApplyFontSettings();
         }
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
             char currentChar = text[index];
+            // 用来标记"地"是否应该固定拼音为"de"
+            bool fixDePronunciation = false;
+
 
             // 处理特殊的汉字拼音
             if (currentChar == '哇')
@@ -739,16 +747,19 @@ namespace 课件帮PPT助手
             }
             else if (currentChar == '地')
             {
-                // 判断“地”后面是否是动词
+                // 判断“地”后面是否有动词
                 if (index < text.Length - 1)
                 {
                     for (int i = index + 1; i < text.Length; i++)
                     {
-                        // 找到后面的第一个汉字并检查是否为动词
-                        string NextWord = GetNextWord(text, i);
-                        if (verbSet != null && verbSet.Contains(NextWord))  // 检查 verbSet 是否为 null
+                        // 获取下一个汉字
+                        string nextWord = GetNextWord(text, i);
+
+                        // 如果动词集合包含该词语，那么设置 fixDePronunciation 为 true
+                        if (verbSet != null && verbSet.Contains(nextWord))
                         {
-                            return "de";
+                            fixDePronunciation = true;
+                            break;
                         }
                         else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
                         {
@@ -762,6 +773,13 @@ namespace 课件帮PPT助手
                     }
                 }
             }
+
+            // 如果标志被触发，将拼音固定为"de"
+            if (fixDePronunciation)
+            {
+                return "de";
+            }
+
             else if (currentChar == '得')
             {
                 bool hasVerbBefore = false;
@@ -936,7 +954,7 @@ namespace 课件帮PPT助手
             return text[startIndex].ToString(); // 如果没有匹配，返回单个字符
         }
 
-        private string GetWordToCheck(string text, int startIndex)
+        private string GetMultiPronunciationWord(string text, int startIndex)
         {
             int maxLength = multiPronunciationDict.Keys.Max(k => k.Length);
             for (int length = maxLength; length > 0; length--)
@@ -952,6 +970,23 @@ namespace 课件帮PPT助手
             }
             return text[startIndex].ToString();
         }
+        private string GetLightToneWord(string text, int startIndex)
+        {
+            int maxLength = lightToneDict.Keys.Max(k => k.Length);
+            for (int length = maxLength; length > 0; length--)
+            {
+                if (startIndex + length <= text.Length)
+                {
+                    string substring = text.Substring(startIndex, length);
+                    if (lightToneDict.ContainsKey(substring))
+                    {
+                        return substring;
+                    }
+                }
+            }
+            return text[startIndex].ToString();
+        }
+
 
         private void HighlightErhuaHanzi()
         {

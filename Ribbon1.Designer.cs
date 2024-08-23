@@ -51,6 +51,9 @@ namespace 课件帮PPT助手
             this.关于我 = this.Factory.CreateRibbonSplitButton();
             this.检查更新 = this.Factory.CreateRibbonButton();
             this.插件版本 = this.Factory.CreateRibbonButton();
+            this.激活插件 = this.Factory.CreateRibbonButton();
+            this.获取ID = this.Factory.CreateRibbonButton();
+            this.清除激活 = this.Factory.CreateRibbonButton();
             this.toggleTaskPaneButton = this.Factory.CreateRibbonButton();
             this.button5 = this.Factory.CreateRibbonButton();
             this.笔顺图解 = this.Factory.CreateRibbonButton();
@@ -74,7 +77,7 @@ namespace 课件帮PPT助手
             this.注音工具 = this.Factory.CreateRibbonSplitButton();
             this.button3 = this.Factory.CreateRibbonButton();
             this.便捷注音 = this.Factory.CreateRibbonButton();
-            this.一键注音 = this.Factory.CreateRibbonButton();
+            this.字典注音 = this.Factory.CreateRibbonButton();
             this.拓展应用 = this.Factory.CreateRibbonSplitButton();
             this.Zici = this.Factory.CreateRibbonButton();
             this.WritePinyin = this.Factory.CreateRibbonButton();
@@ -316,6 +319,9 @@ namespace 课件帮PPT助手
             this.关于我.Image = ((System.Drawing.Image)(resources.GetObject("关于我.Image")));
             this.关于我.Items.Add(this.检查更新);
             this.关于我.Items.Add(this.插件版本);
+            this.关于我.Items.Add(this.激活插件);
+            this.关于我.Items.Add(this.获取ID);
+            this.关于我.Items.Add(this.清除激活);
             this.关于我.Label = "快捷魔方";
             this.关于我.Name = "关于我";
             this.关于我.SuperTip = "点击进入Andy老师的博客";
@@ -336,6 +342,29 @@ namespace 课件帮PPT助手
             this.插件版本.Name = "插件版本";
             this.插件版本.ShowImage = true;
             this.插件版本.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.查看版本_Click);
+            // 
+            // 激活插件
+            // 
+            this.激活插件.Image = ((System.Drawing.Image)(resources.GetObject("激活插件.Image")));
+            this.激活插件.Label = "激活插件";
+            this.激活插件.Name = "激活插件";
+            this.激活插件.ShowImage = true;
+            this.激活插件.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.激活插件_Click);
+            // 
+            // 获取ID
+            // 
+            this.获取ID.Image = ((System.Drawing.Image)(resources.GetObject("获取ID.Image")));
+            this.获取ID.Label = "获取ID";
+            this.获取ID.Name = "获取ID";
+            this.获取ID.ShowImage = true;
+            this.获取ID.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.获取ID_Click);
+            // 
+            // 清除激活
+            // 
+            this.清除激活.Label = "清除激活";
+            this.清除激活.Name = "清除激活";
+            this.清除激活.ShowImage = true;
+            this.清除激活.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.清除激活_Click);
             // 
             // toggleTaskPaneButton
             // 
@@ -543,7 +572,7 @@ namespace 课件帮PPT助手
             this.注音工具.Image = ((System.Drawing.Image)(resources.GetObject("注音工具.Image")));
             this.注音工具.Items.Add(this.button3);
             this.注音工具.Items.Add(this.便捷注音);
-            this.注音工具.Items.Add(this.一键注音);
+            this.注音工具.Items.Add(this.字典注音);
             this.注音工具.Label = "注音工具";
             this.注音工具.Name = "注音工具";
             // 
@@ -567,15 +596,15 @@ namespace 课件帮PPT助手
             this.便捷注音.SuperTip = "选中无声调拼音，单击“便捷注音”，自动匹配相应的四个声调，选择正确声调的拼音进行注音即可。（源：Andy拼音库）";
             this.便捷注音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.便捷注音_Click);
             // 
-            // 一键注音
+            // 字典注音
             // 
-            this.一键注音.Image = ((System.Drawing.Image)(resources.GetObject("一键注音.Image")));
-            this.一键注音.Label = "字典注音";
-            this.一键注音.Name = "一键注音";
-            this.一键注音.ScreenTip = "使用说明：";
-            this.一键注音.ShowImage = true;
-            this.一键注音.SuperTip = "选中文本框，则在文本框顶部注音；选中文本框内的文本，则在所选字符顶部注音。";
-            this.一键注音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.一键注音_Click);
+            this.字典注音.Image = ((System.Drawing.Image)(resources.GetObject("字典注音.Image")));
+            this.字典注音.Label = "字典注音";
+            this.字典注音.Name = "字典注音";
+            this.字典注音.ScreenTip = "使用说明：";
+            this.字典注音.ShowImage = true;
+            this.字典注音.SuperTip = "选中文本框，则在文本框顶部注音；选中文本框内的文本，则在所选字符顶部注音。";
+            this.字典注音.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.字典注音_Click);
             // 
             // 拓展应用
             // 
@@ -1618,7 +1647,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 图形修剪;
         internal RibbonButton 四线三格;
         internal RibbonSplitButton 常用格子;
-        internal RibbonButton 一键注音;
+        internal RibbonButton 字典注音;
         internal RibbonSplitButton 注音工具;
         internal RibbonButton Zici;
         internal RibbonSplitButton 拓展应用;
@@ -1673,6 +1702,9 @@ namespace 课件帮PPT助手
         internal RibbonButton 插入矩形;
         internal RibbonButton 调整宽度;
         internal RibbonButton 插件版本;
+        internal RibbonButton 激活插件;
+        internal RibbonButton 获取ID;
+        internal RibbonButton 清除激活;
     }
 
     partial class ThisRibbonCollection

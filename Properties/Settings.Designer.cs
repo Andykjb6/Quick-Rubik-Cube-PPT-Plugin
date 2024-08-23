@@ -94,5 +94,17 @@ namespace 课件帮PPT助手.Properties {
                 this["OffsetValue"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsActivated {
+            get {
+                return ((bool)(this["IsActivated"]));
+            }
+            set {
+                this["IsActivated"] = value;
+            }
+        }
     }
 }
