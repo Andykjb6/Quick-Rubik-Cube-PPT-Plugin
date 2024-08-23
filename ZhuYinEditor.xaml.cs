@@ -36,6 +36,7 @@ namespace 课件帮PPT助手
             InitializeComponent();
             LoadAdjectiveDict(); // 确保在窗口初始化时加载形容词字典
             LoadVerbDict(); // 加载动词字典
+            LoadLightTonDict(); // 加载轻声词语库
             // 在初始化时应用默认的字体设置
             ApplyDefaultFontSettings();
 
@@ -91,9 +92,22 @@ namespace 课件帮PPT助手
                 }
             }
         }
+        private void LoadLightTonDict()
+        {
+            multiPronunciationDict = new Dictionary<string, string>();
+            string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.轻声词语库.txt");
 
-
-
+            foreach (var line in File.ReadLines(filePath))
+            {
+                var parts = line.Split(new[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                {
+                    string word = parts[0].Trim();
+                    string pinyin = parts[1].Trim();
+                    multiPronunciationDict[word] = pinyin;
+                }
+            }
+        }
         private void InitializeContextMenu()
         {
             var contextMenu = new ContextMenu();
@@ -573,6 +587,8 @@ namespace 课件帮PPT助手
                 }
 
                 string wordToCheck = GetWordToCheck(text, i);
+
+                // 检查词语是否在轻声词语库中
                 if (multiPronunciationDict.ContainsKey(wordToCheck))
                 {
                     string[] pinyinArray = multiPronunciationDict[wordToCheck].Split(' ');
@@ -750,6 +766,7 @@ namespace 课件帮PPT助手
             {
                 bool hasVerbBefore = false;
                 bool hasVerbAfter = false;
+                bool isSpecialPhrase = false;
 
                 // 检查“得”前面是否有动词
                 if (index > 0)
@@ -797,13 +814,28 @@ namespace 课件帮PPT助手
                     }
                 }
 
-                if (hasVerbBefore && !hasVerbAfter)
+                // 检查是否为“要得”或“要不得”并后接标点符号的情况
+                if (index > 1 && index < text.Length - 1)
+                {
+                    string phraseBefore = text.Substring(index - 2, 3);
+                    if ((phraseBefore == "要得" || phraseBefore == "要不得") && char.IsPunctuation(text[index + 1]))
+                    {
+                        isSpecialPhrase = true;
+                    }
+                }
+
+                // 决定拼音
+                if (isSpecialPhrase || hasVerbBefore)
                 {
                     return "de";
                 }
-                else if (!hasVerbBefore && hasVerbAfter)
+                else if (hasVerbAfter && !hasVerbBefore)
                 {
                     return "děi";
+                }
+                else
+                {
+                    return "dé";
                 }
             }
             else if (currentChar == '更')
@@ -1224,7 +1256,13 @@ namespace 课件帮PPT助手
             // 创建一个大的文本框来容纳汉字和标点符号
             float fontSize = 28; // 汉字的字体大小
             float pinyinFontSize = fontSize * 0.5f; // 拼音的字体大小为汉字的一半
-            float textBoxWidth = 700; // 假设的文本框宽度，根据需要调整
+                                                    // 计算文本框的宽度
+            float averageCharWidth = fontSize * 0.6f; // 假设平均字符宽度为字体大小的0.6倍
+            float calculatedWidth = hanziText.Length * averageCharWidth;
+
+            // 限制宽度最大值为幻灯片宽度，最小值为一定宽度
+            float slideWidth = pptApp.ActivePresentation.PageSetup.SlideWidth;
+            float textBoxWidth = Math.Min(Math.Max(calculatedWidth, 100), slideWidth - 20); // 最小宽度100，最大宽度为幻灯片宽度减去20
 
             PowerPoint.Shape hanziTextBox = activeSlide.Shapes.AddTextbox(
                 MsoTextOrientation.msoTextOrientationHorizontal, 100, 100, textBoxWidth, 100);
@@ -1234,6 +1272,24 @@ namespace 课件帮PPT助手
             hanziTextBox.TextFrame2.TextRange.Font.Spacing = 6; // 字间距设为加宽
             hanziTextBox.TextFrame2.WordWrap = MsoTriState.msoTrue;
             hanziTextBox.TextFrame.AutoSize = PpAutoSize.ppAutoSizeShapeToFitText;
+            // 设置文本对齐方式
+            TextAlignment currentAlignment = RichTextBoxLeft.Document.Blocks.OfType<Paragraph>().FirstOrDefault()?.TextAlignment ?? TextAlignment.Left;
+            switch (currentAlignment)
+            {
+                case TextAlignment.Left:
+                    hanziTextBox.TextFrame2.TextRange.ParagraphFormat.Alignment = (MsoParagraphAlignment)PowerPoint.PpParagraphAlignment.ppAlignLeft;
+                    break;
+                case TextAlignment.Center:
+                    hanziTextBox.TextFrame2.TextRange.ParagraphFormat.Alignment = (MsoParagraphAlignment)PowerPoint.PpParagraphAlignment.ppAlignCenter;
+                    break;
+                case TextAlignment.Right:
+                    hanziTextBox.TextFrame2.TextRange.ParagraphFormat.Alignment = (MsoParagraphAlignment)PowerPoint.PpParagraphAlignment.ppAlignRight;
+                    break;
+                case TextAlignment.Justify:
+                    hanziTextBox.TextFrame2.TextRange.ParagraphFormat.Alignment = (MsoParagraphAlignment)PowerPoint.PpParagraphAlignment.ppAlignJustify;
+                    break;
+            }
+
 
             // 更新每个拼音数据的文本框名称
             for (int i = 0; i < pinyinDataList.Count; i++)
@@ -1324,6 +1380,15 @@ namespace 课件帮PPT助手
             {
                 isTextChangedEventHandlerActive = false;
 
+                // 保存光标位置
+                TextPointer caretPosition = RichTextBoxLeft.CaretPosition;
+
+                // 重置文本格式
+                ResetRichTextBoxFormatting();
+
+                // 恢复光标位置
+                RichTextBoxLeft.CaretPosition = caretPosition;
+
                 // 获取纯文本，去除换行符和空格
                 string text = GetPlainTextFromRichTextBox();
                 string plainText = text.Replace(Environment.NewLine, "").Replace(" ", "");
@@ -1338,6 +1403,22 @@ namespace 课件帮PPT助手
                 isTextChangedEventHandlerActive = true;
             }
         }
+
+        private void ResetRichTextBoxFormatting()
+        {
+            var textRange = new System.Windows.Documents.TextRange(RichTextBoxLeft.Document.ContentStart, RichTextBoxLeft.Document.ContentEnd);
+            textRange.ClearAllProperties();
+
+            // 设置默认字体和字号
+            textRange.ApplyPropertyValue(TextElement.FontFamilyProperty, new System.Windows.Media.FontFamily("Microsoft YaHei UI"));
+            textRange.ApplyPropertyValue(TextElement.FontSizeProperty, 20.0); // 默认字号
+            // 设置行间距
+            foreach (var block in RichTextBoxLeft.Document.Blocks.OfType<Paragraph>())
+            {
+                block.LineHeight = 10; // 设置行间距
+            }
+        }
+
 
         private void UpdateCharacterCount(int charCount)
         {
@@ -1583,17 +1664,18 @@ namespace 课件帮PPT助手
             }
         }
 
-
+        //左对齐
         private void BtnAlignLeft_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Left);
         }
-
+        //居中对齐
         private void BtnAlignCenter_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Center);
         }
 
+        //两端对齐
         private void BtnAlignJustify_Click(object sender, RoutedEventArgs e)
         {
             AlignText(TextAlignment.Justify);
