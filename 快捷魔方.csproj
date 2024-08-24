@@ -522,6 +522,12 @@
     <Compile Include="SampleGenerationForm.Designer.cs">
       <DependentUpon>SampleGenerationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectForm.Designer.cs">
+      <DependentUpon>SelectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -682,6 +688,9 @@
     <EmbeddedResource Include="SampleGenerationForm.resx">
       <DependentUpon>SampleGenerationForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SelectForm.resx">
+      <DependentUpon>SelectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -778,7 +787,6 @@
     <Resource Include="Resources\自动记忆.png" />
     <Resource Include="Resources\自动记忆中.png" />
     <Resource Include="Resources\看拼音写词语.png" />
-    <Resource Include="Resources\AI注音.png" />
     <Resource Include="Resources\字体设置.png" />
     <Resource Include="Resources\首选项.png" />
     <EmbeddedResource Include="汉字字典\汉字动词大全.txt" />

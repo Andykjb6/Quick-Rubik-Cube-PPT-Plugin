@@ -1061,45 +1061,6 @@ namespace 课件帮PPT助手
             pinyinForm = null;
         }
 
-        //据字查笔顺
-        private void 笔顺图解_Click(object sender, RibbonControlEventArgs e)
-        {
-            string inputChar = Microsoft.VisualBasic.Interaction.InputBox("请输入目标汉字（需联网，且一次仅支持查询单个汉字）:", "一键获取汉字笔顺图解", "");
-            if (!string.IsNullOrWhiteSpace(inputChar))
-            {
-                string url = $"https://hanyu.baidu.com/s?wd={inputChar}&ptype=zici";
-                ExtractSVGFromWebpage(url, inputChar);
-            }
-        }
-
-        private void ExtractSVGFromWebpage(string url, string inputChar)
-        {
-            try
-            {
-                HtmlWeb web = new HtmlWeb();
-                HtmlAgilityPack.HtmlDocument doc = web.Load(url);
-                var svgNodes = doc.DocumentNode.SelectNodes("//svg");
-                if (svgNodes != null)
-                {
-                    ShowSVGSelectionWindow(svgNodes, inputChar);
-                }
-                else
-                {
-                    MessageBox.Show("未查询到对应SVG笔顺图！");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("出现错误：" + ex.Message);
-            }
-        }
-
-        private void ShowSVGSelectionWindow(HtmlNodeCollection svgNodes, string inputChar)
-        {
-            SvgSelectionForm svgSelectionForm = new SvgSelectionForm(svgNodes, inputChar);
-            svgSelectionForm.ShowDialog();
-        }
-        
         //田字格生成
         private TableForm Form;
         private void 生字格子_Click(object sender, RibbonControlEventArgs e)
@@ -7368,18 +7329,17 @@ End Sub
             var slide = app.ActiveWindow.View.Slide;
 
             // 检查是否选择了文本或文本框
-            if (app.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (app.ActiveWindow.Selection.Type == PpSelectionType.ppSelectionShapes)
             {
                 var selectedShapes = app.ActiveWindow.Selection.ShapeRange;
 
                 // 遍历所有选中的形状
-                foreach (Microsoft.Office.Interop.PowerPoint.Shape selectedShape in selectedShapes)
+                foreach (Shape selectedShape in selectedShapes)
                 {
                     if (selectedShape.HasTextFrame == Office.MsoTriState.msoTrue && selectedShape.TextFrame.HasText == Office.MsoTriState.msoTrue)
                     {
                         string hanzi = selectedShape.TextFrame.TextRange.Text.Trim();
-                        float fontSize = selectedShape.TextFrame.TextRange.Font.Size; // 获取选中文本的字号
-
+                        
                         // 确保文本框内只有一个汉字
                         if (hanzi.Length == 1)
                         {
@@ -7413,7 +7373,10 @@ End Sub
                                 shapeHanzi.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White); // 保持填充颜色为白色
                                 shapeHanzi.Line.ForeColor.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorAccent1; // 设置边框颜色为主题色
                                 shapeHanzi.TextFrame.TextRange.Font.Color.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorDark1;
-                                shapeHanzi.TextFrame.TextRange.Font.Size = fontSize; // 设置字号与文本框字号一致
+                                shapeHanzi.TextFrame.TextRange.Font.Size = 36;// 设置字号与文本框字号一致
+
+                                // 添加形状标签，用于标识需要分离文本的形状
+                                shapeHanzi.Tags.Add("FenLi", "true");
 
                                 currentLeft += shapeHanzi.Width + spacing;
 
@@ -7440,7 +7403,11 @@ End Sub
                                         shapeComponent.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White); // 保持填充颜色为白色
                                         shapeComponent.Line.ForeColor.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorAccent1; // 设置边框颜色为主题色
                                         shapeComponent.TextFrame.TextRange.Font.Color.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorDark1;
-                                        shapeComponent.TextFrame.TextRange.Font.Size = fontSize; // 设置字号与文本框字号一致
+                                        shapeComponent.TextFrame.TextRange.Font.Size = 36;//设置字号与文本框字号一致
+
+                                        // 添加形状标签，用于标识需要分离文本的形状
+                                        shapeComponent.Tags.Add("FenLi", "true");
+
                                         currentLeft += shapeComponent.Width + spacing;
 
                                         // 生成加号（十字形），除了最后一个字符之后
@@ -7457,6 +7424,9 @@ End Sub
                                         }
                                     }
                                 }
+
+                                // 执行形文分离操作
+                                SelectShapesAndSeparate(sender, e, slide);
                             }
                             else
                             {
@@ -7479,6 +7449,32 @@ End Sub
                 MessageBox.Show("请选中一个或多个文本框。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void SelectShapesAndSeparate(object sender, RibbonControlEventArgs e, Slide slide)
+        {
+            // 获取所有带有Tag "FenLi" 的形状
+            var shapesToSeparate = slide.Shapes.Cast<Shape>().Where(s => s.Tags["FenLi"] == "true").ToArray();
+
+            if (shapesToSeparate.Length > 0)
+            {
+                // 选择这些形状
+                slide.Application.ActiveWindow.Selection.Unselect();
+                foreach (var shape in shapesToSeparate)
+                {
+                    shape.Select(MsoTriState.msoFalse);
+                }
+
+                // 调用形文分离的点击事件
+                形文分离_Click(sender, e);
+
+                // 移除Tags
+                foreach (var shape in shapesToSeparate)
+                {
+                    shape.Tags.Delete("FenLi");
+                }
+            }
+        }
+
         private string Chaizi(string resourceName)
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
@@ -7494,94 +7490,133 @@ End Sub
 
         private void 汉字减一减_Click(object sender, RibbonControlEventArgs e)
         {
-            // 获取当前PPT应用程序实例
             var app = Globals.ThisAddIn.Application;
             var slide = app.ActiveWindow.View.Slide;
 
-            // 检查选中对象是否是文本框或文本
-            if (app.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionText ||
-                app.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionShapes)
+            if (app.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionShapes)
             {
-                var selectedTextRange = app.ActiveWindow.Selection.TextRange2.Text.Trim();
                 var selectedShapes = app.ActiveWindow.Selection.ShapeRange;
 
-                if (selectedShapes.Count == 1)
+                foreach (Microsoft.Office.Interop.PowerPoint.Shape selectedShape in selectedShapes)
                 {
-                    string hanzi = selectedTextRange;
-
-                    // 加载拆字数据
-                    string duoyinziFilePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字拆字.txt");
-                    string[] lines = File.ReadAllLines(duoyinziFilePath);
-                    string[] components = null;
-
-                    foreach (var line in lines)
+                    if (selectedShape.HasTextFrame == Microsoft.Office.Core.MsoTriState.msoTrue &&
+                        selectedShape.TextFrame.HasText == Microsoft.Office.Core.MsoTriState.msoTrue)
                     {
-                        string[] parts = line.Split('\t');
-                        if (parts.Length > 1 && parts.Last().Trim() == hanzi)
+                        string hanzi = selectedShape.TextFrame.TextRange.Text.Trim();
+
+                        if (hanzi.Length == 1)
                         {
-                            // 从最后一个字符反推减法公式
-                            components = parts.Take(parts.Length - 1).ToArray();
-                            break;
-                        }
-                    }
+                            string jianfaFilePath = Chaizi("课件帮PPT助手.汉字字典.汉字减一减.txt");
+                            string[] lines = File.ReadAllLines(jianfaFilePath);
+                            var matchingLines = lines
+                                .Where(line => line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)[0] == hanzi)
+                                .ToArray();
 
-                    if (components != null && components.Length >= 1)
-                    {
-                        float currentLeft = selectedShapes[1].Left;
-                        float topPosition = selectedShapes[1].Top + selectedShapes[1].Height + 10;
-                        float spacing = 10;
-
-                        // 创建结果显示的圆角矩形
-                        var shapeHanzi = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRoundedRectangle, currentLeft, topPosition, 50, 50);
-                        shapeHanzi.TextFrame.TextRange.Text = hanzi;
-                        shapeHanzi.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White);
-                        shapeHanzi.TextFrame.TextRange.Font.Color.RGB = shapeHanzi.Line.ForeColor.RGB;
-
-                        currentLeft += shapeHanzi.Width + spacing;
-
-                        // 创建等号
-                        var shapeEquals1 = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 15, 30, 5);
-                        shapeEquals1.Line.Visible = Office.MsoTriState.msoFalse;
-                        var shapeEquals2 = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 30, 30, 5);
-                        shapeEquals2.Line.Visible = Office.MsoTriState.msoFalse;
-                        var equalsGroup = slide.Shapes.Range(new[] { shapeEquals1.Name, shapeEquals2.Name }).Group();
-
-                        currentLeft += equalsGroup.Width + spacing;
-
-                        // 创建组件部分的圆角矩形和减号
-                        for (int i = 0; i < components.Length; i++)
-                        {
-                            var shapeComponent = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRoundedRectangle, currentLeft, topPosition, 50, 50);
-                            shapeComponent.TextFrame.TextRange.Text = components[i];
-                            shapeComponent.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White);
-                            shapeComponent.TextFrame.TextRange.Font.Color.RGB = shapeHanzi.Line.ForeColor.RGB;
-
-                            currentLeft += shapeComponent.Width + spacing;
-
-                            if (i < components.Length - 1)
+                            if (matchingLines.Length == 0)
                             {
-                                var shapeMinus = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 20, 30, 5);
-                                shapeMinus.Line.Visible = Office.MsoTriState.msoFalse;
-                                shapeMinus.Fill.ForeColor.RGB = shapeHanzi.Line.ForeColor.RGB;
-                                currentLeft += shapeMinus.Width + spacing;
+                                MessageBox.Show($"未找到汉字 '{hanzi}' 的拆字数据。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                return;
                             }
+
+                            string selectedLine;
+                            if (matchingLines.Length == 1)
+                            {
+                                selectedLine = matchingLines[0];
+                            }
+                            else
+                            {
+                                var selectForm = new SelectForm(hanzi, matchingLines.Select(line => string.Join(" ", line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))).ToArray());
+                                if (selectForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    selectedLine = $"{hanzi}\t{selectForm.SelectedOption}";
+                                }
+                                else
+                                {
+                                    return; // 用户取消选择
+                                }
+                            }
+
+                            string[] components = selectedLine.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).ToArray();
+
+                            float currentLeft = selectedShape.Left;
+                            float topPosition = selectedShape.Top + selectedShape.Height + 20;
+                            float spacing = 10;
+
+                            var shapeHanzi = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRoundedRectangle, currentLeft, topPosition, 50, 50);
+                            shapeHanzi.TextFrame.TextRange.Text = hanzi;
+                            shapeHanzi.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White);
+                            shapeHanzi.TextFrame.TextRange.Font.Color.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorDark1;
+                            shapeHanzi.Line.ForeColor.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorAccent1;
+                            shapeHanzi.TextFrame.TextRange.Font.Size = 36; // 固定字号为36
+
+                            // 添加形状标签，用于标识需要分离文本的形状
+                            shapeHanzi.Tags.Add("FenLi", "true");
+
+                            var equalsAndMinusColor = Office.MsoThemeColorIndex.msoThemeColorAccent1;
+
+                            currentLeft += shapeHanzi.Width + spacing;
+
+                            var shapeEquals1 = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 15, 30, 5);
+                            shapeEquals1.Line.Visible = Office.MsoTriState.msoFalse;
+                            shapeEquals1.Fill.ForeColor.ObjectThemeColor = equalsAndMinusColor;
+                            var shapeEquals2 = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 30, 30, 5);
+                            shapeEquals2.Line.Visible = Office.MsoTriState.msoFalse;
+                            shapeEquals2.Fill.ForeColor.ObjectThemeColor = equalsAndMinusColor;
+                            var equalsGroup = slide.Shapes.Range(new[] { shapeEquals1.Name, shapeEquals2.Name }).Group();
+
+                            currentLeft += equalsGroup.Width + spacing;
+
+                            for (int i = 0; i < components.Length - 1; i++)
+                            {
+                                string component = components[i];
+
+                                var shapeComponent = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRoundedRectangle, currentLeft, topPosition, 50, 50);
+                                shapeComponent.TextFrame.TextRange.Text = component;
+                                shapeComponent.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White);
+                                shapeComponent.TextFrame.TextRange.Font.Color.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorDark1;
+                                shapeComponent.Line.ForeColor.ObjectThemeColor = equalsAndMinusColor;
+                                shapeComponent.TextFrame.TextRange.Font.Size = 36; // 固定字号为36
+
+                                // 添加形状标签，用于标识需要分离文本的形状
+                                shapeComponent.Tags.Add("FenLi", "true");
+
+                                currentLeft += shapeComponent.Width + spacing;
+
+                                if (i < components.Length - 1)
+                                {
+                                    var shapeMinus1 = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRectangle, currentLeft, topPosition + 20, 30, 5);
+                                    shapeMinus1.Line.Visible = Office.MsoTriState.msoFalse;
+                                    shapeMinus1.Fill.ForeColor.ObjectThemeColor = equalsAndMinusColor;
+                                    currentLeft += shapeMinus1.Width + spacing;
+                                }
+                            }
+
+                            var shapeLastComponent = slide.Shapes.AddShape(Office.MsoAutoShapeType.msoShapeRoundedRectangle, currentLeft, topPosition, 50, 50);
+                            shapeLastComponent.TextFrame.TextRange.Text = components.Last();
+                            shapeLastComponent.Fill.ForeColor.RGB = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.White);
+                            shapeLastComponent.TextFrame.TextRange.Font.Color.ObjectThemeColor = Office.MsoThemeColorIndex.msoThemeColorDark1;
+                            shapeLastComponent.Line.ForeColor.ObjectThemeColor = equalsAndMinusColor;
+                            shapeLastComponent.TextFrame.TextRange.Font.Size = 36; // 固定字号为36
+
+                            // 添加形状标签，用于标识需要分离文本的形状
+                            shapeLastComponent.Tags.Add("FenLi", "true");
+
+                            // 执行形文分离操作
+                            SelectShapesAndSeparate(sender, e, slide);
+                        }
+                        else
+                        {
+                            MessageBox.Show("请确保文本框内只有一个汉字。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
-                        MessageBox.Show($"未找到汉字 '{hanzi}' 的拆字数据。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("请选中一个文本框。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                else
-                {
-                    MessageBox.Show("请确保只选中一个文本框或文本。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选中一个文本框或文本。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private string Chaiz2(string resourceName)
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
@@ -7592,6 +7627,79 @@ End Sub
                 string tempFilePath = Path.GetTempFileName();
                 File.WriteAllText(tempFilePath, content);
                 return tempFilePath;
+            }
+        }
+
+        private void 形文分离_Click(object sender, RibbonControlEventArgs e)
+        {
+            var app = Globals.ThisAddIn.Application;
+            var slide = app.ActiveWindow.View.Slide;
+
+            // 检查是否选择了形状
+            if (app.ActiveWindow.Selection.Type == Microsoft.Office.Interop.PowerPoint.PpSelectionType.ppSelectionShapes)
+            {
+                var selectedShapes = app.ActiveWindow.Selection.ShapeRange;
+
+                foreach (Microsoft.Office.Interop.PowerPoint.Shape selectedShape in selectedShapes)
+                {
+                    // 检查形状是否有文本框且有文本
+                    if (selectedShape.HasTextFrame == Microsoft.Office.Core.MsoTriState.msoTrue &&
+                        selectedShape.TextFrame.HasText == Microsoft.Office.Core.MsoTriState.msoTrue)
+                    {
+                        var textRange = selectedShape.TextFrame.TextRange;
+                        string textContent = textRange.Text.Trim();
+
+                        // 只处理有文本的形状
+                        if (!string.IsNullOrEmpty(textContent))
+                        {
+                            // 获取原形状的文本属性
+                            var fontName = textRange.Font.Name;
+                            var fontSize = textRange.Font.Size;
+                            var fontColor = textRange.Font.Color.RGB;
+                            var fontBold = textRange.Font.Bold;
+                            var fontItalic = textRange.Font.Italic;
+                            var fontUnderline = textRange.Font.Underline;
+                            var textAlign = selectedShape.TextFrame.TextRange.ParagraphFormat.Alignment; // 获取对齐方式
+
+                            // 获取原形状的位置和大小
+                            float left = selectedShape.Left;
+                            float top = selectedShape.Top;
+                            float width = selectedShape.Width;
+                            float height = selectedShape.Height;
+
+                            // 在相同位置创建新的文本框
+                            var newTextBox = slide.Shapes.AddTextbox(
+                                Office.MsoTextOrientation.msoTextOrientationHorizontal,
+                                left, top, width, height);
+
+                            newTextBox.TextFrame.TextRange.Text = textContent;
+
+                            // 设置文本框的字体属性
+                            var newFont = newTextBox.TextFrame.TextRange.Font;
+                            newFont.Name = fontName;
+                            newFont.Size = fontSize;
+                            newFont.Color.RGB = fontColor;
+                            newFont.Bold = fontBold;
+                            newFont.Italic = fontItalic;
+                            newFont.Underline = fontUnderline;
+
+                            // 设置文本框的对齐方式
+                            newTextBox.TextFrame.TextRange.ParagraphFormat.Alignment = textAlign;
+
+                            // 垂直居中
+                            float shapeMidpoint = selectedShape.Top + selectedShape.Height / 2;
+                            float textBoxTop = shapeMidpoint - newTextBox.Height / 2;
+                            newTextBox.Top = textBoxTop;
+
+                            // 清除原形状的文本
+                            selectedShape.TextFrame.TextRange.Text = "";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选中一个或多个包含文本的形状。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
