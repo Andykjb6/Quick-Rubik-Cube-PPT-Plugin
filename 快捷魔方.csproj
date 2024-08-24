@@ -786,6 +786,7 @@
     <EmbeddedResource Include="汉字字典\汉字形容词大全.txt" />
     <EmbeddedResource Include="汉字字典\轻声词语库.txt" />
     <EmbeddedResource Include="汉字字典\汉字拆字.txt" />
+    <EmbeddedResource Include="汉字字典\汉字减一减.txt" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />
