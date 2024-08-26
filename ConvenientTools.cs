@@ -526,10 +526,10 @@ namespace 课件帮PPT助手
                             newGroups.Add(newGroup);
                         }
 
-                        // Check if Ctrl key is pressed
+                        // 检查是否按下了Ctrl键
                         bool isCtrlPressed = (ModifierKeys & Keys.Control) == Keys.Control;
 
-                        // Set colors and remove borders based on the pattern
+                        // 设置填充颜色并移除形状边框
                         for (int i = 0; i < newGroups.Count; i++)
                         {
                             PowerPoint.Shape newGroup = newGroups[i];
@@ -549,14 +549,14 @@ namespace 课件帮PPT助手
                                 }
                                 if (j > i + 1)
                                 {
-                                    newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.Gray);
+                                    newGroupItems[j].Fill.ForeColor.RGB = ColorTranslator.ToOle(Color.FromArgb(191, 191, 191));
                                 }
                             }
 
                             // 命名新组合
                             newGroup.Name = $"【{selectedText}】：分步第{i + 1}笔";
 
-                            // Adjust positions for two-row layout if Ctrl key is pressed
+                            //如果按下 Ctrl 键，则调整双行布局的位置
                             if (isCtrlPressed)
                             {
                                 int columns = (int)Math.Ceiling(newGroups.Count / 2.0);

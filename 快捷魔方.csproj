@@ -797,6 +797,8 @@
     <EmbeddedResource Include="汉字字典\汉字减一减.txt" />
     <EmbeddedResource Include="汉字字典\儿字前缀.txt" />
     <EmbeddedResource Include="汉字字典\儿字后缀.txt" />
+    <EmbeddedResource Include="汉字字典\得字前缀.txt" />
+    <EmbeddedResource Include="汉字字典\得字后缀.txt" />
     <Content Include="汉字转拼音.ico" />
     <EmbeddedResource Include="Resources\原始样机6.png" />
     <EmbeddedResource Include="Resources\原始样机5.png" />

@@ -44,6 +44,7 @@ namespace 课件帮PPT助手
             LoadMultiPronunciationDict();
             LoadVerbDict();  // 加载动词字典
             LoadErhuaRules(); // 加载儿化音处理规则（前缀和后缀）
+            LoadDePrefixSuffixDicts();  // 加载得字前后缀字典
             RichTextBoxLeft.KeyDown += RichTextBoxLeft_KeyDown;
             RichTextBoxLeft.TextChanged += RichTextBoxLeft_TextChanged;
 
@@ -63,20 +64,33 @@ namespace 课件帮PPT助手
         }
         private HashSet<string> verbSet;
 
+        private HashSet<string> dePrefixSet;
+        private HashSet<string> deSuffixSet;
+
+        private void LoadDePrefixSuffixDicts()
+        {
+            dePrefixSet = new HashSet<string>(File.ReadLines("课件帮PPT助手.汉字字典.得字前缀.txt").Select(line => line.Trim()));
+            deSuffixSet = new HashSet<string>(File.ReadLines("课件帮PPT助手.汉字字典.得字后缀.txt").Select(line => line.Trim()));
+        }
+
         private void LoadVerbDict()
         {
-            verbSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            verbSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // 使用不区分大小写的比较器
             string filePath = ExtractEmbeddedResource("课件帮PPT助手.汉字字典.汉字动词大全.txt");
 
-            foreach (var line in File.ReadLines(filePath))
+            if (File.Exists(filePath))
             {
-                string verb = line.Trim();
-                if (!string.IsNullOrEmpty(verb))
+                foreach (var line in File.ReadLines(filePath))
                 {
-                    verbSet.Add(verb);
+                    string verb = line.Trim();
+                    if (!string.IsNullOrEmpty(verb))
+                    {
+                        verbSet.Add(verb); // 将每个非空的动词加入集合中
+                    }
                 }
             }
         }
+
         private HashSet<string> adjectiveSet; // 定义形容词集合
 
         private void LoadAdjectiveDict()
@@ -608,6 +622,7 @@ namespace 课件帮PPT助手
             foreach (StackPanel linePanel in StackPanelContent.Children)
             {
                 ApplyErhuaPinyin(linePanel);
+                ApplyDePinyin(linePanel);
             }
 
             ApplyFontSettings();
@@ -709,11 +724,36 @@ namespace 课件帮PPT助手
             }
             return i + word.Length - 1;
         }
+        private void ApplyDePinyin(StackPanel linePanel)
+        {
+            for (int i = 0; i < linePanel.Children.Count - 1; i++)
+            {
+                StackPanel charPanel = linePanel.Children[i] as StackPanel;
+                StackPanel nextCharPanel = linePanel.Children[i + 1] as StackPanel;
+
+                if (charPanel != null && nextCharPanel != null)
+                {
+                    TextBlock hanziBlock = charPanel.Children[1] as TextBlock;
+                    TextBlock nextHanziBlock = nextCharPanel.Children[1] as TextBlock;
+
+                    if (hanziBlock != null && hanziBlock.Text == "得")
+                    {
+                        // 检查“得”字后面的字符是否是动词
+                        if (verbSet.Contains(nextHanziBlock.Text))
+                        {
+                            TextBlock pinyinBlock = charPanel.Children[0] as TextBlock;
+
+                            // 将“得”的拼音设置为“děi”
+                            pinyinBlock.Text = "děi";
+                        }
+                    }
+                }
+            }
+        }
 
         private string GetCorrectedPinyin(string text, int index, bool isLastChar)
         {
             char currentChar = text[index];
-            // 用来标记"地"是否应该固定拼音为"de"
             bool fixDePronunciation = false;
 
             // 处理特殊的汉字拼音
@@ -750,13 +790,11 @@ namespace 课件帮PPT助手
             }
             else if (currentChar == '不')
             {
-                // 如果前后字符相同，则拼音为“bu”（轻声）
                 if ((index > 0 && index < text.Length - 1 && text[index - 1] == text[index + 1]) ||
                     (index < text.Length - 1 && char.IsPunctuation(text[index + 1])))
                 {
                     return "bu";
                 }
-                // 如果后一个拼音是第四声，则“不”的拼音为“bú”
                 else if (index < text.Length - 1)
                 {
                     char nextChar = text[index + 1];
@@ -770,15 +808,12 @@ namespace 课件帮PPT助手
             }
             else if (currentChar == '地')
             {
-                // 判断“地”后面是否有动词
                 if (index < text.Length - 1)
                 {
                     for (int i = index + 1; i < text.Length; i++)
                     {
-                        // 获取下一个汉字
                         string nextWord = GetNextWord(text, i);
 
-                        // 如果动词集合包含该词语，那么设置 fixDePronunciation 为 true
                         if (verbSet != null && verbSet.Contains(nextWord))
                         {
                             fixDePronunciation = true;
@@ -786,12 +821,11 @@ namespace 课件帮PPT助手
                         }
                         else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
                         {
-                            // 跳过非动词的汉字，继续检查下一个字符
                             continue;
                         }
                         else
                         {
-                            break; // 如果遇到非汉字，则跳出循环
+                            break;
                         }
                     }
                 }
@@ -805,89 +839,47 @@ namespace 课件帮PPT助手
 
             else if (currentChar == '得')
             {
-                bool hasVerbBefore = false;
-                bool hasVerbAfter = false;
-                bool isSpecialPhrase = false;
-
-                // 检查“得”前面是否有动词
+                // 检查“得”字前面是否匹配前缀
                 if (index > 0)
                 {
-                    for (int i = index - 1; i >= 0; i--)
+                    string prevWord = text.Substring(Math.Max(0, index - 4), Math.Min(4, index)); // 获取可能的前缀
+                    if (dePrefixSet.Any(prefix => prevWord.EndsWith(prefix)))
                     {
-                        string prevWord = GetNextWord(text, i);
-                        if (verbSet != null && verbSet.Contains(prevWord))  // 检查 verbSet 是否为 null
-                        {
-                            hasVerbBefore = true;
-                            break;
-                        }
-                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
-                        {
-                            // 跳过非动词的汉字，继续检查前一个字符
-                            continue;
-                        }
-                        else
-                        {
-                            break; // 如果遇到非汉字，则跳出循环
-                        }
+                        return "dé";
                     }
                 }
 
-                // 检查“得”后面是否有动词
+                // 检查“得”字后面是否匹配后缀
+                string followingText = text.Substring(index + 1); // 确保followingText在需要时已经定义
                 if (index < text.Length - 1)
                 {
-                    for (int i = index + 1; i < text.Length; i++)
+                    if (deSuffixSet.Any(suffix => followingText.StartsWith(suffix)))
                     {
-                        string nextWord = GetNextWord(text, i);
-                        if (verbSet != null && verbSet.Contains(nextWord))  // 检查 verbSet 是否为 null
-                        {
-                            hasVerbAfter = true;
-                            break;
-                        }
-                        else if (hanziPinyinDict.ContainsKey(text[i].ToString()))
-                        {
-                            // 跳过非动词的汉字，继续检查下一个字符
-                            continue;
-                        }
-                        else
-                        {
-                            break; // 如果遇到非汉字，则跳出循环
-                        }
+                        return "dé";
                     }
                 }
 
-                // 检查是否为“要得”或“要不得”并后接标点符号的情况
-                if (index > 1 && index < text.Length - 1)
-                {
-                    string phraseBefore = text.Substring(index - 2, 3);
-                    if ((phraseBefore == "要得" || phraseBefore == "要不得") && char.IsPunctuation(text[index + 1]))
-                    {
-                        isSpecialPhrase = true;
-                    }
-                }
-
-                // 决定拼音
-                if (isSpecialPhrase || hasVerbBefore)
-                {
-                    return "de";
-                }
-                else if (hasVerbAfter && !hasVerbBefore)
+                // 默认逻辑
+                bool hasVerbAfter = verbSet != null && verbSet.Any(verb => followingText.StartsWith(verb));
+                if (hasVerbAfter)
                 {
                     return "děi";
                 }
                 else
                 {
-                    return "dé";
+                    return "de";
                 }
             }
+
+
             else if (currentChar == '更')
             {
-                // 判断“更”后面是否是形容词
                 if (index < text.Length - 1 && adjectiveSet != null)
                 {
                     for (int i = index + 1; i < text.Length; i++)
                     {
                         string nextWord = GetNextWord(text, i);
-                        if (adjectiveSet != null && adjectiveSet.Contains(nextWord))  // 加入null检查
+                        if (adjectiveSet != null && adjectiveSet.Contains(nextWord))
                         {
                             return "gèng";
                         }
@@ -928,43 +920,58 @@ namespace 课件帮PPT助手
                     }
                 }
             }
+
             // 默认处理其他汉字
             return hanziPinyinDict.ContainsKey(currentChar.ToString()) ? hanziPinyinDict[currentChar.ToString()][0] : string.Empty;
         }
+
         private string GetNextWord(string text, int startIndex)
         {
-            int maxLength = Math.Min(3, text.Length - startIndex); // 假设词语最大长度为4个字符
+            // 获取词库中最长的词语长度
+            int maxLength = Math.Min(Math.Max(
+                adjectiveSet?.Max(w => w.Length) ?? 0,
+                Math.Max(
+                    verbSet?.Max(w => w.Length) ?? 0,
+                    multiPronunciationDict.Keys.Max(k => k.Length)
+                )
+            ), text.Length - startIndex); // 确保最大长度不超过文本剩余长度
+
             for (int length = maxLength; length > 0; length--)
             {
-                string potentialWord = text.Substring(startIndex, length);
-
-                // 忽略空格和标点符号
-                if (string.IsNullOrWhiteSpace(potentialWord) || char.IsPunctuation(potentialWord[0]))
+                if (startIndex + length <= text.Length)
                 {
-                    continue;
-                }
+                    string potentialWord = text.Substring(startIndex, length);
 
-                // 优先检查内置形容词库
-                if (adjectiveSet != null && adjectiveSet.Contains(potentialWord))
-                {
-                    return potentialWord;
-                }
+                    // 忽略空格和标点符号
+                    if (string.IsNullOrWhiteSpace(potentialWord) || char.IsPunctuation(potentialWord[0]))
+                    {
+                        continue;
+                    }
 
-                // 然后检查内置动词库
-                if (verbSet != null && verbSet.Contains(potentialWord))
-                {
-                    return potentialWord;
-                }
+                    // 优先检查内置形容词库
+                    if (adjectiveSet != null && adjectiveSet.Contains(potentialWord))
+                    {
+                        return potentialWord;
+                    }
 
-                // 最后检查多音字词库
-                if (multiPronunciationDict.ContainsKey(potentialWord))
-                {
-                    return potentialWord;
+                    // 然后检查内置动词库
+                    if (verbSet != null && verbSet.Contains(potentialWord))
+                    {
+                        return potentialWord;
+                    }
+
+                    // 最后检查多音字词库
+                    if (multiPronunciationDict.ContainsKey(potentialWord))
+                    {
+                        return potentialWord;
+                    }
                 }
             }
 
-            return text[startIndex].ToString(); // 如果没有匹配，返回单个字符
+            // 如果没有匹配，返回单个字符
+            return text[startIndex].ToString();
         }
+
 
         private string GetMultiPronunciationWord(string text, int startIndex)
         {
@@ -1523,9 +1530,6 @@ namespace 课件帮PPT助手
             HighlightReduplicatedWords();
             ApplyFontSettings();
         }
-
-
-
 
         private void ApplyFontSettings()
         {
