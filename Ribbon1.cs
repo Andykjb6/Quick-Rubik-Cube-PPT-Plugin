@@ -7702,5 +7702,126 @@ End Sub
                 MessageBox.Show("请选中一个或多个包含文本的形状。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        private void 叠加文本_Click(object sender, RibbonControlEventArgs e)
+        {
+            // 获取当前幻灯片
+            var slide = Globals.ThisAddIn.Application.ActiveWindow.View.Slide;
+
+            // 获取选中的文本框
+            if (Globals.ThisAddIn.Application.ActiveWindow.Selection.Type == PowerPoint.PpSelectionType.ppSelectionText)
+            {
+                var textRange = Globals.ThisAddIn.Application.ActiveWindow.Selection.TextRange;
+
+                // 获取选中的文本
+                string selectedText = textRange.Text;
+
+                // 如果有选中的文本
+                if (!string.IsNullOrEmpty(selectedText))
+                {
+                    // 检查文本框末尾是否存在空白行
+                    bool addedNewLine = false;
+                    var parentShape = textRange.Parent as PowerPoint.Shape;
+                    if (parentShape != null)
+                    {
+                        var parentTextRange = parentShape.TextFrame.TextRange;
+                        string originalText = parentTextRange.Text;
+
+                        // 如果文本框末尾没有空白行，则添加一个空白行
+                        if (!originalText.EndsWith("\r"))
+                        {
+                            parentTextRange.Text += "\r\n"; // 使用 "\r\n" 确保成功添加回车
+                            addedNewLine = true;
+                        }
+                    }
+
+
+                    // 获取选中文字的位置和大小
+                    float originalLeft = textRange.BoundLeft;
+                    float originalTop = textRange.BoundTop;
+                    float originalWidth = textRange.BoundWidth;
+                    float originalHeight = textRange.BoundHeight;
+
+                    // 获取行间距倍数
+                    float lineSpacingMultiplier = textRange.ParagraphFormat.SpaceWithin;
+
+                    // 计算基于行间距的向下移动量
+                    float downwardShift = (float)((lineSpacingMultiplier - 1.0f) * 10 * 0.6); // 每增加0.1倍行间距，向下移动0.9个单位
+
+                    // 创建辅助矩形
+                    PowerPoint.Shape rectangle = slide.Shapes.AddShape(MsoAutoShapeType.msoShapeRectangle, originalLeft, originalTop, originalWidth, originalHeight);
+                    rectangle.Line.Visible = MsoTriState.msoFalse; // 隐藏矩形边框
+                    rectangle.Fill.Transparency = 1.0f; // 设置为完全透明
+
+                    // 创建一个新的文本框，并设置其内容为选中的文本
+                    var newTextBox = slide.Shapes.AddTextbox(
+                        MsoTextOrientation.msoTextOrientationHorizontal,
+                        originalLeft, originalTop + downwardShift, originalWidth, originalHeight); // 应用向下移动后的位置
+
+                    var newTextRange = newTextBox.TextFrame.TextRange;
+                    newTextRange.Text = selectedText;
+
+                    // 设置新文本框的字体大小与选中文本一致
+                    newTextRange.Font.Size = textRange.Font.Size;
+                    newTextRange.Font.Name = textRange.Font.Name;
+
+                    // 设置新文本框的字体颜色为红色并加粗
+                    newTextRange.Font.Color.RGB = ColorTranslator.ToOle(Color.Red);
+                    newTextRange.Font.Bold = MsoTriState.msoTrue;
+
+                    // 确保新文本框不自动换行
+                    newTextBox.TextFrame.WordWrap = MsoTriState.msoFalse;
+
+                    // 计算新文本框的位置，使其居中于辅助矩形
+                    float newLeft = rectangle.Left + (rectangle.Width - newTextBox.Width) / 2;
+                    float newTop = rectangle.Top + (rectangle.Height - newTextBox.Height) / 2;
+
+                    // 应用计算后的新位置
+                    newTextBox.Left = newLeft;
+                    newTextBox.Top = newTop + downwardShift; // 应用基于行间距的向下移动量
+
+                    // 确保新文本框已经完全加载
+                    System.Windows.Forms.Application.DoEvents();
+
+                    // 添加“擦除”动画，并设置方向为自左侧，触发方式为“页面点击”播放
+                    PowerPoint.TimeLine timeLine = slide.TimeLine;
+                    PowerPoint.Sequence sequence = timeLine.MainSequence;
+                    PowerPoint.Effect effect = sequence.AddEffect(newTextBox, PowerPoint.MsoAnimEffect.msoAnimEffectWipe, PowerPoint.MsoAnimateByLevel.msoAnimateLevelNone, PowerPoint.MsoAnimTriggerType.msoAnimTriggerOnPageClick);
+                    effect.EffectParameters.Direction = PowerPoint.MsoAnimDirection.msoAnimDirectionLeft;
+                    effect.Timing.Duration = 0.5f; // 动画持续时间为0.5秒
+
+                    // 删除辅助矩形
+                    rectangle.Delete();
+
+                    // 移除在开始时添加的空白行
+                    if (addedNewLine)
+                    {
+                        parentShape.TextFrame.TextRange.Text = parentShape.TextFrame.TextRange.Text.TrimEnd('\r', '\n');
+                    }
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("请选中文本框内的文本！");
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("请选中文本框内的文本！");
+            }
+        }
+
+        // 用于测量文本的宽度
+        private float MeasureTextWidth(string text, float fontSize, string fontName)
+        {
+            using (var bmp = new Bitmap(1, 1))
+            {
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    var font = new System.Drawing.Font(fontName, fontSize);
+                    var size = g.MeasureString(text, font);
+                    return size.Width;
+                }
+            }
+        }
     }
 }

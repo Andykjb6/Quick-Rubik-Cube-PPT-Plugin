@@ -26,7 +26,6 @@ namespace 课件帮PPT助手
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Ribbon1));
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl1 = this.Factory.CreateRibbonDropDownItem();
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl2 = this.Factory.CreateRibbonDropDownItem();
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl3 = this.Factory.CreateRibbonDropDownItem();
@@ -37,6 +36,7 @@ namespace 课件帮PPT助手
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl8 = this.Factory.CreateRibbonDropDownItem();
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl9 = this.Factory.CreateRibbonDropDownItem();
             Microsoft.Office.Tools.Ribbon.RibbonDropDownItem ribbonDropDownItemImpl10 = this.Factory.CreateRibbonDropDownItem();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Ribbon1));
             this.课件帮PPT助手 = this.Factory.CreateRibbonTab();
             this.group3 = this.Factory.CreateRibbonGroup();
             this.group10 = this.Factory.CreateRibbonGroup();
@@ -46,11 +46,8 @@ namespace 课件帮PPT助手
             this.group8 = this.Factory.CreateRibbonGroup();
             this.group6 = this.Factory.CreateRibbonGroup();
             this.group9 = this.Factory.CreateRibbonGroup();
-            this.矩形拆分 = this.Factory.CreateRibbonButton();
-            this.Mosaic = this.Factory.CreateRibbonButton();
-            this.ApplyFilter = this.Factory.CreateRibbonButton();
-            this.Expandimage = this.Factory.CreateRibbonButton();
-            this.splitButton2 = this.Factory.CreateRibbonSplitButton();
+            this.comboBox1 = this.Factory.CreateRibbonComboBox();
+            this.comboBox2 = this.Factory.CreateRibbonComboBox();
             this.关于我 = this.Factory.CreateRibbonSplitButton();
             this.检查更新 = this.Factory.CreateRibbonButton();
             this.插件版本 = this.Factory.CreateRibbonButton();
@@ -60,6 +57,7 @@ namespace 课件帮PPT助手
             this.toggleTaskPaneButton = this.Factory.CreateRibbonButton();
             this.button5 = this.Factory.CreateRibbonButton();
             this.生字赋格 = this.Factory.CreateRibbonButton();
+            this.叠加文本 = this.Factory.CreateRibbonButton();
             this.快速拆字 = this.Factory.CreateRibbonSplitButton();
             this.汉字拆字 = this.Factory.CreateRibbonButton();
             this.汉字减一减 = this.Factory.CreateRibbonButton();
@@ -101,6 +99,10 @@ namespace 课件帮PPT助手
             this.Bgsub = this.Factory.CreateRibbonButton();
             this.矢量 = this.Factory.CreateRibbonSplitButton();
             this.Tmttool = this.Factory.CreateRibbonButton();
+            this.矩形拆分 = this.Factory.CreateRibbonButton();
+            this.Mosaic = this.Factory.CreateRibbonButton();
+            this.ApplyFilter = this.Factory.CreateRibbonButton();
+            this.Expandimage = this.Factory.CreateRibbonButton();
             this.平移居中 = this.Factory.CreateRibbonButton();
             this.分布 = this.Factory.CreateRibbonMenu();
             this.沿线分布 = this.Factory.CreateRibbonButton();
@@ -127,6 +129,7 @@ namespace 课件帮PPT助手
             this.单字拆分 = this.Factory.CreateRibbonButton();
             this.拆分段落 = this.Factory.CreateRibbonButton();
             this.批量改字 = this.Factory.CreateRibbonButton();
+            this.形文分离 = this.Factory.CreateRibbonButton();
             this.字词加点 = this.Factory.CreateRibbonButton();
             this.文本矢量化 = this.Factory.CreateRibbonButton();
             this.文写入形 = this.Factory.CreateRibbonButton();
@@ -174,9 +177,7 @@ namespace 课件帮PPT助手
             this.快捷盒子 = this.Factory.CreateRibbonButton();
             this.Replaceaudio = this.Factory.CreateRibbonButton();
             this.插入矩形 = this.Factory.CreateRibbonButton();
-            this.comboBox1 = this.Factory.CreateRibbonComboBox();
-            this.comboBox2 = this.Factory.CreateRibbonComboBox();
-            this.形文分离 = this.Factory.CreateRibbonButton();
+            this.splitButton2 = this.Factory.CreateRibbonSplitButton();
             this.课件帮PPT助手.SuspendLayout();
             this.group3.SuspendLayout();
             this.group10.SuspendLayout();
@@ -216,6 +217,7 @@ namespace 课件帮PPT助手
             // 
             this.group2.Items.Add(this.button5);
             this.group2.Items.Add(this.生字赋格);
+            this.group2.Items.Add(this.叠加文本);
             this.group2.Items.Add(this.快速拆字);
             this.group2.Items.Add(this.注音编辑);
             this.group2.Items.Add(this.常用格子);
@@ -278,30 +280,43 @@ namespace 课件帮PPT助手
             this.group9.Label = "页面布局";
             this.group9.Name = "group9";
             // 
-            // 矩形拆分
+            // comboBox1
             // 
-            this.矩形拆分.Label = "";
-            this.矩形拆分.Name = "矩形拆分";
+            this.comboBox1.Image = ((System.Drawing.Image)(resources.GetObject("comboBox1.Image")));
+            ribbonDropDownItemImpl1.Label = "A4";
+            ribbonDropDownItemImpl2.Label = "A3";
+            ribbonDropDownItemImpl3.Label = "A1";
+            ribbonDropDownItemImpl4.Label = "A2";
+            ribbonDropDownItemImpl5.Label = "16:9";
+            ribbonDropDownItemImpl6.Label = "4:3";
+            ribbonDropDownItemImpl7.Label = "公众号封面";
+            ribbonDropDownItemImpl8.Label = "小红书图文";
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl1);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl2);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl3);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl4);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl5);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl6);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl7);
+            this.comboBox1.Items.Add(ribbonDropDownItemImpl8);
+            this.comboBox1.Label = "页面尺寸";
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.ShowImage = true;
+            this.comboBox1.Text = null;
+            this.comboBox1.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox1_TextChanged);
             // 
-            // Mosaic
+            // comboBox2
             // 
-            this.Mosaic.Label = "";
-            this.Mosaic.Name = "Mosaic";
-            // 
-            // ApplyFilter
-            // 
-            this.ApplyFilter.Label = "";
-            this.ApplyFilter.Name = "ApplyFilter";
-            // 
-            // Expandimage
-            // 
-            this.Expandimage.Label = "";
-            this.Expandimage.Name = "Expandimage";
-            // 
-            // splitButton2
-            // 
-            this.splitButton2.Label = "splitButton2";
-            this.splitButton2.Name = "splitButton2";
+            this.comboBox2.Image = ((System.Drawing.Image)(resources.GetObject("comboBox2.Image")));
+            ribbonDropDownItemImpl9.Label = "纵向";
+            ribbonDropDownItemImpl10.Label = "横向";
+            this.comboBox2.Items.Add(ribbonDropDownItemImpl9);
+            this.comboBox2.Items.Add(ribbonDropDownItemImpl10);
+            this.comboBox2.Label = "页面方向";
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.ShowImage = true;
+            this.comboBox2.Text = null;
+            this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
             // 
             // 关于我
             // 
@@ -384,6 +399,14 @@ namespace 课件帮PPT助手
             this.生字赋格.ShowImage = true;
             this.生字赋格.SuperTip = "选中一个或多个对象，为其添加田字格。默认按照行列排列对齐。按住Ctrl键单击“生成”可强制原位添加田字格。";
             this.生字赋格.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.生字赋格_Click);
+            // 
+            // 叠加文本
+            // 
+            this.叠加文本.Image = ((System.Drawing.Image)(resources.GetObject("叠加文本.Image")));
+            this.叠加文本.Label = "选词凸显";
+            this.叠加文本.Name = "叠加文本";
+            this.叠加文本.ShowImage = true;
+            this.叠加文本.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.叠加文本_Click);
             // 
             // 快速拆字
             // 
@@ -780,6 +803,26 @@ namespace 课件帮PPT助手
             this.Tmttool.ShowImage = true;
             this.Tmttool.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.位图转矢量图_Click);
             // 
+            // 矩形拆分
+            // 
+            this.矩形拆分.Label = "";
+            this.矩形拆分.Name = "矩形拆分";
+            // 
+            // Mosaic
+            // 
+            this.Mosaic.Label = "";
+            this.Mosaic.Name = "Mosaic";
+            // 
+            // ApplyFilter
+            // 
+            this.ApplyFilter.Label = "";
+            this.ApplyFilter.Name = "ApplyFilter";
+            // 
+            // Expandimage
+            // 
+            this.Expandimage.Label = "";
+            this.Expandimage.Name = "Expandimage";
+            // 
             // 平移居中
             // 
             this.平移居中.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -1054,6 +1097,14 @@ namespace 课件帮PPT助手
             this.批量改字.ShowImage = true;
             this.批量改字.SuperTip = "选中一个或多个文本框（形状），可对它们的文本进行批量修改。";
             this.批量改字.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.批量改字_Click);
+            // 
+            // 形文分离
+            // 
+            this.形文分离.Image = ((System.Drawing.Image)(resources.GetObject("形文分离.Image")));
+            this.形文分离.Label = "形文分离";
+            this.形文分离.Name = "形文分离";
+            this.形文分离.ShowImage = true;
+            this.形文分离.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.形文分离_Click);
             // 
             // 字词加点
             // 
@@ -1519,51 +1570,10 @@ namespace 课件帮PPT助手
             this.插入矩形.SuperTip = "无选中对象，默认单击，插入与幻灯片等大的矩形；选中对象，默认单击，在所选对象顶层插入与其等大的矩形；按Ctrl单击，则在所选对象底层插入等大的矩形。";
             this.插入矩形.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.插入矩形_Click);
             // 
-            // comboBox1
+            // splitButton2
             // 
-            this.comboBox1.Image = ((System.Drawing.Image)(resources.GetObject("comboBox1.Image")));
-            ribbonDropDownItemImpl1.Label = "A4";
-            ribbonDropDownItemImpl2.Label = "A3";
-            ribbonDropDownItemImpl3.Label = "A1";
-            ribbonDropDownItemImpl4.Label = "A2";
-            ribbonDropDownItemImpl5.Label = "16:9";
-            ribbonDropDownItemImpl6.Label = "4:3";
-            ribbonDropDownItemImpl7.Label = "公众号封面";
-            ribbonDropDownItemImpl8.Label = "小红书图文";
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl1);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl2);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl3);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl4);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl5);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl6);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl7);
-            this.comboBox1.Items.Add(ribbonDropDownItemImpl8);
-            this.comboBox1.Label = "页面尺寸";
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.ShowImage = true;
-            this.comboBox1.Text = null;
-            this.comboBox1.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox1_TextChanged);
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Image = ((System.Drawing.Image)(resources.GetObject("comboBox2.Image")));
-            ribbonDropDownItemImpl9.Label = "纵向";
-            ribbonDropDownItemImpl10.Label = "横向";
-            this.comboBox2.Items.Add(ribbonDropDownItemImpl9);
-            this.comboBox2.Items.Add(ribbonDropDownItemImpl10);
-            this.comboBox2.Label = "页面方向";
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.ShowImage = true;
-            this.comboBox2.Text = null;
-            this.comboBox2.TextChanged += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.comboBox2_TextChanged);
-            // 
-            // 形文分离
-            // 
-            this.形文分离.Image = ((System.Drawing.Image)(resources.GetObject("形文分离.Image")));
-            this.形文分离.Label = "形文分离";
-            this.形文分离.Name = "形文分离";
-            this.形文分离.ShowImage = true;
-            this.形文分离.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.形文分离_Click);
+            this.splitButton2.Label = "splitButton2";
+            this.splitButton2.Name = "splitButton2";
             // 
             // Ribbon1
             // 
@@ -1735,6 +1745,7 @@ namespace 课件帮PPT助手
         internal RibbonButton 汉字减一减;
         internal RibbonSplitButton 快速拆字;
         internal RibbonButton 形文分离;
+        internal RibbonButton 叠加文本;
     }
 
     partial class ThisRibbonCollection

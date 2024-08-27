@@ -44,7 +44,7 @@ namespace 课件帮PPT助手
             LoadMultiPronunciationDict();
             LoadVerbDict();  // 加载动词字典
             LoadErhuaRules(); // 加载儿化音处理规则（前缀和后缀）
-            LoadDePrefixSuffixDicts();  // 加载得字前后缀字典
+            LoadDePrefixAndSuffix();  // 加载得字前后缀字典
             RichTextBoxLeft.KeyDown += RichTextBoxLeft_KeyDown;
             RichTextBoxLeft.TextChanged += RichTextBoxLeft_TextChanged;
 
@@ -67,11 +67,33 @@ namespace 课件帮PPT助手
         private HashSet<string> dePrefixSet;
         private HashSet<string> deSuffixSet;
 
-        private void LoadDePrefixSuffixDicts()
+        private void LoadDePrefixAndSuffix()
         {
-            dePrefixSet = new HashSet<string>(File.ReadLines("课件帮PPT助手.汉字字典.得字前缀.txt").Select(line => line.Trim()));
-            deSuffixSet = new HashSet<string>(File.ReadLines("课件帮PPT助手.汉字字典.得字后缀.txt").Select(line => line.Trim()));
+            dePrefixSet = LoadWordSetFromEmbeddedResource("课件帮PPT助手.汉字字典.得字前缀.txt");
+            deSuffixSet = LoadWordSetFromEmbeddedResource("课件帮PPT助手.汉字字典.得字后缀.txt");
         }
+
+        private HashSet<string> LoadWordSetFromEmbeddedResource(string resourceName)
+        {
+            var wordSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string filePath = ExtractEmbeddedResource(resourceName);
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                foreach (var line in File.ReadLines(filePath))
+                {
+                    string word = line.Trim();
+                    if (!string.IsNullOrEmpty(word))
+                    {
+                        wordSet.Add(word);
+                    }
+                }
+            }
+
+            return wordSet;
+        }
+
+        
 
         private void LoadVerbDict()
         {
@@ -231,9 +253,7 @@ namespace 课件帮PPT助手
             double hanziFontSize = Properties.Settings.Default.HanziFontSize;
 
             ApplyFontSettings(pinyinFont, pinyinFontSize, hanziFont, hanziFontSize);
-        }
-
-       
+        } 
 
         private void ZhuYinEditor_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -342,7 +362,6 @@ namespace 课件帮PPT助手
                     }
 
                     // 检查是否为儿化音情况
-                    bool isErhua = false;
                     if (hanziBlock.Parent is StackPanel charPanel && charPanel.Parent is StackPanel linePanel)
                     {
                         int charPanelIndex = linePanel.Children.IndexOf(charPanel);
@@ -352,9 +371,7 @@ namespace 课件帮PPT助手
                             var nextHanziBlock = nextCharPanel.Children[1] as TextBlock;
                             if (nextHanziBlock.Text == "儿")
                             {
-                                isErhua = true;
-
-                                // 添加儿化音选项并缓存
+                                // 添加儿化音选项
                                 var erPinyin = hanziPinyinDict[hanzi][0] + "r";
                                 var erMenuItem = new MenuItem
                                 {
@@ -368,18 +385,26 @@ namespace 课件帮PPT助手
                                 menu.Items.Add(erMenuItem);
                             }
                         }
-                    }
 
-                    // 确保只有在不是多音字的情况下才添加“轻声”选项
-                    if (!isErhua && hanziPinyinDict[hanzi].Count == 1)
-                    {
-                        var lightToneMenuItem = new MenuItem
+                        // 检查是否为叠词且背景为粉色高亮
+                        int currentIndex = linePanel.Children.IndexOf(charPanel);
+                        if (currentIndex > 0)
                         {
-                            Header = RemoveTone(hanziPinyinDict[hanzi][0]), // 假设第一个拼音为标准拼音
-                            Tag = hanziBlock
-                        };
-                        lightToneMenuItem.Click += MenuItem_Click;
-                        menu.Items.Add(lightToneMenuItem);
+                            var prevCharPanel = linePanel.Children[currentIndex - 1] as StackPanel;
+                            var prevHanziBlock = prevCharPanel?.Children[1] as TextBlock;
+
+                            if (prevHanziBlock != null && prevHanziBlock.Text == hanziBlock.Text && hanziBlock.Background == System.Windows.Media.Brushes.LightPink)
+                            {
+                                // 添加轻声选项
+                                var lightToneMenuItem = new MenuItem
+                                {
+                                    Header = RemoveTone(hanziPinyinDict[hanzi][0]), // 假设第一个拼音为标准拼音
+                                    Tag = hanziBlock
+                                };
+                                lightToneMenuItem.Click += MenuItem_Click;
+                                menu.Items.Add(lightToneMenuItem);
+                            }
+                        }
                     }
 
                     hanziBlock.ContextMenu = menu;
@@ -417,6 +442,7 @@ namespace 课件帮PPT助手
                 .Replace("ǚ", "ü")
                 .Replace("ǜ", "ü");
         }
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)

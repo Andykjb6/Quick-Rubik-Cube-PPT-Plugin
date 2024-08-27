@@ -124,7 +124,7 @@ namespace 课件帮PPT助手
             }
 
             PowerPoint.Application pptApp = Globals.ThisAddIn.Application;
-            PowerPoint.Slide slide = pptApp.ActiveWindow.View.Slide;
+            _ = pptApp.ActiveWindow.View.Slide;
 
             pptApp.ActiveWindow.Selection.Unselect();
             foreach (var shape in selectedShapes)
